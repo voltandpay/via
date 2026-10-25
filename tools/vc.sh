@@ -1,5 +1,6 @@
 #!/bin/sh
 # Pleos Virtual Console HTTP 조작 (시연·테스트용). 연결이 잠깐 끊기면(emulator_inactive) 다시 시도한다.
+# 콘솔 웹 페이지(http://127.0.0.1:8088)가 브라우저에 열려 있어야 동작한다 — 닫히면 계속 emulator_inactive.
 # 사용: tools/vc.sh gear Drive | soc 15 | charge on|off | port open|closed | odo 123
 V=${VC_URL:-http://127.0.0.1:8088/vehicle}
 case "$1" in
