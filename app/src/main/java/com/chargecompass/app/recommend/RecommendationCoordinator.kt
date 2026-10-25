@@ -27,7 +27,7 @@ sealed interface RecoState {
     data class Enough(val arrivalSoc: Double) : RecoState
     data class Suggested(val routeId: Long, val arrivalSoc: Double, val top: List<RankedStation>) : RecoState
     /** 음성으로 확인하지 못했다. 정차 화면에서 터치 한 번으로 추가한다. */
-    data class AwaitingTouch(val routeId: Long, val choice: RankedStation, val top: List<RankedStation>) : RecoState
+    data class AwaitingTouch(val routeId: Long, val choice: RankedStation, val top: List<RankedStation>, val arrivalSoc: Double) : RecoState
     /** 경유지 추가 요청 중. 이 동안 들어오는 터치는 무시한다(중복 추가 방지). */
     data class Adding(val station: RankedStation) : RecoState
     data class Added(val station: RankedStation, val result: StopResult) : RecoState
@@ -106,13 +106,13 @@ class RecommendationCoordinator(
         val info = describe(arrival, best)
         if (!voice.sttAvailable) {
             voice.speak("$info 정차하면 화면에서 추가할 수 있어요.")
-            _state.value = RecoState.AwaitingTouch(routeId, best, top)
+            _state.value = RecoState.AwaitingTouch(routeId, best, top, arrival)
             return
         }
         when (voice.ask("$info 경유지로 추가할까요?")) {
             Answer.YES -> add(best)
             Answer.NO -> Unit
-            Answer.UNKNOWN, Answer.TIMEOUT -> _state.value = RecoState.AwaitingTouch(routeId, best, top)
+            Answer.UNKNOWN, Answer.TIMEOUT -> _state.value = RecoState.AwaitingTouch(routeId, best, top, arrival)
         }
     }
 

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- VIA: 출발점에서 목적지로 가는 길 가운데에 충전 경유지(번개). 안전 영역(가운데 66dp) 안에 그린다. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- 길 -->
+    <path
+        android:pathData="M33,76 C33,60 48,62 54,54 C60,46 75,48 75,32"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+    <!-- 출발점 -->
+    <path
+        android:pathData="M33,76 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0"
+        android:fillColor="#FFFFFF" />
+    <!-- 목적지 -->
+    <path
+        android:pathData="M70,27 h10 v10 h-10 z"
+        android:fillColor="#FFFFFF" />
+    <!-- 충전 경유지 -->
+    <path
+        android:pathData="M54,54 m-13,0 a13,13 0 1,0 26,0 a13,13 0 1,0 -26,0"
+        android:fillColor="#FFFFFF" />
+    <path
+        android:pathData="M56,44 L47,56 L53,56 L52,64 L61,52 L55,52 Z"
+        android:fillColor="@color/via_blue" />
+</vector>

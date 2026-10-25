@@ -1,27 +1,30 @@
 package com.chargecompass.app.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.chargecompass.app.AppContainer
 import kotlinx.coroutines.launch
 
@@ -30,33 +33,46 @@ import kotlinx.coroutines.launch
 @Composable
 fun Onboarding(c: AppContainer) {
     val scope = rememberCoroutineScope()
+    val col = colors
     var vehicle by remember { mutableStateOf<String?>(null) }
     var owned by remember { mutableStateOf(c.membership.owned.value) }
-    Column(Modifier.fillMaxSize().padding(40.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        Title("VIA 시작하기")
-        Caption("가는 길에, 가장 싸게, 차가 확인한 보상")
-        Caption("읽는 데이터: 배터리·전비·충전 상태·주행거리·위치 — 충전소 추천과 포인트 확인에만 씁니다")
-        Body("내 차")
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            c.data.vehicles.forEach { v ->
-                FilterChip(selected = vehicle == v.id, onClick = { vehicle = v.id }, label = { Text(v.name, fontSize = 32.sp) }, modifier = Modifier.height(72.dp))
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(48.dp), verticalArrangement = Arrangement.spacedBy(28.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            ViaMark(72.dp)
+            Column {
+                T("VIA 시작하기", ViaType.titleL)
+                T("가는 길에, 가장 싸게, 차가 확인한 보상", ViaType.bodyM, col.text2.c())
             }
         }
-        Body("가지고 있는 충전 멤버십 (없으면 비회원가로 계산해요)")
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            c.data.memberships.forEach { m ->
-                FilterChip(
-                    selected = m.id in owned,
-                    onClick = { owned = if (m.id in owned) owned - m.id else owned + m.id },
-                    label = { Text(m.name, fontSize = 32.sp) },
-                    modifier = Modifier.height(72.dp),
-                )
-            }
+        T("읽는 데이터: 배터리·전비·충전 상태·주행거리·위치 — 충전소 추천과 포인트 확인에만 씁니다", ViaType.labelM, col.text3.c())
+        T("내 차", ViaType.titleS)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            c.data.vehicles.forEach { v -> Choice(v.name, vehicle == v.id) { vehicle = v.id } }
         }
-        Button(
+        T("가지고 있는 충전 멤버십", ViaType.titleS)
+        T("없으면 비회원가로 계산해요", ViaType.labelM, col.text3.c())
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            c.data.memberships.forEach { m -> Choice(m.name, m.id in owned) { owned = if (m.id in owned) owned - m.id else owned + m.id } }
+        }
+        ViaButton(
+            "시작하기", enabled = vehicle != null, modifier = Modifier.fillMaxWidth(),
             onClick = { scope.launch { c.membership.set(owned); vehicle?.let { c.membership.setVehicle(it) } } },
-            enabled = vehicle != null,
-            modifier = Modifier.fillMaxWidth().height(88.dp),
-        ) { Text("시작하기", fontSize = 36.sp) }
+        )
     }
+}
+
+/** 선택 칩(Pleos Toggle button 형태): 선택되면 파란 테두리·옅은 파란 바탕. */
+@Composable
+private fun Choice(label: String, selected: Boolean, onClick: () -> Unit) {
+    val col = colors
+    val shape = RoundedCornerShape(20.dp)
+    T(
+        label, ViaType.bodyM.copy(fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal),
+        if (selected) col.pos.c() else col.text.c(),
+        Modifier.clip(shape)
+            .background(if (selected) col.posSoft.c() else col.card.c())
+            .border(if (selected) 3.dp else 2.dp, if (selected) col.pos.c() else col.line.c(), shape)
+            .pressable(role = Role.Checkbox, onClick = onClick)
+            .padding(horizontal = 28.dp, vertical = 20.dp),
+    )
 }

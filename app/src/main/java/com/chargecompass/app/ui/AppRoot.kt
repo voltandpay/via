@@ -1,8 +1,11 @@
 package com.chargecompass.app.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,13 +23,18 @@ import com.chargecompass.app.drivestate.DriveState
 fun AppRoot(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
     val drive by c.drive.state.collectAsState()
     val vehicleId by c.membership.vehicleModelId.collectAsState()
-    ChargeTheme {
-        Box(Modifier.fillMaxSize().background(Background)) {
-            when {
-                drive == DriveState.DRIVING -> DriveCard(c)
-                vehicleId == null -> Onboarding(c)
-                drive == DriveState.CHARGING -> ChargingScreen(c)
-                else -> ParkedHome(c)
+    val narrow by c.narrowPreview.collectAsState()
+    ViaTheme {
+        Box(Modifier.fillMaxSize()) {
+            Box(if (narrow) Modifier.width(840.dp).fillMaxHeight() else Modifier.fillMaxSize()) {
+                CompositionLocalProvider(LocalWindowLayout provides if (narrow) WindowLayout.NARROW else LocalWindowLayout.current) {
+                    when {
+                        drive == DriveState.DRIVING -> DriveCard(c)
+                        vehicleId == null -> Onboarding(c)
+                        drive == DriveState.CHARGING -> ChargingScreen(c)
+                        else -> ParkedHome(c)
+                    }
+                }
             }
             if (BuildConfig.DEBUG) DebugPanel(c, onSwitchMode)
         }

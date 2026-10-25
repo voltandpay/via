@@ -43,7 +43,7 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
     val route by c.navi.route.collectAsState()
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
         if (!open) {
-            TextButton(onClick = { open = true }) { Text("DEV", color = Muted, fontSize = 18.sp) }
+            TextButton(onClick = { open = true }) { Text("DEV", color = Color(0xFF8B95A3), fontSize = 18.sp) }
             return@Box
         }
         Column(
@@ -51,13 +51,14 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Text("시연 패널 · ${c.mode} · $drive", color = Color.White, fontSize = 20.sp)
-            Text("SoC ${energy.socPct} · 경로 ${route?.destinationName ?: "-"} ${route?.remainingKm ?: ""}km", color = Muted, fontSize = 18.sp)
+            Text("SoC ${energy.socPct} · 경로 ${route?.destinationName ?: "-"} ${route?.remainingKm ?: ""}km", color = Color(0xFF8B95A3), fontSize = 18.sp)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 val other = if (c.mode == DataMode.MOCK) DataMode.PLEOS else DataMode.MOCK
                 OutlinedButton(onClick = { onSwitchMode(other) }) { Text("$other 모드로") }
                 OutlinedButton(onClick = { open = false }) { Text("닫기") }
                 OutlinedButton(onClick = { c.demoClock.jumpTo(LocalDate.now().atTime(23, 30)) }) { Text("밤 11:30으로") }
                 OutlinedButton(onClick = { c.demoClock.reset() }) { Text("실제 시각") }
+                OutlinedButton(onClick = { c.narrowPreview.value = !c.narrowPreview.value }) { Text("좁은 화면") }
                 (c.navi as? PleosNaviRepository)?.let { navi ->
                     OutlinedButton(onClick = { navi.requestDemoRoute() }) { Text("서울역 경로 요청") }
                 }
