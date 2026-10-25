@@ -46,8 +46,7 @@ fun CompareScreen(c: AppContainer) {
     val addingId = (reco as? RecoState.Adding)?.station?.station?.id
 
     if (top.isEmpty() && addingId == null) {
-        T("경로 위 충전소 비교", ViaType.titleM)
-        T("경로 안내 중 충전이 필요하면 내 멤버십 기준 후보 3곳을 보여드려요", ViaType.bodyL, col.text2.c())
+        EmptyState({ PinIcon(color = col.pos.c()) }, "아직 비교할 충전소가 없어요", "내비에서 목적지를 정하면, 충전이 필요할 때 내 멤버십 기준 후보 3곳을 보여드려요")
         return
     }
     Adaptive(Arrangement.spacedBy(12.dp)) { first ->

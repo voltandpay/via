@@ -18,7 +18,7 @@ fun StampBook(c: AppContainer) {
     val entries by c.ledger.entries.collectAsState()
     val stamps = entries.filter { it.kind == RewardKind.NEW_STAMP }
     T("충전소 도감 ${stamps.size} / ${c.data.stations.size}", ViaType.titleM)
-    if (stamps.isEmpty()) T("처음 충전한 충전소마다 스탬프가 찍혀요", ViaType.bodyL, colors.text2.c())
+    if (stamps.isEmpty()) EmptyState({ StampIcon(color = colors.pos.c()) }, "첫 스탬프를 모아 보세요", "처음 충전한 충전소마다 스탬프가 찍히고 +20P를 드려요")
     stamps.forEach { e ->
         ViaCard(padding = 32.dp) {
             T(c.data.stations.firstOrNull { it.id == e.stationId }?.name ?: e.stationId.orEmpty(), ViaType.titleS)
@@ -45,7 +45,9 @@ fun EventsScreen(c: AppContainer) {
 @Composable
 fun PointsExchange(c: AppContainer) {
     val col = colors
-    T("보유 ${c.ledger.balance(LocalDateTime.now())}P", ViaType.headline, col.activeText.c())
+    val balance = c.ledger.balance(LocalDateTime.now())
+    if (balance == 0) EmptyState({ TicketIcon(color = col.pos.c()) }, "아직 포인트가 없어요", "충전·새 충전소 스탬프·이벤트 충전소·효율 운전으로 포인트가 저절로 쌓여요")
+    else T("보유 ${balance}P", ViaType.headline, col.activeText.c())
     T("포인트는 제휴 충전 할인 쿠폰으로만 바꿀 수 있어요 · 유효기간 12개월", ViaType.bodyM, col.text2.c())
     listOf("채비 충전 2,000원 할인" to 200, "한전 EV 충전 1,000원 할인" to 100, "워터 초급속 3,000원 할인" to 300).forEach { (name, cost) ->
         ViaCard(padding = 32.dp) {

@@ -51,3 +51,68 @@ fun PlusIcon(size: Dp = 30.dp, color: Color = Color.White) = LineIcon(size, colo
         Path().apply { moveTo(5 * s, 12 * s); lineTo(19 * s, 12 * s) },
     )
 }
+
+/** 설정(톱니): 바깥 이빨 8개 + 가운데 원. */
+@Composable
+fun GearIcon(size: Dp = 36.dp, color: Color) {
+    Canvas(Modifier.size(size)) {
+        val s = this.size.width / 24f
+        val stroke = Stroke(width = 2.2f * s, cap = StrokeCap.Round, join = StrokeJoin.Round)
+        val c = Offset(12 * s, 12 * s)
+        drawCircle(color, radius = 7 * s, center = c, style = stroke)
+        drawCircle(color, radius = 3 * s, center = c, style = stroke)
+        for (i in 0 until 8) {
+            val a = Math.toRadians(i * 45.0)
+            val from = Offset((12 + 7 * Math.cos(a)).toFloat() * s, (12 + 7 * Math.sin(a)).toFloat() * s)
+            val to = Offset((12 + 10 * Math.cos(a)).toFloat() * s, (12 + 10 * Math.sin(a)).toFloat() * s)
+            drawLine(color, from, to, stroke.width, StrokeCap.Round)
+        }
+    }
+}
+
+@Composable
+fun CloseIcon(size: Dp = 28.dp, color: Color) = LineIcon(size, color) { s ->
+    listOf(
+        Path().apply { moveTo(6 * s, 6 * s); lineTo(18 * s, 18 * s) },
+        Path().apply { moveTo(18 * s, 6 * s); lineTo(6 * s, 18 * s) },
+    )
+}
+
+/** 스탬프(동그라미 안 체크). */
+@Composable
+fun StampIcon(size: Dp = 48.dp, color: Color) {
+    Canvas(Modifier.size(size)) {
+        val s = this.size.width / 24f
+        val stroke = Stroke(width = 2f * s, cap = StrokeCap.Round, join = StrokeJoin.Round)
+        drawCircle(color, radius = 10 * s, center = Offset(12 * s, 12 * s), style = stroke)
+        drawPath(Path().apply { moveTo(7.5f * s, 12.5f * s); lineTo(10.5f * s, 15.5f * s); lineTo(16.5f * s, 9 * s) }, color, style = stroke)
+    }
+}
+
+/** 쿠폰(양옆이 파인 티켓). */
+@Composable
+fun TicketIcon(size: Dp = 48.dp, color: Color) = LineIcon(size, color) { s ->
+    listOf(
+        Path().apply {
+            moveTo(3 * s, 7 * s); lineTo(21 * s, 7 * s); lineTo(21 * s, 10 * s)
+            quadraticTo(18.5f * s, 12 * s, 21 * s, 14 * s); lineTo(21 * s, 17 * s); lineTo(3 * s, 17 * s); lineTo(3 * s, 14 * s)
+            quadraticTo(5.5f * s, 12 * s, 3 * s, 10 * s); close()
+        },
+        Path().apply { moveTo(14 * s, 8 * s); lineTo(14 * s, 16 * s) },
+    )
+}
+
+/** 경로(지도 핀). */
+@Composable
+fun PinIcon(size: Dp = 48.dp, color: Color) = LineIcon(size, color) { s ->
+    listOf(
+        Path().apply {
+            moveTo(12 * s, 21 * s)
+            cubicTo(7 * s, 15.5f * s, 5 * s, 12.5f * s, 5 * s, 9.5f * s)
+            cubicTo(5 * s, 5.5f * s, 8 * s, 2.5f * s, 12 * s, 2.5f * s)
+            cubicTo(16 * s, 2.5f * s, 19 * s, 5.5f * s, 19 * s, 9.5f * s)
+            cubicTo(19 * s, 12.5f * s, 17 * s, 15.5f * s, 12 * s, 21 * s); close()
+        },
+        Path().apply { addOval(androidx.compose.ui.geometry.Rect(9.5f * s, 7 * s, 14.5f * s, 12 * s)) },
+    )
+}

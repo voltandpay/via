@@ -137,4 +137,37 @@ class RewardCoordinatorTest {
         now = now.plusMinutes(10); vehicle.endCharging()
         assertTrue(c.sessionEarned.value.isEmpty())
     }
+
+    @Test
+    fun `충전이 끝나면 실제 충전량으로 절약액과 받은 포인트를 요약한다`() = runTest(UnconfinedTestDispatcher()) {
+        val (vehicle, ledger, voice) = env()
+        val c = RewardCoordinator(vehicle, ledger, data, { car }, voice, backgroundScope, { setOf("m-chaevi") })
+        vehicle.setLocation(yangjae.lat, yangjae.lng)
+        vehicle.setSoc(30)
+        vehicle.setCharging(true)
+        assertNull(c.lastSummary.value)
+        vehicle.setSoc(55)
+        now = now.plusMinutes(20); vehicle.setCharging(true)
+        now = now.plusMinutes(1); vehicle.endCharging()
+        val sum = c.lastSummary.value
+        assertNotNull(sum)
+        // (55−30)% × 77.4kWh = 19.35kWh · 회원가 299원 = 5,786원, 비회원가 520원 = 10,062원 → 4,276원 절약
+        assertEquals("양재 채비 충전소", sum.stationName)
+        assertEquals(19.35, sum.chargedKwh, 0.001)
+        assertEquals(5786, sum.costWon)
+        assertEquals(4276, sum.savingWon)
+        assertEquals(30, sum.points)
+        c.dismissSummary()
+        assertNull(c.lastSummary.value)
+    }
+
+    @Test
+    fun `충전소를 못 찾았거나 충전량을 모르면 요약하지 않는다`() = runTest(UnconfinedTestDispatcher()) {
+        val (vehicle, ledger, voice) = env()
+        val c = RewardCoordinator(vehicle, ledger, data, { car }, voice, backgroundScope, { setOf("m-chaevi") })
+        vehicle.clearLocation()
+        vehicle.setCharging(true)
+        now = now.plusMinutes(20); vehicle.endCharging()
+        assertNull(c.lastSummary.value)
+    }
 }

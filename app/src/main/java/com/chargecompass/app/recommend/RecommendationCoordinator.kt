@@ -46,17 +46,22 @@ class RecommendationCoordinator(
     private val vehicleModel: () -> VehicleModel?,
     private val ownedMemberships: () -> Set<String>,
     private val scope: CoroutineScope,
+    /** 주행 중이면 true. 정차 중에는 음성 대신 화면으로 추천한다. */
+    private val driving: StateFlow<Boolean> = MutableStateFlow(true),
 ) {
     private val _state = MutableStateFlow<RecoState>(RecoState.Idle)
     val state: StateFlow<RecoState> = _state
 
     private var handledRouteId: Long? = null
     private var question: Job? = null
+    /** 음성으로 이미 물어본 경로. 같은 경로에서는 한 번만 묻는다. */
+    private val voiceAskedRoutes = mutableSetOf<Long>()
 
     init {
         scope.launch {
             combine(navi.route, vehicle.energy, ::Pair).collect { (route, energy) -> onUpdate(route, energy) }
         }
+        scope.launch { driving.collect { if (it) onDrivingStarted() } }
     }
 
     fun confirmByTouch(stationId: String) {
@@ -64,6 +69,8 @@ class RecommendationCoordinator(
         val choice = when (val s = _state.value) {
             is RecoState.AwaitingTouch -> s.top.takeIf { s.routeId == currentRoute }?.firstOrNull { it.station.id == stationId }
             is RecoState.Suggested -> s.top.takeIf { s.routeId == currentRoute }?.firstOrNull { it.station.id == stationId }
+            // 추가에 실패했으면 같은 충전소로 다시 시도할 수 있다
+            is RecoState.Added -> s.station.takeIf { s.result == StopResult.FAILED && currentRoute != null && it.station.id == stationId }
             else -> null
         } ?: return
         _state.value = RecoState.Adding(choice)
@@ -97,8 +104,25 @@ class RecommendationCoordinator(
             question = scope.launch { voice.speak(NO_STATION) }
             return
         }
-        _state.value = RecoState.Suggested(route.routeId, arrival, ranked)
-        question = scope.launch { ask(route.routeId, arrival, ranked) }
+        if (!driving.value) {
+            // 정차 중이면 화면을 쓸 수 있다: 바로 추천 카드와 추가 버튼. 음성은 출발할 때 한 번.
+            _state.value = RecoState.AwaitingTouch(route.routeId, ranked.first(), ranked, arrival)
+            return
+        }
+        askByVoice(route.routeId, arrival, ranked)
+    }
+
+    private fun askByVoice(routeId: Long, arrival: Double, top: List<RankedStation>) {
+        voiceAskedRoutes += routeId
+        _state.value = RecoState.Suggested(routeId, arrival, top)
+        question = scope.launch { ask(routeId, arrival, top) }
+    }
+
+    /** 정차 중에 띄운 추천을 그대로 두고 출발하면, 그때 음성으로 한 번 묻는다. */
+    private fun onDrivingStarted() {
+        val s = _state.value as? RecoState.AwaitingTouch ?: return
+        if (s.routeId != handledRouteId || s.routeId in voiceAskedRoutes || question?.isActive == true) return
+        askByVoice(s.routeId, s.arrivalSoc, s.top)
     }
 
     private suspend fun ask(routeId: Long, arrival: Double, top: List<RankedStation>) {
@@ -118,7 +142,12 @@ class RecommendationCoordinator(
 
     private suspend fun add(choice: RankedStation) {
         _state.value = RecoState.Adding(choice)
-        _state.value = RecoState.Added(choice, navi.addChargingStop(choice.station))
+        val result = navi.addChargingStop(choice.station)
+        _state.value = RecoState.Added(choice, result)
+        // 추가되면 내비 앱이 앞으로 나와 우리 화면이 가려지므로, 결과는 음성으로 알린다
+        voice.speak(
+            if (result == StopResult.FAILED) ADD_FAILED else "${withObjectParticle(choice.station.name)} 경유지로 넣었어요",
+        )
     }
 
     private fun describe(arrival: Double, best: RankedStation): String {
@@ -142,5 +171,13 @@ class RecommendationCoordinator(
 
     companion object {
         const val NO_STATION = "경로 위에 쓸 수 있는 충전소가 없어요"
+        const val ADD_FAILED = "경유지를 넣지 못했어요. 정차 후 화면에서 다시 시도해 주세요"
     }
+}
+
+/** 받침이 있으면 "을", 없으면 "를" (한글이 아니면 "를"). */
+fun withObjectParticle(word: String): String {
+    val last = word.lastOrNull() ?: return word
+    val hasFinal = last in '가'..'힣' && (last - '가') % 28 != 0
+    return word + if (hasFinal) "을" else "를"
 }

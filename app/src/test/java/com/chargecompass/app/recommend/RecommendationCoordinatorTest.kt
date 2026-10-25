@@ -244,4 +244,65 @@ class RecommendationCoordinatorTest {
         env.navi.setRoute(RouteSnapshot(3, "평택", 60.0, 3000))
         assertIs<RecoState.NoneAvailable>(c.state.value)
     }
+
+    @Test
+    fun `정차 중이면 음성으로 묻지 않고 화면에 바로 추천한다`() = runTest(UnconfinedTestDispatcher()) {
+        val voice = MockVoiceGateway(answers = listOf(Answer.YES))
+        val env = Env(voice = voice)
+        val driving = kotlinx.coroutines.flow.MutableStateFlow(false)
+        val c = RecommendationCoordinator(env.vehicle, env.navi, voice, data, { car }, { setOf("m-chaevi") }, backgroundScope, driving)
+        env.vehicle.setSoc(15)
+        env.navi.setRoute(route)
+        val s = c.state.value
+        assertIs<RecoState.AwaitingTouch>(s)
+        assertEquals("st-yangjae-chaevi", s.choice.station.id)
+        assertTrue(voice.asked.isEmpty())
+        assertTrue(voice.spoken.isEmpty())
+    }
+
+    @Test
+    fun `정차 중 추천을 그대로 두고 출발하면 그때 한 번 음성으로 묻는다`() = runTest(UnconfinedTestDispatcher()) {
+        val voice = MockVoiceGateway(answers = listOf(Answer.YES))
+        val env = Env(voice = voice)
+        val driving = kotlinx.coroutines.flow.MutableStateFlow(false)
+        val c = RecommendationCoordinator(env.vehicle, env.navi, voice, data, { car }, { setOf("m-chaevi") }, backgroundScope, driving)
+        env.vehicle.setSoc(15)
+        env.navi.setRoute(route)
+        driving.value = true
+        assertEquals(1, voice.asked.size)
+        assertIs<RecoState.Added>(c.state.value)
+        driving.value = false
+        driving.value = true
+        assertEquals(1, voice.asked.size)
+    }
+
+    @Test
+    fun `경유지를 넣으면 음성으로 확인해 준다`() = runTest(UnconfinedTestDispatcher()) {
+        val voice = MockVoiceGateway(answers = listOf(Answer.YES))
+        val env = Env(voice = voice)
+        start(env)
+        env.vehicle.setSoc(15)
+        env.navi.setRoute(route)
+        assertEquals("양재 채비 충전소를 경유지로 넣었어요", voice.spoken.last())
+    }
+
+    @Test
+    fun `경유지 추가에 실패하면 알리고 다시 시도할 수 있다`() = runTest(UnconfinedTestDispatcher()) {
+        val voice = MockVoiceGateway(answers = listOf(Answer.YES))
+        val env = Env(voice = voice)
+        env.navi.nextResult = StopResult.FAILED
+        val c = start(env)
+        env.vehicle.setSoc(15)
+        env.navi.setRoute(route)
+        val failed = c.state.value
+        assertIs<RecoState.Added>(failed)
+        assertEquals(StopResult.FAILED, failed.result)
+        assertEquals("경유지를 넣지 못했어요. 정차 후 화면에서 다시 시도해 주세요", voice.spoken.last())
+        env.navi.nextResult = StopResult.WAYPOINT_ADDED
+        c.confirmByTouch(failed.station.station.id)
+        val retried = c.state.value
+        assertIs<RecoState.Added>(retried)
+        assertEquals(StopResult.WAYPOINT_ADDED, retried.result)
+        assertEquals(2, env.navi.addedStops.size)
+    }
 }

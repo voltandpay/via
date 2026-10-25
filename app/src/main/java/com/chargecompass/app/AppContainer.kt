@@ -2,6 +2,7 @@ package com.chargecompass.app
 
 import android.content.Context
 import com.chargecompass.app.demo.DemoClock
+import com.chargecompass.app.drivestate.DriveState
 import com.chargecompass.app.drivestate.DriveStateProvider
 import com.chargecompass.app.drivestate.GearDriveStateProvider
 import com.chargecompass.app.drivestate.ToggleDriveStateProvider
@@ -9,6 +10,7 @@ import com.chargecompass.app.navi.MockNaviRepository
 import com.chargecompass.app.navi.NaviRepository
 import com.chargecompass.app.navi.PleosNaviRepository
 import com.chargecompass.app.recommend.RecommendationCoordinator
+import com.chargecompass.app.rewards.EventAnnouncer
 import com.chargecompass.app.rewards.RewardCoordinator
 import com.chargecompass.app.store.FileMembershipStore
 import com.chargecompass.app.store.FileRewardLedger
@@ -56,7 +58,7 @@ class AppContainer(context: Context, val mode: DataMode, scope: CoroutineScope) 
 
     fun vehicleModel(): VehicleModel? = membership.vehicleModelId.value?.let(catalog::byId)
 
-    val rewards = RewardCoordinator(vehicle, ledger, data, ::vehicleModel, voice, scope)
+    val rewards = RewardCoordinator(vehicle, ledger, data, ::vehicleModel, voice, scope, { membership.owned.value })
     private val chargingActive: StateFlow<Boolean> =
         rewards.activeSession.map { it != null }.stateIn(scope, SharingStarted.Eagerly, false)
 
@@ -64,12 +66,24 @@ class AppContainer(context: Context, val mode: DataMode, scope: CoroutineScope) 
     val drive: DriveStateProvider =
         if (mode == DataMode.MOCK) toggleDrive else GearDriveStateProvider(vehicle.parked, chargingActive, scope)
 
-    val reco = RecommendationCoordinator(vehicle, navi, voice, data, ::vehicleModel, { membership.owned.value }, scope)
+    private val driving: StateFlow<Boolean> =
+        drive.state.map { it == DriveState.DRIVING }.stateIn(scope, SharingStarted.Eagerly, drive.state.value == DriveState.DRIVING)
+
+    val reco = RecommendationCoordinator(vehicle, navi, voice, data, ::vehicleModel, { membership.owned.value }, scope, driving)
+    private val announcer = EventAnnouncer(data.events, data.stations)
 
     init {
         vehicle.start()
         navi.start()
         voice.start()
+        // 출발(정차 → 주행)할 때 오늘의 이벤트 충전소를 하루 한 번 음성으로 알린다
+        scope.launch {
+            var wasDriving = driving.value
+            driving.collect { now ->
+                if (now && !wasDriving) announcer.onDepart(demoClock.now())?.let { voice.speak(it) }
+                wasDriving = now
+            }
+        }
         // 차종을 아직 고르지 않았으면 VIN으로 먼저 찾아본다(에뮬레이터 VIN은 "invalid"라 온보딩에서 고른다)
         scope.launch {
             if (membership.vehicleModelId.value == null) catalog.byVin(vehicle.vin())?.let { membership.setVehicle(it.id) }

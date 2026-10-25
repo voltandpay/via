@@ -45,6 +45,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalView
+import android.view.HapticFeedbackConstants
+import androidx.compose.foundation.shape.CircleShape
 
 fun Long.c() = Color(this)
 
@@ -110,14 +113,19 @@ fun ViaCard(
     Column(m.padding(padding), verticalArrangement = Arrangement.spacedBy(16.dp), content = content)
 }
 
-/** 모든 터치 요소: 누르는 동안 95%로 줄어든다(Pleos Interaction). */
+/** 모든 터치 요소: 누르는 동안 95%로 줄어들고, 누르면 짧게 진동한다(Pleos Interaction·Feedback). */
 @Composable
 fun Modifier.pressable(enabled: Boolean = true, role: Role = Role.Button, onClick: () -> Unit): Modifier {
     val source = remember { MutableInteractionSource() }
     val pressed by source.collectIsPressedAsState()
+    val view = LocalView.current
     return this
         .graphicsLayer { val s = if (pressed) 0.95f else 1f; scaleX = s; scaleY = s }
-        .clickable(interactionSource = source, indication = null, enabled = enabled, role = role, onClick = onClick)
+        .clickable(interactionSource = source, indication = null, enabled = enabled, role = role) {
+            // Pleos: 터치에 진동 피드백
+            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+            onClick()
+        }
 }
 
 /**
@@ -195,13 +203,19 @@ fun ViaMark(size: Dp = 56.dp) {
  * Pleos Page Navigation + Line 탭. 화면 위쪽에 둔다(아래쪽은 시스템 GNB 자리).
  */
 @Composable
-fun PageNavigation(subtitle: String, tabs: List<String>, selected: Int, onSelect: (Int) -> Unit) {
+fun PageNavigation(subtitle: String, tabs: List<String>, selected: Int, onSelect: (Int) -> Unit, onSettings: (() -> Unit)? = null) {
     val c = colors
     Column(Modifier.fillMaxWidth().padding(start = 48.dp, end = 48.dp, top = 32.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             ViaMark()
             T("VIA", ViaType.titleM)
-            T(subtitle, ViaType.labelM, c.text3.c())
+            T(subtitle, ViaType.labelM, c.text3.c(), Modifier.weight(1f))
+            // Page Navigation의 Suffix 자리: 설정
+            if (onSettings != null) {
+                Box(Modifier.size(64.dp).clip(CircleShape).pressable(onClick = onSettings), contentAlignment = Alignment.Center) {
+                    GearIcon(color = c.text2.c())
+                }
+            }
         }
         Row(
             Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())
