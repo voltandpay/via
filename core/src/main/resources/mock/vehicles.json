@@ -1,0 +1,7 @@
+[
+  {"id": "ioniq5", "name": "아이오닉 5 롱레인지", "batteryKwh": 77.4, "baseEfficiencyKmPerKwh": 5.0, "connectors": ["DC_COMBO", "AC_TYPE1"], "vinPrefixes": ["KMHKM"]},
+  {"id": "ioniq6", "name": "아이오닉 6 롱레인지", "batteryKwh": 77.4, "baseEfficiencyKmPerKwh": 5.6, "connectors": ["DC_COMBO", "AC_TYPE1"], "vinPrefixes": ["KMHM3"]},
+  {"id": "ev6", "name": "EV6 롱레인지", "batteryKwh": 84.0, "baseEfficiencyKmPerKwh": 5.1, "connectors": ["DC_COMBO", "AC_TYPE1"], "vinPrefixes": ["KNAC"]},
+  {"id": "kona-ev", "name": "코나 일렉트릭 롱레인지", "batteryKwh": 64.8, "baseEfficiencyKmPerKwh": 5.5, "connectors": ["DC_COMBO", "AC_TYPE1"], "vinPrefixes": ["KMHHC"]},
+  {"id": "ev3", "name": "EV3 롱레인지", "batteryKwh": 81.4, "baseEfficiencyKmPerKwh": 5.4, "connectors": ["DC_COMBO", "AC_TYPE1"], "vinPrefixes": ["KNAE"]}
+]

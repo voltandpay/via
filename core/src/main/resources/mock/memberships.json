@@ -1,0 +1,12 @@
+[
+  {"id": "m-me", "operatorId": "me", "name": "환경부 충전카드"},
+  {"id": "m-kepco", "operatorId": "kepco", "name": "한전 EV충전"},
+  {"id": "m-skel", "operatorId": "skel", "name": "SK일렉링크"},
+  {"id": "m-chaevi", "operatorId": "chaevi", "name": "채비"},
+  {"id": "m-evsis", "operatorId": "evsis", "name": "이브이시스"},
+  {"id": "m-gscv", "operatorId": "gscv", "name": "GS차지비"},
+  {"id": "m-everon", "operatorId": "everon", "name": "에버온"},
+  {"id": "m-water", "operatorId": "water", "name": "워터"},
+  {"id": "m-pluglink", "operatorId": "pluglink", "name": "플러그링크"},
+  {"id": "m-epit", "operatorId": "epit", "name": "E-pit"}
+]

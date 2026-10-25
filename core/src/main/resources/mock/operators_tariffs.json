@@ -1,0 +1,12 @@
+[
+  {"operatorId": "me", "memberWonPerKwh": 347, "roamingWonPerKwh": null, "nonMemberWonPerKwh": 486, "membershipIds": ["m-me"]},
+  {"operatorId": "kepco", "memberWonPerKwh": 324, "roamingWonPerKwh": 400, "nonMemberWonPerKwh": 470, "membershipIds": ["m-kepco"]},
+  {"operatorId": "skel", "memberWonPerKwh": 345, "roamingWonPerKwh": 430, "nonMemberWonPerKwh": 550, "membershipIds": ["m-skel"]},
+  {"operatorId": "chaevi", "memberWonPerKwh": 299, "roamingWonPerKwh": 410, "nonMemberWonPerKwh": 520, "membershipIds": ["m-chaevi"]},
+  {"operatorId": "evsis", "memberWonPerKwh": 340, "roamingWonPerKwh": 420, "nonMemberWonPerKwh": 500, "membershipIds": ["m-evsis"]},
+  {"operatorId": "gscv", "memberWonPerKwh": 329, "roamingWonPerKwh": 410, "nonMemberWonPerKwh": 490, "membershipIds": ["m-gscv"]},
+  {"operatorId": "everon", "memberWonPerKwh": 310, "roamingWonPerKwh": 400, "nonMemberWonPerKwh": 480, "membershipIds": ["m-everon"]},
+  {"operatorId": "water", "memberWonPerKwh": 385, "roamingWonPerKwh": null, "nonMemberWonPerKwh": 560, "membershipIds": ["m-water"]},
+  {"operatorId": "pluglink", "memberWonPerKwh": 335, "roamingWonPerKwh": 420, "nonMemberWonPerKwh": 590, "membershipIds": ["m-pluglink"]},
+  {"operatorId": "epit", "memberWonPerKwh": 347, "roamingWonPerKwh": 440, "nonMemberWonPerKwh": 520, "membershipIds": ["m-epit"]}
+]
