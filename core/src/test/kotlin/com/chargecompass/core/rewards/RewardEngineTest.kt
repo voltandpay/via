@@ -56,14 +56,14 @@ class RewardEngineTest {
     @Test
     fun `이벤트 시간대에 충전하면 보너스 10점`() {
         val r = RewardEngine.onChargeStarted(session("st-event", now), listOf(event), History(stamps = setOf("st-event")))
-        assertEquals(RewardEntry(RewardKind.EVENT_BONUS, 10, now, "st-event", "night2x"), r.single { it.kind == RewardKind.EVENT_BONUS })
+        assertEquals(RewardEntry(RewardKind.EVENT_BONUS, 10, now, "st-event", "night2x", LocalDate.of(2026, 11, 3)), r.single { it.kind == RewardKind.EVENT_BONUS })
     }
 
     @Test
     fun `자정을 넘긴 01시 충전도 보너스이고 전날 회차로 센다`() {
         val oneAm = LocalDateTime.of(2026, 11, 4, 1, 0)
         val r = RewardEngine.onChargeStarted(session("st-event", oneAm), listOf(event), History(stamps = setOf("st-event")))
-        assertEquals(1, r.count { it.kind == RewardKind.EVENT_BONUS })
+        assertEquals(LocalDate.of(2026, 11, 3), r.single { it.kind == RewardKind.EVENT_BONUS }.eventDate)
         // 같은 회차(11/3)에 이미 받았으면 없음
         val again = RewardEngine.onChargeStarted(
             session("st-event", oneAm), listOf(event),

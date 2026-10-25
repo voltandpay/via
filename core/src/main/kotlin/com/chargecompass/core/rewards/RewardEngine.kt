@@ -15,6 +15,8 @@ data class RewardEntry(
     val at: LocalDateTime,
     val stationId: String? = null,
     val eventId: String? = null,
+    /** EVENT_BONUS의 이벤트 회차 시작일. 자정을 넘긴 충전은 전날 회차다. */
+    val eventDate: LocalDate? = null,
 )
 
 /** 이미 받은 보상. 영속 구현은 앱의 포인트 원장이 맡는다. */
@@ -44,7 +46,7 @@ object RewardEngine {
         for (event in events.filter { it.stationId == stationId }) {
             val occurrence = eventOccurrenceDate(event, at) ?: continue
             if (occurrence in history.eventBonusDates(event.id)) continue
-            entries += RewardEntry(RewardKind.EVENT_BONUS, Defaults.POINTS_CHARGE * (event.multiplier - 1), at, stationId, event.id)
+            entries += RewardEntry(RewardKind.EVENT_BONUS, Defaults.POINTS_CHARGE * (event.multiplier - 1), at, stationId, event.id, occurrence)
         }
         return entries
     }
