@@ -31,11 +31,16 @@ class StationRankerTest {
     }
 
     @Test
-    fun `멤버십이 없고 로밍가가 더 싸면 로밍가`() {
-        val p = StationRanker.effectivePrice(tariffA, emptySet())
+    fun `이 사업자 멤버십은 없지만 다른 카드가 있고 로밍가가 더 싸면 로밍가`() {
+        val p = StationRanker.effectivePrice(tariffA, setOf("memB"))
         assertEquals(400, p.wonPerKwh)
         assertEquals(PriceBasis.ROAMING, p.basis)
         assertNull(p.membershipId)
+    }
+
+    @Test
+    fun `카드가 하나도 없으면 로밍가를 못 받으니 비회원가`() {
+        assertEquals(EffectivePrice(450, PriceBasis.NON_MEMBER, null), StationRanker.effectivePrice(tariffA, emptySet()))
     }
 
     @Test

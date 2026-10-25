@@ -28,7 +28,8 @@ object StationRanker {
     fun effectivePrice(tariff: Tariff, owned: Set<String>): EffectivePrice {
         val membership = tariff.membershipIds.filter { it in owned }.minOrNull()
         if (membership != null) return EffectivePrice(tariff.memberWonPerKwh, PriceBasis.MEMBER, membership)
-        val roaming = tariff.roamingWonPerKwh
+        // 로밍가는 다른 사업자 카드라도 하나는 있어야 받을 수 있다
+        val roaming = tariff.roamingWonPerKwh?.takeIf { owned.isNotEmpty() }
         return if (roaming != null && roaming < tariff.nonMemberWonPerKwh) {
             EffectivePrice(roaming, PriceBasis.ROAMING, null)
         } else {

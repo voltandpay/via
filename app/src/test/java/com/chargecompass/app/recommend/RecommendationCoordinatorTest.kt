@@ -203,4 +203,45 @@ class RecommendationCoordinatorTest {
         assertEquals(1, navi.calls.size)
         assertIs<RecoState.Added>(c.state.value)
     }
+
+    @Test
+    fun `로밍가로 고른 곳은 로밍 요금 기준이라고 말한다`() = runTest(UnconfinedTestDispatcher()) {
+        val voice = MockVoiceGateway(answers = listOf(Answer.NO))
+        val env = Env(voice = voice)
+        // 에버온 충전소는 커넥터가 안 맞아, 1위는 다른 사업자의 로밍가가 된다
+        RecommendationCoordinator(env.vehicle, env.navi, voice, data, { car }, { setOf("m-everon") }, backgroundScope)
+        env.vehicle.setSoc(15)
+        env.navi.setRoute(route)
+        val q = voice.asked.single()
+        assertTrue(q.contains("로밍 요금 기준"), q)
+        assertTrue(!q.contains("내 멤버십 기준"), q)
+    }
+
+    @Test
+    fun `새 경로에서 계산할 수 없으면 이전 경로 추천을 지우고 이전 후보 터치는 무시한다`() = runTest(UnconfinedTestDispatcher()) {
+        val env = Env(voice = MockVoiceGateway(sttAvailable = false))
+        var model: com.chargecompass.core.model.VehicleModel? = car
+        val c = RecommendationCoordinator(env.vehicle, env.navi, env.voice, data, { model }, { setOf("m-chaevi") }, backgroundScope)
+        env.vehicle.setSoc(15)
+        env.navi.setRoute(route)
+        val old = c.state.value
+        assertIs<RecoState.AwaitingTouch>(old)
+        model = null
+        env.navi.setRoute(RouteSnapshot(2, "강남역", 23.0, 2000))
+        assertIs<RecoState.Idle>(c.state.value)
+        c.confirmByTouch(old.choice.station.id)
+        assertTrue(env.navi.addedStops.isEmpty())
+    }
+
+    @Test
+    fun `도착 잔량 5퍼센트 미만으로만 닿는 충전소는 추천하지 않는다`() = runTest(UnconfinedTestDispatcher()) {
+        val voice = MockVoiceGateway()
+        val env = Env(voice = voice)
+        // SoC 15%, 기본 전비 5.0, 77.4kWh: 46km 앞이면 도착 잔량 약 3.1%
+        val far = data.stations.first { it.id == "st-yangjae-chaevi" }.copy(alongRouteKm = 46.0, detourKm = 0.0)
+        val c = start(env, data.copy(stations = listOf(far)))
+        env.vehicle.setSoc(15)
+        env.navi.setRoute(RouteSnapshot(3, "평택", 60.0, 3000))
+        assertIs<RecoState.NoneAvailable>(c.state.value)
+    }
 }

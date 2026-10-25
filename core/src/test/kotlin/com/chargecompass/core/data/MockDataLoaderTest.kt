@@ -26,7 +26,8 @@ class MockDataLoaderTest {
         assertTrue(data.stations.size >= 8)
         assertTrue(data.stations.any { it.status == ChargerStatus.BROKEN })
         assertTrue(data.stations.any { it.status == ChargerStatus.IN_USE })
-        assertTrue(data.stations.any { it.status == AVAILABLE && Connector.DC_COMBO !in it.connectors })
+        val ioniq5 = data.vehicles.first { it.id == "ioniq5" }
+        assertTrue(data.stations.any { it.status == AVAILABLE && it.connectors.none { c -> c in ioniq5.connectors } })
     }
 
     @Test

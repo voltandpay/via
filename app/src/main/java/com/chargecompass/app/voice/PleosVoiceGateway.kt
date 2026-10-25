@@ -7,7 +7,10 @@ import ai.pleos.playground.tts.TextToSpeech
 import ai.pleos.playground.tts.listener.EventListener
 import android.content.Context
 import android.util.Log
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
 import java.util.Locale
 
@@ -20,6 +23,7 @@ class PleosVoiceGateway(context: Context) : VoiceGateway {
 
     @Volatile override var sttAvailable: Boolean = false
         private set
+    private val voiceLock = Mutex()
     @Volatile private var speaking: CompletableDeferred<Unit>? = null
     @Volatile private var listening: CompletableDeferred<String?>? = null
 
@@ -71,25 +75,41 @@ class PleosVoiceGateway(context: Context) : VoiceGateway {
         stt.release()
     }
 
-    override suspend fun speak(text: String) {
-        val done = CompletableDeferred<Unit>().also { speaking = it }
-        tts.speak(text)
-        withTimeoutOrNull(SPEAK_TIMEOUT_MS) { done.await() }
-        speaking = null
+    /** 한 번에 한 문장씩만 말한다(스탬프 알림과 추천 질문이 겹쳐도 완료 신호가 섞이지 않게). */
+    override suspend fun speak(text: String) = voiceLock.withLock { speakLocked(text) }
+
+    /** 질문과 듣기를 한 덩어리로 묶는다. 목적지가 바뀌어 취소되면 말하던 것과 듣던 것을 바로 멈춘다. */
+    override suspend fun ask(question: String, timeoutMs: Long): Answer = voiceLock.withLock {
+        speakLocked(question)
+        if (!sttAvailable) return@withLock Answer.UNKNOWN
+        val heard = CompletableDeferred<String?>().also { listening = it }
+        try {
+            stt.request()
+            val text = withTimeoutOrNull(timeoutMs) { heard.await() }
+            if (text == null && !heard.isCompleted) {
+                stt.stop()
+                return@withLock Answer.TIMEOUT
+            }
+            YesNoParser.parse(text)
+        } catch (e: CancellationException) {
+            stt.stop()
+            throw e
+        } finally {
+            listening = null
+        }
     }
 
-    override suspend fun ask(question: String, timeoutMs: Long): Answer {
-        speak(question)
-        if (!sttAvailable) return Answer.UNKNOWN
-        val heard = CompletableDeferred<String?>().also { listening = it }
-        stt.request()
-        val text = withTimeoutOrNull(timeoutMs) { heard.await() }
-        listening = null
-        if (text == null && !heard.isCompleted) {
-            stt.stop()
-            return Answer.TIMEOUT
+    private suspend fun speakLocked(text: String) {
+        val done = CompletableDeferred<Unit>().also { speaking = it }
+        try {
+            tts.speak(text)
+            withTimeoutOrNull(SPEAK_TIMEOUT_MS) { done.await() }
+        } catch (e: CancellationException) {
+            tts.stop()
+            throw e
+        } finally {
+            speaking = null
         }
-        return YesNoParser.parse(text)
     }
 
     companion object {

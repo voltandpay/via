@@ -75,8 +75,14 @@ class FileMembershipStore(private val file: File) : MembershipStore {
     override suspend fun set(ids: Set<String>) { _owned.value = ids; save() }
     override suspend fun setVehicle(id: String) { _vehicle.value = id; save() }
 
+    /** 임시 파일에 쓴 뒤 바꿔치기한다 — 쓰는 도중 꺼져도 이전 내용이 남는다. */
     private fun save() {
         file.parentFile?.mkdirs()
-        file.writeText("${_vehicle.value.orEmpty()}\n${_owned.value.sorted().joinToString(",")}\n")
+        val tmp = File(file.path + ".tmp")
+        tmp.writeText("${_vehicle.value.orEmpty()}\n${_owned.value.sorted().joinToString(",")}\n")
+        if (!tmp.renameTo(file)) {
+            file.delete()
+            tmp.renameTo(file)
+        }
     }
 }

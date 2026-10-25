@@ -4,8 +4,8 @@ package com.chargecompass.core
 object Defaults {
     const val NEED_CHARGE_SOC = 15.0
     const val TARGET_SOC = 80.0
-    const val DETOUR_TIME_WON_PER_MIN = 0
-    const val VOICE_SUGGESTIONS = 1
+    /** 이보다 낮은 잔량으로만 닿는 충전소는 추천하지 않는다(전비 오차 여유). */
+    const val MIN_ARRIVAL_SOC = 5.0
     const val COMPARE_SUGGESTIONS = 3
     const val EFFICIENT_TRIP_MIN_KM = 10.0
     const val POINT_VALIDITY_MONTHS = 12L

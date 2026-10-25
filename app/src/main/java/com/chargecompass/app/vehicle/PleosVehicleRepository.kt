@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -57,12 +58,12 @@ class PleosVehicleRepository(
     private var pollJob: Job? = null
 
     private val socListener = object : EvBatteryStateOfChargeListener {
-        override fun onEvBatteryStateOfChargeUpdated(value: Int?) { _energy.value = _energy.value.copy(socPct = value) }
+        override fun onEvBatteryStateOfChargeUpdated(value: Int?) { _energy.update { it.copy(socPct = value) } }
         override fun onFailed(e: Exception) = warn("SoC", e)
     }
     private val efficiencyListener = object : EvBatteryEfficiencyListener {
         override fun onEvBatteryEfficiencyUpdated(efficiency: Float?) {
-            _energy.value = _energy.value.copy(efficiencyKmPerKwh = efficiency?.toDouble()?.takeIf { it > 0 })
+            _energy.update { it.copy(efficiencyKmPerKwh = efficiency?.toDouble()?.takeIf { e -> e > 0 }) }
         }
         override fun onFailed(e: Exception) = warn("전비(미지원이면 기본 전비 사용)", e)
     }

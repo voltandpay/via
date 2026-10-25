@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.stateIn
 
 enum class DriveState { DRIVING, PARKED, CHARGING }
 
-/** 화면 노출 규칙의 기준. 충전 중이면 기어와 상관없이 CHARGING. */
+/** 화면 노출 규칙의 기준. P단이 아니면 무조건 DRIVING(충전 세션이 아직 안 끝났어도), P단에서 충전 중이면 CHARGING. */
 interface DriveStateProvider {
     val state: StateFlow<DriveState>
 }
@@ -27,6 +27,7 @@ class GearDriveStateProvider(
         .stateIn(scope, SharingStarted.Eagerly, resolve(parked.value, chargingActive.value))
 
     private fun resolve(parked: Boolean?, charging: Boolean) = when {
+        parked == false -> DriveState.DRIVING
         charging -> DriveState.CHARGING
         parked == true -> DriveState.PARKED
         else -> DriveState.DRIVING
@@ -41,7 +42,7 @@ class ToggleDriveStateProvider(
     private val selected = MutableStateFlow(DriveState.PARKED)
 
     override val state: StateFlow<DriveState> = combine(selected, chargingActive) { s, charging ->
-        if (charging) DriveState.CHARGING else s
+        if (charging && s != DriveState.DRIVING) DriveState.CHARGING else s
     }.stateIn(scope, SharingStarted.Eagerly, selected.value)
 
     fun set(state: DriveState) { selected.value = state }

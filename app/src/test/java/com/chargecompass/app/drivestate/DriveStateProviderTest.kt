@@ -27,12 +27,23 @@ class DriveStateProviderTest {
     }
 
     @Test
-    fun `시연 토글은 정한 상태를 따르고 충전 중이 우선한다`() = runTest(UnconfinedTestDispatcher()) {
+    fun `시연 토글은 정한 상태를 따르고 정차 중에만 충전이 우선한다`() = runTest(UnconfinedTestDispatcher()) {
         val charging = MutableStateFlow(false)
         val p = ToggleDriveStateProvider(charging, backgroundScope)
-        p.set(DriveState.DRIVING)
-        assertEquals(DriveState.DRIVING, p.state.value)
+        p.set(DriveState.PARKED)
         charging.value = true
         assertEquals(DriveState.CHARGING, p.state.value)
+        p.set(DriveState.DRIVING)
+        assertEquals(DriveState.DRIVING, p.state.value)
+    }
+
+    @Test
+    fun `충전 세션이 아직 안 끝났어도 D단이면 주행 화면`() = runTest(UnconfinedTestDispatcher()) {
+        val parked = MutableStateFlow<Boolean?>(true)
+        val charging = MutableStateFlow(true)
+        val p = GearDriveStateProvider(parked, charging, backgroundScope)
+        assertEquals(DriveState.CHARGING, p.state.value)
+        parked.value = false
+        assertEquals(DriveState.DRIVING, p.state.value)
     }
 }

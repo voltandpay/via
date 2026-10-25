@@ -11,6 +11,7 @@ import com.chargecompass.core.data.MockData
 import com.chargecompass.core.energy.ArrivalCalculator
 import com.chargecompass.core.energy.EnergyState
 import com.chargecompass.core.model.VehicleModel
+import com.chargecompass.core.pricing.PriceBasis
 import com.chargecompass.core.pricing.RankedStation
 import com.chargecompass.core.pricing.StationRanker
 import kotlinx.coroutines.CoroutineScope
@@ -59,9 +60,10 @@ class RecommendationCoordinator(
     }
 
     fun confirmByTouch(stationId: String) {
+        val currentRoute = navi.route.value?.routeId
         val choice = when (val s = _state.value) {
-            is RecoState.AwaitingTouch -> s.top.firstOrNull { it.station.id == stationId }
-            is RecoState.Suggested -> s.top.firstOrNull { it.station.id == stationId }
+            is RecoState.AwaitingTouch -> s.top.takeIf { s.routeId == currentRoute }?.firstOrNull { it.station.id == stationId }
+            is RecoState.Suggested -> s.top.takeIf { s.routeId == currentRoute }?.firstOrNull { it.station.id == stationId }
             else -> null
         } ?: return
         _state.value = RecoState.Adding(choice)
@@ -75,8 +77,10 @@ class RecommendationCoordinator(
             _state.value = RecoState.Idle
             return
         }
-        if (route.routeId != handledRouteId && question != null) cancelQuestion()
         if (route.routeId == handledRouteId) return
+        if (question != null) cancelQuestion()
+        // 이전 경로의 추천이 화면에 남지 않게, 새 경로를 계산하기 전에 비운다
+        _state.value = RecoState.Idle
 
         val car = vehicleModel() ?: return
         val arrival = ArrivalCalculator.socAfter(energy, car, route.remainingKm) ?: return
@@ -86,7 +90,7 @@ class RecommendationCoordinator(
             _state.value = RecoState.Enough(arrival)
             return
         }
-        val ranked = StationRanker.rank(data.stations, data.tariffs, ownedMemberships(), energy, car)
+        val ranked = StationRanker.rank(data.stations, data.tariffs, ownedMemberships(), energy, car, minArrivalSocPct = Defaults.MIN_ARRIVAL_SOC)
             .take(Defaults.COMPARE_SUGGESTIONS)
         if (ranked.isEmpty()) {
             _state.value = RecoState.NoneAvailable
@@ -122,7 +126,12 @@ class RecommendationCoordinator(
         val km = best.station.alongRouteKm.roundToInt()
         val nonMember = data.tariffs[best.station.operatorId]?.nonMemberWonPerKwh ?: best.price.wonPerKwh
         val diff = nonMember - best.price.wonPerKwh
-        val saving = if (diff > 0) "내 멤버십 기준 kWh당 ${diff}원 더 저렴해요." else "경로 위에서 가장 저렴해요."
+        val basis = when (best.price.basis) {
+            PriceBasis.MEMBER -> "내 멤버십 기준"
+            PriceBasis.ROAMING -> "로밍 요금 기준"
+            PriceBasis.NON_MEMBER -> null
+        }
+        val saving = if (diff > 0 && basis != null) "$basis kWh당 ${diff}원 더 저렴해요." else "경로 위에서 가장 저렴해요."
         return "도착 시 배터리가 $soc%예요. ${km}km 앞 ${best.station.name}에 들르면 $saving"
     }
 
