@@ -1,0 +1,25 @@
+# Android / Gradle
+build/
+.gradle/
+local.properties
+*.iml
+.idea/
+.kotlin/
+*.keystore
+*.jks
+
+# 버리는 스파이크 코드
+spike/
+
+# VOC 조사: 비밀키·가상환경·원자료·대용량 결과
+research/voc/.env
+research/voc/.venv/
+research/voc/data/
+research/voc/out/classified_reviews.csv
+research/voc/out/global/global_reviews.csv
+research/voc/out/global/full/classified_reviews.csv
+
+# 실행 계획 작업 공간
+.superpowers/
+
+.DS_Store

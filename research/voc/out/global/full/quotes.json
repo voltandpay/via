@@ -1,0 +1,2077 @@
+{
+ "[불편] 앱 안정성·오류": [
+  {
+   "app": "Tesla",
+   "score": 1,
+   "thumbs": 320,
+   "date": "2025-09-17",
+   "text": "The app doesn't maintain a proper connection to the car. When I attempt to open the doors it doesn't recognize my phone. I have to turn off Bluetooth and turn it back on for it to detect my phone. I have looked at location settings, I see that the option for the permission \"Allow Always\" doesn't exist. It still doesn't work and I complained about this here for months. OnePlus 12 on Android 15. I have reinstalled the app etc. Still not working."
+  },
+  {
+   "app": "Kia App (EU)",
+   "score": 1,
+   "thumbs": 170,
+   "date": "2025-08-05",
+   "text": "The old Kia app worked fine. This new version is a pain. It's ploddingly slow for a start. Worse, it has logged me out on a regular basis, and despite the biometric box being ticked, it demands a key entry of user name and password. And the UI is cluttered and messy anyway. A classic and unnecessary big corporate downgrade. Try some proper testing. EDIT: I now have a mixture of km and miles. Shockingly poorly developed and (not properly) tested."
+  },
+  {
+   "app": "Kia App (EU)",
+   "score": 1,
+   "thumbs": 81,
+   "date": "2025-08-27",
+   "text": "Don't buy a KIA. The old connect app worked perfectly. This new one is a joke. it logs you out constantly, when you are logged in it's more presses to get to the useful features like locking and unlocking. everything is slower or more complicated. it's literally worse in every way. it still doesn't get the model of the car right.. can't display miles. it's useless."
+  },
+  {
+   "app": "My BMW",
+   "score": 1,
+   "thumbs": 78,
+   "date": "2023-06-02",
+   "text": "I've tried using the Samsung browser, the Chrome browser, uninstalling and reinstalling the app, and even updating my password. I get an error every single time so the app does not work, period. Considering I do pay for Connected Drive, this is disappointing at best. Please fix it immediately, I expect better from BMW. UPDATE: The app is still useless. Do better, BMW."
+  },
+  {
+   "app": "Genesis Intelligent Assistant (US)",
+   "score": 1,
+   "thumbs": 53,
+   "date": "2024-06-21",
+   "text": "App has a tendency to get stuck/crash during startup on my Pixel. Only fix I've found is uninstalling and reinstalling it - but I've had to do that twice already. Until this is fixed, the app is basically trash and deserves a one star. It's like they didn't test the software and don't bother with telemetry/alerting needed to deliver a quality product."
+  },
+  {
+   "app": "Volkswagen",
+   "score": 1,
+   "thumbs": 49,
+   "date": "2026-02-14",
+   "text": "App has become unusable this week. It hangs on the splash screen and eventually triggers the \"App isn't responding\" error and won't allow log in. I have already attempted a force stop, cleared the cache/data, and performed a full reinstall, but the issue persists. Looking at recent feedback from the last fortnight, this is clearly a widespread bug. UPDATE - One month on and this still isn't fixed! Sort it out VW."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 47,
+   "date": "2025-09-09",
+   "text": "Over half of the functions in the app say \"Something unexpected happened. Check your internet connection.\" Nope, connection is just fine for every other app. Gaslighting by EA for something broken in their app. Couldn't even charge through the app. Had to start the charging on the station and NFC tap the phone for Members to get it to register our account and thus use our free credits."
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 2,
+   "thumbs": 46,
+   "date": "2025-12-16",
+   "text": "I don't want to constantly be prompted to buy stuff, in an app where I want to control my car. I'm already paying money each month for the remote control capabilities. Also: don't give me a user guide about the \"Digital Key\" if my car does not support this feature. same for the \"trigger hazard lights and horn.\" it doesn't work, so I want to hide it / not see it."
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 1,
+   "thumbs": 43,
+   "date": "2026-01-15",
+   "text": "Dire, much worse than the old one. Absolutely awful. Can't switch between vehicles without constantly having to select each one as the main vehicle each time. Nothing is one click, have to go through multiple steps to do anything. It really is practically unusable. I used the old app quite frequently but check fuel levels/charge status and location, status but now it'll be quicker just to go check the actual car. Hyundai you need to fix this!!"
+  },
+  {
+   "app": "myAudi",
+   "score": 1,
+   "thumbs": 42,
+   "date": "2026-05-02",
+   "text": "Unreliable connection to my car. a significant amount of times it will not connect, so I can't check on the charge level or send a timer to preheat. Slow responses to requests for support and it usually means waiting for an update to see if the issue is fixed. 2/5/26 Update: the latest version has again disconnected from my car, so I have no access to charging info. The app and in-car software are so bad I would not buy the car again."
+  },
+  {
+   "app": "My BMW",
+   "score": 2,
+   "thumbs": 42,
+   "date": "2026-04-18",
+   "text": "The app shows 3 different languages for me, while I only said to use English. It is showing advertisements in French and privacy policy and T&C are only available in German. You have to agree to something you don't completely understand to use the app. Who tested this? Very slow and buggy behavior"
+  },
+  {
+   "app": "Tesla",
+   "score": 1,
+   "thumbs": 41,
+   "date": "2026-06-27",
+   "text": "This piece of garbage app won't load! I only get a loading screen. It is 100% useless to me at the moment. I've cleared the app cache, and that didn't help."
+  }
+ ],
+ "[불편] 로그인·인증": [
+  {
+   "app": "myChevrolet",
+   "score": 2,
+   "thumbs": 285,
+   "date": "2026-10-09",
+   "text": "Enough with the two factor authentication!! My phone never leaves my side. This is \"security theater\" and only serves to inconvenience me. To save time, in case my verbiage isn't obvious enough, I work in IT, so uninstalling and reinstalling the app isn't going to remove two factor authentication."
+  },
+  {
+   "app": "Kia App (EU)",
+   "score": 1,
+   "thumbs": 170,
+   "date": "2025-08-05",
+   "text": "The old Kia app worked fine. This new version is a pain. It's ploddingly slow for a start. Worse, it has logged me out on a regular basis, and despite the biometric box being ticked, it demands a key entry of user name and password. And the UI is cluttered and messy anyway. A classic and unnecessary big corporate downgrade. Try some proper testing. EDIT: I now have a mixture of km and miles. Shockingly poorly developed and (not properly) tested."
+  },
+  {
+   "app": "My BMW",
+   "score": 1,
+   "thumbs": 78,
+   "date": "2023-06-02",
+   "text": "I've tried using the Samsung browser, the Chrome browser, uninstalling and reinstalling the app, and even updating my password. I get an error every single time so the app does not work, period. Considering I do pay for Connected Drive, this is disappointing at best. Please fix it immediately, I expect better from BMW. UPDATE: The app is still useless. Do better, BMW."
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 1,
+   "thumbs": 59,
+   "date": "2025-12-17",
+   "text": "A huge company like Hyundai can surely do better than this? An app from you should be slick, seamless and state of the art. Look at the reviews and the average score: 1.9. This doesn't need small revisions, it needs to be withdrawn and start again. Icon for Car, Icon for Map, Icon for account, start there. No ads, no upselling thank you. Poor effort."
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 53,
+   "date": "2022-06-05",
+   "text": "Utterly awful. Pathetic. Asks for credit card info over and over. Didn't seem to save the info I had entered, yet later I saw that my account had this same card saved multiple times. Then, I decided to subscribe to one of the plans and, yes, it asked me yet again for a credit card. Ugh! Once the charging session started, the app reported that my car had disconnected and that the session had ended. Wrong in both counts."
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 51,
+   "date": "2023-02-19",
+   "text": "The app didn't work. I signed in and tried to charge at a station and the app asked me to log in again and then just took me back to the account charger selection screen. I was stuck in a loop. I thought I was going to be stranded at the station. The station would not take my credit card either. Luckily someone with an iPhone downloaded the app and it worked for them."
+  },
+  {
+   "app": "Volkswagen",
+   "score": 1,
+   "thumbs": 49,
+   "date": "2026-02-14",
+   "text": "App has become unusable this week. It hangs on the splash screen and eventually triggers the \"App isn't responding\" error and won't allow log in. I have already attempted a force stop, cleared the cache/data, and performed a full reinstall, but the issue persists. Looking at recent feedback from the last fortnight, this is clearly a widespread bug. UPDATE - One month on and this still isn't fixed! Sort it out VW."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 47,
+   "date": "2025-09-09",
+   "text": "Over half of the functions in the app say \"Something unexpected happened. Check your internet connection.\" Nope, connection is just fine for every other app. Gaslighting by EA for something broken in their app. Couldn't even charge through the app. Had to start the charging on the station and NFC tap the phone for Members to get it to register our account and thus use our free credits."
+  },
+  {
+   "app": "MINI",
+   "score": 1,
+   "thumbs": 36,
+   "date": "2022-07-18",
+   "text": "When I first started using the app, I loved that I could remotely vent my 2019 Cooper S. Also, know fuel levels, etc. Was very useful. With the changes that removed support for older vehicles, it is disappointing that Mini has left those of us with 3 year old cars without support. I will certainly take this into account when choosing my next car. Why couldn't there be an update to the vehicle to maintain support?"
+  },
+  {
+   "app": "Kia App (EU)",
+   "score": 1,
+   "thumbs": 35,
+   "date": "2025-07-05",
+   "text": "This app is awful. you have to keep logging in and re- setting every few days. why does it not retain the settings? example keeps reverting to km instead of miles. when you do log in it goes through all the demo screens AGAIN... you have to physically refresh the screen when you do get on. please sort it out !!! why have you released an app that's not been tested robustly? never had issues with the original."
+  },
+  {
+   "app": "My BMW",
+   "score": 1,
+   "thumbs": 35,
+   "date": "2023-05-24",
+   "text": "The most infuriating and frustrating app experience, to the point it is unacceptable for a brand of this size. Every single time it requires you to log in again. Imagine being in a rush and needing to use the app to send map locations to the car? imagine having to login everytime to do this and setting up a new pin everytime. Product team if you are reading this, prioritise it in your backlog for the next sprint immediately."
+  },
+  {
+   "app": "myChevrolet",
+   "score": 1,
+   "thumbs": 33,
+   "date": "2025-12-04",
+   "text": "It's terrible. Long load times just to open the app. Requires two-factor ident, which isn't always possible when traveling. Crashes after two-factor step. Support is unresponsive. \"How can we improve\" screen hangs and crashes. I could go on, but why? Electrify America app works flawlessly. Tesla app works flawlessly. Do better!!!!! Uninstall asap. one year later. still unreliable. They never got back to me."
+  }
+ ],
+ "[불편] 결제·청구 오류": [
+  {
+   "app": "My BMW",
+   "score": 1,
+   "thumbs": 78,
+   "date": "2023-06-02",
+   "text": "I've tried using the Samsung browser, the Chrome browser, uninstalling and reinstalling the app, and even updating my password. I get an error every single time so the app does not work, period. Considering I do pay for Connected Drive, this is disappointing at best. Please fix it immediately, I expect better from BMW. UPDATE: The app is still useless. Do better, BMW."
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 1,
+   "thumbs": 66,
+   "date": "2025-12-18",
+   "text": "UI is dire, only 4 shortcuts and many commonly used items are buried under layers of menus, for example ev charging limits. Needs simplifying and arranging logically by commonality. There should be no ads in or around a product that has already been bought and paid for- in fact this is off putting from the brand. The best advert for your future product is a great user experience with the one they have now!"
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 2,
+   "thumbs": 61,
+   "date": "2025-12-20",
+   "text": "Like the old one (blue link) but a bit worse. harder to get to map. more ways it tries to sell itself to us. just clunkier, bloatier and even less friendly (e.g. harder to get to see car location). separate point: but disappointing that there's so little use for the free version of blue link: I liked remote locking/unlocking but not enough to pay an extortionate amount for a subscription. just not good value at all."
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 53,
+   "date": "2022-06-05",
+   "text": "Utterly awful. Pathetic. Asks for credit card info over and over. Didn't seem to save the info I had entered, yet later I saw that my account had this same card saved multiple times. Then, I decided to subscribe to one of the plans and, yes, it asked me yet again for a credit card. Ugh! Once the charging session started, the app reported that my car had disconnected and that the session had ended. Wrong in both counts."
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 51,
+   "date": "2023-02-19",
+   "text": "The app didn't work. I signed in and tried to charge at a station and the app asked me to log in again and then just took me back to the account charger selection screen. I was stuck in a loop. I thought I was going to be stranded at the station. The station would not take my credit card either. Luckily someone with an iPhone downloaded the app and it worked for them."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 36,
+   "date": "2024-12-26",
+   "text": "Absolute worst charging experience. NFC tap to open app doesnt. Credit card readers do not work. Times out waiting for the app so you have to start over and over again. Only way to charge is via the app, which only shows charging stations SOMETIMES. Despite knowing your exact location and showing you on the map, charging stations do not appear in app when ready to charge. (And then it times out). Requires a balance. Expensive and bad. Stay away."
+  },
+  {
+   "app": "MyHyundai with Bluelink (US)",
+   "score": 1,
+   "thumbs": 33,
+   "date": "2025-03-03",
+   "text": "March 25 update - app stopped working 22 days ago, uninstalled / reinstalled 4 TIMES! It will not connect to my car. The same as in 2022... shock & surprise that my old review is still my same frustration. I didn't really have an issue before the update, but now the remote start feature & lock features will not work at all. I paid for this due to winter weather & the chat feature was of no help."
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 2,
+   "thumbs": 33,
+   "date": "2023-06-27",
+   "text": "This app has very basic functions like notifying me that my car is unlocked or starting remotely (which I would prefer to be less complicated than having to open the app set time for start, leaving time etc. Much easier to press a button on a key fob). Now my subscription is ending and the renewal fee is $200 FOR SIX MONTHS??! That's insane. Who would pay that?? Not me."
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 31,
+   "date": "2022-08-12",
+   "text": "The app is completely useless. 1. It doesn't detect any nearby locations even if I'm literally at the station. 2. It keeps telling me to add a payment and then when I attempt to add it, it says payment failed. Even though I know for a fact my card is attached to it. 3. Everytime I need to charge, I have to call to get customer service to initiate from their end. They always advise to use the app but it hasn't worked for me since January."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 31,
+   "date": "2020-02-18",
+   "text": "App will not move past the add money screen. I inputted my credit card info then pushed the Next button but nothing happened. The only think I could do was to exit the process. I tried 3 times and then gave up."
+  },
+  {
+   "app": "myChevrolet",
+   "score": 1,
+   "thumbs": 27,
+   "date": "2026-01-03",
+   "text": "Problems, app buffers and doesn't update location of vehicle. Pay good money for a crapy app. Don't waste your time. My download speeds wifi with spectrum ate 400mbps. It's not a connection problem. Now the app is down, do I get reimbursement, no !!! I've Uninstalled it several times."
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 2,
+   "thumbs": 26,
+   "date": "2023-04-03",
+   "text": "It's a great feature for a \"premium\" brand but only given for 4 years; after that it's $200 per year without enough value proposition to make it worthwhile. As others have mentioned the functions are lacking when compared to other manufacturers, even non \"premium.\" Considering how limited the functions are and the issues with the app, it should not be a paid subscription but a complimentary feature provided for the life of the car."
+  }
+ ],
+ "[불편] 요금·가격": [
+  {
+   "app": "myHyundai (EU)",
+   "score": 2,
+   "thumbs": 61,
+   "date": "2025-12-20",
+   "text": "Like the old one (blue link) but a bit worse. harder to get to map. more ways it tries to sell itself to us. just clunkier, bloatier and even less friendly (e.g. harder to get to see car location). separate point: but disappointing that there's so little use for the free version of blue link: I liked remote locking/unlocking but not enough to pay an extortionate amount for a subscription. just not good value at all."
+  },
+  {
+   "app": "ChargePoint",
+   "score": 1,
+   "thumbs": 48,
+   "date": "2024-09-14",
+   "text": "Automatically puts $10 on the card if the balance gets low instead of sending a notification that balance is low and providing the option to refill. I do not use chargepoint frequently enough to justify having $14 sitting there unused; could use this $14 for supercharging and it would go a lot further. Can't seem to get my money back, either. Will uninstall for this reason. Don't toy with people's money."
+  },
+  {
+   "app": "My BMW",
+   "score": 1,
+   "thumbs": 45,
+   "date": "2025-09-02",
+   "text": "Can't add charging tariff rate to eg. my home charging location: \"Something went wrong\"."
+  },
+  {
+   "app": "PlugShare",
+   "score": 1,
+   "thumbs": 41,
+   "date": "2022-02-28",
+   "text": "It misses 3 locations near me where I know there is power. But it captures every restaurant, grocery, feed store, market, etc which fills up the map and that cannot be toggled off. I can't turn off the map blocking ad banner. I get that the developers need ads to support the app but dang move the ad banner somewhere else or charge me $2.99 to get rid of it. Deleting app. Onward in search of another one."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 37,
+   "date": "2024-06-30",
+   "text": "Three years ought to have been enough time to improve the network and service but it is still unreliable, expensive, and riddled with issues. I wish there were alternatives or competition for this network; it's terrible but the only option for interstate travel. I cannot help but believe the backers genuinely want EVs to fail in the US at this point."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 36,
+   "date": "2024-12-26",
+   "text": "Absolute worst charging experience. NFC tap to open app doesnt. Credit card readers do not work. Times out waiting for the app so you have to start over and over again. Only way to charge is via the app, which only shows charging stations SOMETIMES. Despite knowing your exact location and showing you on the map, charging stations do not appear in app when ready to charge. (And then it times out). Requires a balance. Expensive and bad. Stay away."
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 2,
+   "thumbs": 35,
+   "date": "2025-01-08",
+   "text": "Still disappointing. If the car hasn't been driven for over a day. The system shuts down. It then doesn't operate remotely so no pre heating. The scheduled charge could be good except it keeps forgetting the schedule! Then when you plug it in, it starts charging immediately at peak rate!! Just got worse. Tried to use chat with us in the app and it closed! Checked the charge period and it displayed correctly - then vanished and said set schedule."
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 2,
+   "thumbs": 33,
+   "date": "2023-06-27",
+   "text": "This app has very basic functions like notifying me that my car is unlocked or starting remotely (which I would prefer to be less complicated than having to open the app set time for start, leaving time etc. Much easier to press a button on a key fob). Now my subscription is ending and the renewal fee is $200 FOR SIX MONTHS??! That's insane. Who would pay that?? Not me."
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 33,
+   "date": "2022-01-29",
+   "text": "If there was a 0 star option I'd pick that. From just one use my experience was not a good one, setting up an account has too many steps compared to other apps the price is also much higher. Once you start a session there is no way to stop it on you phone or the charger you will get charged for the whole session even if you started it by accident and didn't actually charge your car. Overall a really bad experience."
+  },
+  {
+   "app": "Mercedes-Benz",
+   "score": 1,
+   "thumbs": 31,
+   "date": "2026-01-03",
+   "text": "Charging for basic convenience that low end vehicles have standard, not what one would expect for a six figure vehicle. for the price you could control temp, seats, etc. Remote start is spotty, and why shut off when less than 25% fuel, 10 minutes won't hurt. Unless of course the app really is not accurate on fuel, which is likely, then it checks out. You can see the German design elements that make it so complicated it works but not intuitively."
+  },
+  {
+   "app": "Volkswagen",
+   "score": 1,
+   "thumbs": 30,
+   "date": "2026-02-01",
+   "text": "The app was working ok for me until the recent update - now I can't open the app at all, it just gets stuck on the loading screen then crashes. I have tried uninstalling and reinstalling the app, but it just did the same thing. Means there's no point in me renewing the digital connectivity subscription on the car if VW can't make an app that works."
+  },
+  {
+   "app": "My BMW",
+   "score": 1,
+   "thumbs": 30,
+   "date": "2023-06-25",
+   "text": "Really inconsistent, really not that useful. E.g., it won't update service requirements after service is performed. Can't get it to connect to car from my wife's phone. You'd think that with the price BMW charges for its cars, they'd be able to build a working phone app. (Note: Even the Developer reply below is not helpful. When I go to Profile / Contact Us, there are 6 choices; which one should I use?)"
+  }
+ ],
+ "[불편] 충전기 고장·충전 실패": [
+  {
+   "app": "Tesla",
+   "score": 1,
+   "thumbs": 126,
+   "date": "2026-07-21",
+   "text": "The communication between this app and the car is the worst. I asked for 100% charge SO many times and it kept resetting to 85% eventually it didn't. I wake up and it's at 85%. I have 20 minutes before I leave. So I ask it to charge some more. I look back 5 minutes later. It's not charging. FFS! Now I'm being bombarded with notifications. Connected. Connected. Connected. Connected.... Every minute."
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 1,
+   "thumbs": 51,
+   "date": "2026-02-21",
+   "text": "Updated my review as the latest update of the app has now somehow locked my car from charging and I now have to press the 'start charging' button for it to update. Left it on all knight and it didn't charge at all and now I have to keep pressing it to see if it's working. Luckily I'm getting rid of my car in the next couple of months so I won't have to suffer much longer."
+  },
+  {
+   "app": "Electrify America",
+   "score": 2,
+   "thumbs": 33,
+   "date": "2020-10-30",
+   "text": "First off, the map data is wrong. The app shows 1 available and 12 Coming Soon spots for my location, which is wrong. EA's iOS app and web site show them all as Online, which is right. No ability to stay logged in is annoying. Even a Remember Username option would be nice. If a session fails to start due to charger problems, i have to force quit the app to try again. Overall sluggish response throughout the app."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 32,
+   "date": "2023-06-18",
+   "text": "The app no longer works. It used to work fine on previous out of state trips. This past week we traveled about 250 mi out of state and stopped to charge four different times. Each time the app hung on the \"initiating charge\" screen. Sometimes it would indicate \"charging failure\" or just stay on the \"initiating charge\" screen. In all cases though it did actually charge the vehicle but the app never seemed to acknowledge it."
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 31,
+   "date": "2024-03-23",
+   "text": "Between the abysmal performance of your stations and your app, I wonder if you care about keeping users. I avoid using EVgo now but was forced to resort to you today. I came to a station with a broken charger that showed as working in the app (before the app went offline). Went to another EVgo station to encounter the same thing. Now your app has been offline for over an hour. If you're trying to push users away, CONGRATS, you've succeeded."
+  },
+  {
+   "app": "Volkswagen",
+   "score": 1,
+   "thumbs": 30,
+   "date": "2026-02-01",
+   "text": "The app was working ok for me until the recent update - now I can't open the app at all, it just gets stuck on the loading screen then crashes. I have tried uninstalling and reinstalling the app, but it just did the same thing. Means there's no point in me renewing the digital connectivity subscription on the car if VW can't make an app that works."
+  },
+  {
+   "app": "Volkswagen",
+   "score": 1,
+   "thumbs": 26,
+   "date": "2023-11-19",
+   "text": "The new upgrade doesn't show if the car is locked or unlocked. Climate control doesn't start if on charge. I have to stop the charging option before I can use it. It has pretty much become useless. And, the remote lock option would help. I believe your system has that ability. I just don't understand why not make it available."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 16,
+   "date": "2023-04-30",
+   "text": "Barely works. Everytime I wanted to charge the plug wouldn't work and when I try a different station the app was stuck on \"processing payment\". Had to uninstall and re install the app just to get basic functions to work and then got stuck on \"processing payment\" again. This happened a lot. I didn't even have time to get anything done. Thanks for nothing and practically robbing me E.A.! Be better!"
+  },
+  {
+   "app": "ChargePoint",
+   "score": 1,
+   "thumbs": 15,
+   "date": "2025-10-30",
+   "text": "How is this app still so awful? \"Cannot communicate with server\" constantly. Cannot join waitlist. Cannot do anything. Now Im stuck in an active charging session even though I unplugged my car 2 days ago. Clicking end session gives an error. Trying to contact support though the app gives an error \"unsupported browser\" Can't charge. Can't join waitlist. Can't contact support."
+  },
+  {
+   "app": "Kia App (EU)",
+   "score": 2,
+   "thumbs": 15,
+   "date": "2025-07-10",
+   "text": "Promising, but not there yet. Notifications get stuck on the screen, features say they're unavailable but it's not clear why (in some cases it's because you haven't accepted the terms, or enabled biometric auth). UI is a bit confusing in places, and ads for other cars (I already have a car thanks) take up more space than they should."
+  },
+  {
+   "app": "Octopus Energy (EV 관련만)",
+   "score": 1,
+   "thumbs": 15,
+   "date": "2023-10-14",
+   "text": "App crashes going into the devices section. I can't charge my car properly. Update oct 23. App is still fundamental broken on the devices section, I've tried uninstalling, clearing caches, logging out etc nothing works. It just sits there with the windmill loading. It's hard not being able to adjust the charge and departure time."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 14,
+   "date": "2026-08-16",
+   "text": "I have the $7 premium package. I have wanted to cancel this package for 3 months. the button in app does not cancel it, it does not work. I have contacted support and they keep telling me I have to use the method that does not work. they will not stop charging me. There is just no way to cancel my account because support can't take 5 seconds to read an email."
+  }
+ ],
+ "[불편] 충전기 정보 부정확": [
+  {
+   "app": "Volkswagen",
+   "score": 1,
+   "thumbs": 57,
+   "date": "2026-09-08",
+   "text": "The app has become less unreliable. It doesn't show the correct status, i.e. Doors locked when they are unlocked. Knowing this I just tried to refresh the app and it locked me out. This is only helpful if it is reliable and accurate; otherwise it's just a gimmick."
+  },
+  {
+   "app": "My BMW",
+   "score": 1,
+   "thumbs": 45,
+   "date": "2025-09-02",
+   "text": "Can't add charging tariff rate to eg. my home charging location: \"Something went wrong\"."
+  },
+  {
+   "app": "Kia App (EU)",
+   "score": 1,
+   "thumbs": 38,
+   "date": "2026-01-01",
+   "text": "Glitches all the time, location of vehicle tells you where you were, not where you are now. Climate control function does not work (I've followed all the rules, parked doors closed, car recently used etc, checked the car all up to date etc). App freezes a lot, takes a long time to send any commands to the car. Charge start stop doesn't work either."
+  },
+  {
+   "app": "Kia App (EU)",
+   "score": 1,
+   "thumbs": 35,
+   "date": "2025-12-11",
+   "text": "It's totally useless. The cars current location is incorrect and only records the last stopping place, not the current location. The whole app is totally confusing, and I'm wondering what it does to help me. The Kia Connect Store is totally devoid of anything useful. In fact, trying to access anything just sends you round in circles. Now, the app reports battery faults that don't exist. This app needs to go back to the previous useful version."
+  },
+  {
+   "app": "Electrify America",
+   "score": 2,
+   "thumbs": 33,
+   "date": "2020-10-30",
+   "text": "First off, the map data is wrong. The app shows 1 available and 12 Coming Soon spots for my location, which is wrong. EA's iOS app and web site show them all as Online, which is right. No ability to stay logged in is annoying. Even a Remember Username option would be nice. If a session fails to start due to charger problems, i have to force quit the app to try again. Overall sluggish response throughout the app."
+  },
+  {
+   "app": "Mercedes-Benz",
+   "score": 1,
+   "thumbs": 31,
+   "date": "2026-01-03",
+   "text": "Charging for basic convenience that low end vehicles have standard, not what one would expect for a six figure vehicle. for the price you could control temp, seats, etc. Remote start is spotty, and why shut off when less than 25% fuel, 10 minutes won't hurt. Unless of course the app really is not accurate on fuel, which is likely, then it checks out. You can see the German design elements that make it so complicated it works but not intuitively."
+  },
+  {
+   "app": "myAudi",
+   "score": 1,
+   "thumbs": 31,
+   "date": "2023-05-25",
+   "text": "If it were possible to give a score of zero, I should give it. So much unreliability in a simple and basic app from a reputable manufacturer with absolutely no support is shameful. The application never works properly and when it does, it is very short-lived. The basic connection with the Q4 where it is important to have information about charging and the rest is never up-to-date, accurate and all together it is quite funny if it were not sad."
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 1,
+   "thumbs": 30,
+   "date": "2022-10-25",
+   "text": "Not very user friendly. 99% of the time I can't lock or unlock my car. Messages about the car (being locked, unlocked, fully charged etc.) aren't accurate. Also very limited on any feature you can use it's almost completely worthless to have this app. Hopefully it will improve but they have A LOT of work to do."
+  },
+  {
+   "app": "My BMW",
+   "score": 1,
+   "thumbs": 29,
+   "date": "2025-03-15",
+   "text": "I wish I could track my car real time, even when it's moving. huge delay on the Vehicle Finder, and it won't refresh its location even after I open the app. app not working. it keeps saying \"no internet connection, please try again\" whenever I try to click anything. I can't lock it remotely, I can't see the car's current location, no nothing. App is currently useless at this point."
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 1,
+   "thumbs": 28,
+   "date": "2025-12-18",
+   "text": "Paying for a beta app is outrageous. Navigating to coordinates is usually off by several kilometers, making it useless. The charging status is sometimes displayed incorrectly, causing me to panic in the morning, thinking that the car isn't charged. There's also not much logic in the app in terms of where the various functions are located. It's all very messy."
+  },
+  {
+   "app": "Volkswagen",
+   "score": 2,
+   "thumbs": 25,
+   "date": "2024-09-28",
+   "text": "Update (2024): Have to downgrade review again as payment system is completely broken! Wish they would just provide a consistent, reliable app! (2023): well done VW for solving the connection/sync issues! It's a pleasure to use now, good AC control and extra functions like sending map routes to the car work great. (2022)Has potential; doesn't show up to date information. Lots of bugs."
+  },
+  {
+   "app": "My BMW",
+   "score": 1,
+   "thumbs": 21,
+   "date": "2024-04-07",
+   "text": "Buggy as a swamp. App does not accurately reflect car's status. As of April 2024, after several updates installed in car? App *still* does not accurately report what the car's displays indicate even after rebooting the car."
+  }
+ ],
+ "[불편] 대기·혼잡·점유": [
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 19,
+   "date": "2024-08-07",
+   "text": "The map of which chargers are in use is helpful but the customer support line is horrendous! You get stuck in loops with their automated call system with no way out. Had to call 3 back three times today, each time trying different prompts before finally finding one to talk to support staff. The app has no other ways to get help with issues. Better hope you never need their help..."
+  },
+  {
+   "app": "ChargePoint",
+   "score": 1,
+   "thumbs": 16,
+   "date": "2025-10-03",
+   "text": "The wait list feature is completely broken. Sometimes it will tell me I am first in line for stations I am watching, and as I watch cars leave I see others go in ahead of me. Then when my spot comes up, the app doesn't notify me until it's too late to accept it. Then I rejoin the queue and silently get dropped from it. All this amid the app telling me 75% of the time that it's having trouble contacting the servers."
+  },
+  {
+   "app": "Volkswagen",
+   "score": 1,
+   "thumbs": 14,
+   "date": "2024-01-14",
+   "text": "Volkswagen positioned the remote start receiver at the top of the windshield, so when it snows the signal is blocked by snow, rendering it useless. This level of stupidity for a company is truly shocking. I was disheartened that I was automatically enrolled in the DriveView feature which tracks all details of your driving, but I quickly unenrolled from this."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 13,
+   "date": "2024-12-01",
+   "text": "Forces you to carry a balance instead of providing a pay-as-you-go option, charging status updates are slow, and feedback through the app fails every time I try to submit it. The charging network itself is pretty good but suffers from too few chargers at locations, not enough locations in some spots like OH and WV, and offline chargers that take too long to be repaired."
+  },
+  {
+   "app": "ChargePoint",
+   "score": 1,
+   "thumbs": 11,
+   "date": "2024-11-15",
+   "text": "Just setting up this app while waiting for my charger install, and there are loads of display issues—the app is in dark mode, but pop-up menus for selecting my vehicle are in light mode, and the text does not display (or of it does, it's white-on-white, so it's invisible). I had to select my EV by trial and error. Map buttons are also missing. I'd love to use this app but I worry about having to make any selections in it."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 10,
+   "date": "2023-08-07",
+   "text": "App keeps crashing, it has also locked up multiple times. so then you need to call for customer assistance. if you have been waiting in line to charge your car and then your app doesn't work, those waiting in line behind you get very angry because you are not charging and you are waiting for customer service. to help you. absolutely unacceptable."
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 9,
+   "date": "2023-09-24",
+   "text": "App constantly loads up a dialog that it can't connect to the servers on literally every screen, however features work fine. It's just annoying and inaccurate. Now editing to one star. EVGo as a business is disgusting. Offline chargers at all times. Failure to maintain their equipment. Now, I can't even charge at a FUNCTIONING charger because the app will refuse it."
+  },
+  {
+   "app": "MyHyundai with Bluelink (US)",
+   "score": 1,
+   "thumbs": 7,
+   "date": "2026-05-29",
+   "text": "It's not 100% reliable even though the car is out in the open and not blocked by trees or buildings."
+  },
+  {
+   "app": "ChargePoint",
+   "score": 1,
+   "thumbs": 5,
+   "date": "2026-07-21",
+   "text": "Recent updates are horrible. Every time I use the app I have to re-log in. I am driving my car that is extremely dangerous. At least provide a method to use phone system level authentication if you're not going to leave it permanently logged it. New UI is horrible as well, it makes it hard to see what stations are in use and which are free."
+  },
+  {
+   "app": "Tesla",
+   "score": 1,
+   "thumbs": 4,
+   "date": "2026-09-08",
+   "text": "unablw to use energy icons anymore. they are blocked by the bottom galaxy S25 screen icons."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 4,
+   "date": "2023-10-12",
+   "text": "Very buggy app. Difficult to navigate. Add a queueing/waitlist system to alleviate the chaos of taking turns at the chargers."
+  },
+  {
+   "app": "PlugShare",
+   "score": 1,
+   "thumbs": 4,
+   "date": "2023-08-11",
+   "text": "The data about charging and parking rates is so inaccurate it's laughable. In response to dev feedback, please check my suggested edits in the app, as a guideline, any charger I've checked within a 5 mile radius of my home address has had factually incorrect information."
+  }
+ ],
+ "[불편] 원격제어·차량연결": [
+  {
+   "app": "Tesla",
+   "score": 1,
+   "thumbs": 320,
+   "date": "2025-09-17",
+   "text": "The app doesn't maintain a proper connection to the car. When I attempt to open the doors it doesn't recognize my phone. I have to turn off Bluetooth and turn it back on for it to detect my phone. I have looked at location settings, I see that the option for the permission \"Allow Always\" doesn't exist. It still doesn't work and I complained about this here for months. OnePlus 12 on Android 15. I have reinstalled the app etc. Still not working."
+  },
+  {
+   "app": "myChevrolet",
+   "score": 2,
+   "thumbs": 285,
+   "date": "2026-10-09",
+   "text": "Enough with the two factor authentication!! My phone never leaves my side. This is \"security theater\" and only serves to inconvenience me. To save time, in case my verbiage isn't obvious enough, I work in IT, so uninstalling and reinstalling the app isn't going to remove two factor authentication."
+  },
+  {
+   "app": "myChevrolet",
+   "score": 2,
+   "thumbs": 166,
+   "date": "2025-12-24",
+   "text": "Issues with this app. takes forever to start my vehicle and lately is won't read fuel levels accurately. I can fill the tank and it will show the gas level at 5% and 57 miles left. Refreshing or reinstalling the app does not fix the problem. only thing I like is that if I use the app to start the car it turn on the heated seats, which is really nice during the winter."
+  },
+  {
+   "app": "Kia App (EU)",
+   "score": 1,
+   "thumbs": 81,
+   "date": "2025-08-27",
+   "text": "Don't buy a KIA. The old connect app worked perfectly. This new one is a joke. it logs you out constantly, when you are logged in it's more presses to get to the useful features like locking and unlocking. everything is slower or more complicated. it's literally worse in every way. it still doesn't get the model of the car right.. can't display miles. it's useless."
+  },
+  {
+   "app": "My BMW",
+   "score": 1,
+   "thumbs": 78,
+   "date": "2023-06-02",
+   "text": "I've tried using the Samsung browser, the Chrome browser, uninstalling and reinstalling the app, and even updating my password. I get an error every single time so the app does not work, period. Considering I do pay for Connected Drive, this is disappointing at best. Please fix it immediately, I expect better from BMW. UPDATE: The app is still useless. Do better, BMW."
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 2,
+   "thumbs": 61,
+   "date": "2025-12-20",
+   "text": "Like the old one (blue link) but a bit worse. harder to get to map. more ways it tries to sell itself to us. just clunkier, bloatier and even less friendly (e.g. harder to get to see car location). separate point: but disappointing that there's so little use for the free version of blue link: I liked remote locking/unlocking but not enough to pay an extortionate amount for a subscription. just not good value at all."
+  },
+  {
+   "app": "Volkswagen",
+   "score": 1,
+   "thumbs": 57,
+   "date": "2026-09-08",
+   "text": "The app has become less unreliable. It doesn't show the correct status, i.e. Doors locked when they are unlocked. Knowing this I just tried to refresh the app and it locked me out. This is only helpful if it is reliable and accurate; otherwise it's just a gimmick."
+  },
+  {
+   "app": "Kia App (EU)",
+   "score": 2,
+   "thumbs": 56,
+   "date": "2026-07-30",
+   "text": "This following problem hasn't been fixed on the latest version. Why does it completely brick my phone sometimes when I send a remote command? this has happened several times now. Eventually it seems to time out, and closes the program so I can regain control of the phone. There's something very wrong with the way it handles communication with the car when the signal is poor. it also takes ages to respond to the commands."
+  },
+  {
+   "app": "My BMW",
+   "score": 1,
+   "thumbs": 55,
+   "date": "2022-03-23",
+   "text": "Completely unreliable. One would think a quality automaker would have solid technology to support their products...nope. The previous version worked maybe 7 out of 10 times I would attempt to remotely connect to my car, however the release of the newer app., all I have ever been able to do is check my fuel status; no remote locking, remote start, etc. Now the app refuses to even update the car status since 2AM on March 11,2022. VERY DISAPPOINTING"
+  },
+  {
+   "app": "My BMW",
+   "score": 1,
+   "thumbs": 53,
+   "date": "2022-06-25",
+   "text": "Awful. Shameful. Insane. About 3 years ago the app was good, the options worked (e.g., remote climatizing, etc.) and then obviously the developers set out to destroy it. It has been awful, not functioning, and stripped of the working features ever since the first devastating updates that started a few years ago. For heaven's sake, return the app to what it was 3 years ago."
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 53,
+   "date": "2022-06-05",
+   "text": "Utterly awful. Pathetic. Asks for credit card info over and over. Didn't seem to save the info I had entered, yet later I saw that my account had this same card saved multiple times. Then, I decided to subscribe to one of the plans and, yes, it asked me yet again for a credit card. Ugh! Once the charging session started, the app reported that my car had disconnected and that the session had ended. Wrong in both counts."
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 1,
+   "thumbs": 51,
+   "date": "2026-02-21",
+   "text": "Updated my review as the latest update of the app has now somehow locked my car from charging and I now have to press the 'start charging' button for it to update. Left it on all knight and it didn't charge at all and now I have to keep pressing it to see if it's working. Luckily I'm getting rid of my car in the next couple of months so I won't have to suffer much longer."
+  }
+ ],
+ "[불편] 디지털키": [
+  {
+   "app": "BYD AUTO",
+   "score": 1,
+   "thumbs": 48,
+   "date": "2025-01-02",
+   "text": "Very disappointed with the app. Had seen the 王朝app in china and thought this will be similar to it. This has very few functions compared to the china version. I was hoping to have bluetooth remote control function and able to send navigation address from app to the car. There is no digital key for singapore as well. Why is there no nfc for phone?"
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 47,
+   "date": "2025-09-09",
+   "text": "Over half of the functions in the app say \"Something unexpected happened. Check your internet connection.\" Nope, connection is just fine for every other app. Gaslighting by EA for something broken in their app. Couldn't even charge through the app. Had to start the charging on the station and NFC tap the phone for Members to get it to register our account and thus use our free credits."
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 2,
+   "thumbs": 46,
+   "date": "2025-12-16",
+   "text": "I don't want to constantly be prompted to buy stuff, in an app where I want to control my car. I'm already paying money each month for the remote control capabilities. Also: don't give me a user guide about the \"Digital Key\" if my car does not support this feature. same for the \"trigger hazard lights and horn.\" it doesn't work, so I want to hide it / not see it."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 36,
+   "date": "2024-12-26",
+   "text": "Absolute worst charging experience. NFC tap to open app doesnt. Credit card readers do not work. Times out waiting for the app so you have to start over and over again. Only way to charge is via the app, which only shows charging stations SOMETIMES. Despite knowing your exact location and showing you on the map, charging stations do not appear in app when ready to charge. (And then it times out). Requires a balance. Expensive and bad. Stay away."
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 2,
+   "thumbs": 33,
+   "date": "2023-06-27",
+   "text": "This app has very basic functions like notifying me that my car is unlocked or starting remotely (which I would prefer to be less complicated than having to open the app set time for start, leaving time etc. Much easier to press a button on a key fob). Now my subscription is ending and the renewal fee is $200 FOR SIX MONTHS??! That's insane. Who would pay that?? Not me."
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 1,
+   "thumbs": 26,
+   "date": "2026-06-17",
+   "text": "Update: Bluelink is not considered for resolving the bug in their app. \"Hyundai markets Digital Key 2.0 as a replacement for carrying a physical key. However, despite my vehicle supporting RSPA, the feature only works when the physical key is present and is not available through the Hyundai app. This completely undermines the purpose of having a \"digital\" key.\""
+  },
+  {
+   "app": "Electrify America",
+   "score": 2,
+   "thumbs": 21,
+   "date": "2025-06-21",
+   "text": "It works mostly, but you have to foce close the app nearly every time you need to use it. The NFC scanners on the chargers work so infrequently that you need to use the app to start, and often I have to force close the app to keep it from bouncing back to the last place I charged. Defintely needs work."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 20,
+   "date": "2023-02-05",
+   "text": "Sessions routinely get locked for hours after I have left. Cannot start another without calling their toll free number and waiting to get it rest. Their suggestion was to update my app, but is the current version. Clearly something in THEIR system, not my phone. Also would be amazing if their NFC's readers actually worked with the Android phone app."
+  },
+  {
+   "app": "BYD AUTO",
+   "score": 2,
+   "thumbs": 18,
+   "date": "2026-07-27",
+   "text": "Fixed some errors and now supports NFC in countries where doesn't. Also allows Pixel Watch support, but, there are a logout error and can't replace watch."
+  },
+  {
+   "app": "BYD AUTO",
+   "score": 1,
+   "thumbs": 18,
+   "date": "2024-08-19",
+   "text": "App is getting worse. Won't allow other brand phones with android 14 (e.g. Sony) to add digital key. Widget and app is not following Android theme. A lot of work needed to be up to standard. Take a few hints from Tesla's app. Battery charging per time and day scheduling a must. Live camera views would be good. Also need to update a lot of the software in car too. Keep lumbar settings."
+  },
+  {
+   "app": "Polestar",
+   "score": 2,
+   "thumbs": 17,
+   "date": "2022-02-14",
+   "text": "Very temperamental. Often won't connect or refresh data and when it does, the battery level whilst charging is way behind what it actually is which isn't particularly helpful to know when it's finished. Tonight it has now logged me out, said the digital key is not connected and now can't detect the battery level! Love the car but the app not great."
+  },
+  {
+   "app": "Polestar",
+   "score": 1,
+   "thumbs": 16,
+   "date": "2023-08-07",
+   "text": "This app is far too basic. You can only unlock/lock, set climate and check range. I've found the digital key to be unreliable and you cant open the boot without the physical key. Please add more features like the Tesla app, for example, setting charge limits, send maps directions to the car, car window venting check tire pressures, unlock all doors/trunk, and sentry mode."
+  }
+ ],
+ "[불편] 경로·내비 (일반)": [
+  {
+   "app": "myHyundai (EU)",
+   "score": 2,
+   "thumbs": 61,
+   "date": "2025-12-20",
+   "text": "Like the old one (blue link) but a bit worse. harder to get to map. more ways it tries to sell itself to us. just clunkier, bloatier and even less friendly (e.g. harder to get to see car location). separate point: but disappointing that there's so little use for the free version of blue link: I liked remote locking/unlocking but not enough to pay an extortionate amount for a subscription. just not good value at all."
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 1,
+   "thumbs": 59,
+   "date": "2025-12-17",
+   "text": "A huge company like Hyundai can surely do better than this? An app from you should be slick, seamless and state of the art. Look at the reviews and the average score: 1.9. This doesn't need small revisions, it needs to be withdrawn and start again. Icon for Car, Icon for Map, Icon for account, start there. No ads, no upselling thank you. Poor effort."
+  },
+  {
+   "app": "BYD AUTO",
+   "score": 1,
+   "thumbs": 48,
+   "date": "2025-01-02",
+   "text": "Very disappointed with the app. Had seen the 王朝app in china and thought this will be similar to it. This has very few functions compared to the china version. I was hoping to have bluetooth remote control function and able to send navigation address from app to the car. There is no digital key for singapore as well. Why is there no nfc for phone?"
+  },
+  {
+   "app": "PlugShare",
+   "score": 1,
+   "thumbs": 41,
+   "date": "2022-02-28",
+   "text": "It misses 3 locations near me where I know there is power. But it captures every restaurant, grocery, feed store, market, etc which fills up the map and that cannot be toggled off. I can't turn off the map blocking ad banner. I get that the developers need ads to support the app but dang move the ad banner somewhere else or charge me $2.99 to get rid of it. Deleting app. Onward in search of another one."
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 38,
+   "date": "2024-03-21",
+   "text": "For the third time in a row I have been unable to use the app to find a station as the map never shows anything regardless of the parameters I put in. Also wasn't able to start a charging session through the app. Was forced to call customer service to try to establish a charging session. I don't know if it's the way I'm using it, or my device or anything else but it's pretty disappointing."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 36,
+   "date": "2024-12-26",
+   "text": "Absolute worst charging experience. NFC tap to open app doesnt. Credit card readers do not work. Times out waiting for the app so you have to start over and over again. Only way to charge is via the app, which only shows charging stations SOMETIMES. Despite knowing your exact location and showing you on the map, charging stations do not appear in app when ready to charge. (And then it times out). Requires a balance. Expensive and bad. Stay away."
+  },
+  {
+   "app": "My BMW",
+   "score": 2,
+   "thumbs": 35,
+   "date": "2023-08-18",
+   "text": "The My Trips feature is totally useless. It shows no map information or location information. All it tells me is I started at my house and ended at my house but there's no information in-between. Absolutely pointless."
+  },
+  {
+   "app": "My BMW",
+   "score": 1,
+   "thumbs": 35,
+   "date": "2023-05-24",
+   "text": "The most infuriating and frustrating app experience, to the point it is unacceptable for a brand of this size. Every single time it requires you to log in again. Imagine being in a rush and needing to use the app to send map locations to the car? imagine having to login everytime to do this and setting up a new pin everytime. Product team if you are reading this, prioritise it in your backlog for the next sprint immediately."
+  },
+  {
+   "app": "Electrify America",
+   "score": 2,
+   "thumbs": 33,
+   "date": "2020-10-30",
+   "text": "First off, the map data is wrong. The app shows 1 available and 12 Coming Soon spots for my location, which is wrong. EA's iOS app and web site show them all as Online, which is right. No ability to stay logged in is annoying. Even a Remember Username option would be nice. If a session fails to start due to charger problems, i have to force quit the app to try again. Overall sluggish response throughout the app."
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 1,
+   "thumbs": 31,
+   "date": "2022-12-28",
+   "text": "Can you bring back the old volvo app? This Volvo Cars app is not very good. First it didn't work on androids, now everything it says it offers it does not. With my first Volvo, I was able to see my car stats, set timers, send addresses to maps, see gas mileage ect. Now I only have climate and lock/unlock doors. For 2022 google enabled luxury, this is terrible. And yes, car was updated, app was removed and reinstalled. So disappointing."
+  },
+  {
+   "app": "My BMW",
+   "score": 1,
+   "thumbs": 29,
+   "date": "2026-03-16",
+   "text": "Seems aimed at the latest BMW EV's, and not too well at that either! \"Blow Horn\" doesn't work and never has! Lots of updates with practically NO improvements! Like others have said...map, lock/unlock doors, sound horn, and more take ages to work...if they ever do!"
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 1,
+   "thumbs": 29,
+   "date": "2022-06-08",
+   "text": "It's really frustrating the app has less functionality for my 2022 XC60 than it did for my 2020 S60. The car and maps icons are gone. I no longer can see the details about my car, change its name, see where my car is parked, or look at my driving journal. Why would a newer, more expensive car that runs on Android not have a functional app? What a disappointment."
+  }
+ ],
+ "[불편] 배터리·전비": [
+  {
+   "app": "Kia App (EU)",
+   "score": 1,
+   "thumbs": 35,
+   "date": "2025-12-11",
+   "text": "It's totally useless. The cars current location is incorrect and only records the last stopping place, not the current location. The whole app is totally confusing, and I'm wondering what it does to help me. The Kia Connect Store is totally devoid of anything useful. In fact, trying to access anything just sends you round in circles. Now, the app reports battery faults that don't exist. This app needs to go back to the previous useful version."
+  },
+  {
+   "app": "Kia Access (US)",
+   "score": 1,
+   "thumbs": 29,
+   "date": "2026-10-20",
+   "text": "Ugh! Kia just changed the home page of this app. It now shows zero for the estimated gas and battery range, even though my gas tank is full and my battery is fully charged. It also assumes that I am using an L2 charger to estimate charging time, even though I've only used an L1 charger for 3 years now."
+  },
+  {
+   "app": "Tesla",
+   "score": 1,
+   "thumbs": 29,
+   "date": "2026-07-17",
+   "text": "app unstable. the car and battery level flicker for a bit then app crashes"
+  },
+  {
+   "app": "BYD AUTO",
+   "score": 2,
+   "thumbs": 29,
+   "date": "2026-05-10",
+   "text": "The app is helpful, but I was expecting much more. It lacks detailed stats like energy consumption, average speed, efficiency by driving mode, and trip length summaries. most of which is clearly available in the car itself. Instead of expanding access, the app is just a bit more than a smart key. I hope future updates will unlock more of the data that's already being collected"
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 2,
+   "thumbs": 27,
+   "date": "2023-09-05",
+   "text": "The app does well what it advertises, but that is really not much. You can preheat / precool the car, see the current battery charge (I have an electric C40) and if it's plugged in and charging or not. Also, you can enable location logging. That's it. There is no history, no stats of any kind, nothing."
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 1,
+   "thumbs": 26,
+   "date": "2026-03-19",
+   "text": "Poor. if I'm paying for a service then it has to be good and reliable. This is buggy. bloated, slow. It's also essential to officially allow third party apps (such as Home Assistant) to have reliable access to the same functionality. Half the time, my car's battery % is wrong. Lots of buttons in the app don't work, with no explanation."
+  },
+  {
+   "app": "Volkswagen",
+   "score": 1,
+   "thumbs": 23,
+   "date": "2024-08-07",
+   "text": "Just like to many things in this car, the app feels like it's half finished. Many basic features are missing, such as car lock control, car location to find your car in a large place, and battery conditioning to optimise charging. And even the features of the app don't work properly. For the last 8 months, the app refused to synchronise the range. I have no idea how the charging goes when I stop somewhere. I will buy EV again, but never VW again."
+  },
+  {
+   "app": "BYD AUTO",
+   "score": 1,
+   "thumbs": 22,
+   "date": "2023-12-20",
+   "text": "The app used to work perfectly. Now it no longer does anything. You cannot use any of the functions and the charge and range estimate are stuck and do not change with charging. As it currently is it serves absolutely no purpose, you cannot check any stats on the car or turn anything on. I've tried uninstalling and reinstalling, clearing the cache but it remains frozen. Disappointing not to be able to use one of the most handy features of the car."
+  },
+  {
+   "app": "myAudi",
+   "score": 1,
+   "thumbs": 22,
+   "date": "2023-07-18",
+   "text": "Connectivity with the vehicle is sooo bad. every now and then, it does not connect with the vehicle. Audi is still very much behind in app development and does not have a remote vehicle start on the app. i have to visit the dealership a couple of times to fix this.there are very minimal features on the app, and it drains the battery. I love My Q5, and there is nothing wrong with the car."
+  },
+  {
+   "app": "Mercedes-Benz",
+   "score": 2,
+   "thumbs": 21,
+   "date": "2023-06-28",
+   "text": "Perpetually out of sync. Extremely frustrating when I open the app and I cannot get access to the current status of the car, and there's no way to force a refresh. Breaks the experience for knowing whether or not the car is unlocked at the moment for example, or what the state of charge is."
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 1,
+   "thumbs": 19,
+   "date": "2026-01-04",
+   "text": "They made it worse than the old Blue link app. It no longer shows updated battery and door status, \"Connected\" just seems to mean the app is connected to their servers and there doesn't seem to be a way to force a status refresh from the car. I've tried myHyundai -> Control -> ... as suggested in the Hyundai review response, but it doesn't update. The app is up-to-date."
+  },
+  {
+   "app": "Volkswagen",
+   "score": 2,
+   "thumbs": 18,
+   "date": "2026-01-16",
+   "text": "Nothing consistently works in the app. it will work for a month or so and then doesn't. Now, it shows the vehicle unlocked and back door open when it's locked and closed. Odometer no longer updating, I can start Climate remotely but app says command failed. Battery state no longer updates. Vehicle location is wrong (but that's broken in the car too)."
+  }
+ ],
+ "[불편] 포인트·리워드·멤버십": [
+  {
+   "app": "Kia App (EU)",
+   "score": 1,
+   "thumbs": 24,
+   "date": "2025-09-14",
+   "text": "I won't repeat all the problems reported by others, but I'll add a new one: the map does not always display so your destination is just a mark in a blank area. I can't believe this was released with all these faults. I don't think Kia realise how this affects customer loyalty. I love the car, but the brand is tarnished by this awful app. The ads the app serves up are worse than pointless. I'm now looking at other makes."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 21,
+   "date": "2021-06-28",
+   "text": "The app doesn't work 9/10 times when initializing payment and starting the charging of the car which means if you pay for a membership to save on charging you can't even use it and have to pay as a guest so you waste money on the membership and paying full price for charging. This has been an issue for months and still hasn't been fixed."
+  },
+  {
+   "app": "MyHyundai with Bluelink (US)",
+   "score": 1,
+   "thumbs": 20,
+   "date": "2025-01-09",
+   "text": "When it works, it's convenient. Had this three years for free with my new car and barely use it because 98% of the time the remote start feature can't connect or just fails completely on the app. Once my free membership expires, I won't be renewing. The car is paid for, now you're gonna get me to pay more money to join a subscription service that barely works? Hahaha, no thanks."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 10,
+   "date": "2025-04-09",
+   "text": "This has been a terribly buggy app. Recently, however, I've been having to log in every day. Now it won't even let me use my authenticator app. Rather, it sends me an email with a code that doesn't work. I was hoping they'd get the location issues fixed, but six months into this membership and I can't use the stinking service."
+  },
+  {
+   "app": "Electrify America",
+   "score": 2,
+   "thumbs": 9,
+   "date": "2022-12-23",
+   "text": "Won't let you simply pay for a charge like you can by swiping a credit card at the charger. I would have liked to use the app to keep track of my charge history, but it forces you to preload money on the free membership plan and you will annoyingly have an unused balance. Not good for casual users, better to forget the app and pay with your card."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 8,
+   "date": "2024-10-15",
+   "text": "Horrendous! Zero stars. I haven't used this in the year of owning our EV; my husband has used it once with great difficulty. Recently had to pay non membership rate to charge my vehicle while traveling, Electrify America app wouldn't connect. Also, this particular location had just 6 charging stations, not 12 as stated on locator map."
+  },
+  {
+   "app": "Kia Access (US)",
+   "score": 1,
+   "thumbs": 7,
+   "date": "2026-01-21",
+   "text": "I used to be able to do the basics without the paid membership. start, turn off, lock, and unlock. Now, these features are locked as well. I also find it laughable that this is even a service you have to pay for after paying 30k+ on a vehicle. most other manufacturers include an app by default."
+  },
+  {
+   "app": "Chargemap",
+   "score": 1,
+   "thumbs": 7,
+   "date": "2025-07-12",
+   "text": "Avoid avoid avoid. The prices you pay with this app are hiked so much, you end up paying sometimes double or triple per Kw, then hilariously they offer you a membership to reduce cost by paying for a membership and after that the prices are still sky high."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 7,
+   "date": "2024-06-17",
+   "text": "Car included a membership to this network. Have tried using charging many times over the last year. App never lets me start the charge myself. So my only option is calling customer support to start it remotely. Tried multiple phones and different charger stations. Its simpler to use a credit card and pay for a single charge."
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 1,
+   "thumbs": 7,
+   "date": "2024-02-29",
+   "text": "SLOOOOOOW. Every time I open this app I go to get a cup of coffee. The developers of this app never heard of \"cache\"? And it keeps getting worse: Each new version has fewer and fewer information than in the older versions. You never see a new feature added (maybe once in 5 years? \"driving journal?\" So useful. Wow). Bonus point for having the wrong car color now! (something that always worked and they STILL managed to broke). Great job, kids!"
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 6,
+   "date": "2026-05-31",
+   "text": "app keep saying I don't have a membership plan even though I have membership. So I'm paying extra every time I charge."
+  },
+  {
+   "app": "Electrify America",
+   "score": 2,
+   "thumbs": 6,
+   "date": "2023-12-07",
+   "text": "My experience has been pure trash. The app helps show where charging stations are, but I've had a stuck session for about a month and can't use the app. When I have to call in, it takes about 10-15 to get help. Some stations, the card reader or membership reader doesn't work. Not a fan"
+  }
+ ],
+ "[불편] UI·UX 불편": [
+  {
+   "app": "Kia App (EU)",
+   "score": 1,
+   "thumbs": 170,
+   "date": "2025-08-05",
+   "text": "The old Kia app worked fine. This new version is a pain. It's ploddingly slow for a start. Worse, it has logged me out on a regular basis, and despite the biometric box being ticked, it demands a key entry of user name and password. And the UI is cluttered and messy anyway. A classic and unnecessary big corporate downgrade. Try some proper testing. EDIT: I now have a mixture of km and miles. Shockingly poorly developed and (not properly) tested."
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 1,
+   "thumbs": 66,
+   "date": "2025-12-18",
+   "text": "UI is dire, only 4 shortcuts and many commonly used items are buried under layers of menus, for example ev charging limits. Needs simplifying and arranging logically by commonality. There should be no ads in or around a product that has already been bought and paid for- in fact this is off putting from the brand. The best advert for your future product is a great user experience with the one they have now!"
+  },
+  {
+   "app": "Kia App (EU)",
+   "score": 1,
+   "thumbs": 39,
+   "date": "2026-04-23",
+   "text": "Whilst you very very slowly transform an app that must have been designed by a child with behavioural problems into something logical and usable, please can you give us live notifications. Notifying me the next time I happen to open my phone that my car has been unlocked for 2 hours is no use to me at all. I need to know now."
+  },
+  {
+   "app": "Kia App (EU)",
+   "score": 1,
+   "thumbs": 35,
+   "date": "2025-12-11",
+   "text": "It's totally useless. The cars current location is incorrect and only records the last stopping place, not the current location. The whole app is totally confusing, and I'm wondering what it does to help me. The Kia Connect Store is totally devoid of anything useful. In fact, trying to access anything just sends you round in circles. Now, the app reports battery faults that don't exist. This app needs to go back to the previous useful version."
+  },
+  {
+   "app": "Mercedes-Benz",
+   "score": 1,
+   "thumbs": 31,
+   "date": "2026-01-03",
+   "text": "Charging for basic convenience that low end vehicles have standard, not what one would expect for a six figure vehicle. for the price you could control temp, seats, etc. Remote start is spotty, and why shut off when less than 25% fuel, 10 minutes won't hurt. Unless of course the app really is not accurate on fuel, which is likely, then it checks out. You can see the German design elements that make it so complicated it works but not intuitively."
+  },
+  {
+   "app": "myAudi",
+   "score": 1,
+   "thumbs": 31,
+   "date": "2023-05-25",
+   "text": "If it were possible to give a score of zero, I should give it. So much unreliability in a simple and basic app from a reputable manufacturer with absolutely no support is shameful. The application never works properly and when it does, it is very short-lived. The basic connection with the Q4 where it is important to have information about charging and the rest is never up-to-date, accurate and all together it is quite funny if it were not sad."
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 31,
+   "date": "2022-05-18",
+   "text": "While every other app is moving forward with new innovation, getting better and more user friendly, EVgo is going backwards. The app never works when needed. I get logged out every time, the password doesn't work, and on rare occasions when it logs me in, I cannot see the status of my current charge. It's gotten to a point where I really avoid EVgo chargers unless I'm in desperate need."
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 1,
+   "thumbs": 30,
+   "date": "2022-10-25",
+   "text": "Not very user friendly. 99% of the time I can't lock or unlock my car. Messages about the car (being locked, unlocked, fully charged etc.) aren't accurate. Also very limited on any feature you can use it's almost completely worthless to have this app. Hopefully it will improve but they have A LOT of work to do."
+  },
+  {
+   "app": "Kia App (EU)",
+   "score": 1,
+   "thumbs": 29,
+   "date": "2025-11-06",
+   "text": "The previous app, though clunky, did work. This doesn't. We have an EV3, a high tech car, the app that now is intended to control it is poor. For instance I can turn on climate control, but it seems impossible to now turn it off. Also, it no longer works on my tablet. This is rubbish. Who would allow such a poorly design to go live? It hurts the brand and I suggest you sort it out."
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 1,
+   "thumbs": 26,
+   "date": "2025-12-22",
+   "text": "Agree with others. This is really poor. Glitchy, untidy and unintuitive. As a small example, on Bluelink I can switch between my 2 cars very easily, it's a real faff on this app.Much worse than the existing Bluelink App (which isn't great, but works fine). This shouldn't have been launched, please acknowledge the mistake and go back to the drawing board."
+  },
+  {
+   "app": "Mercedes-Benz",
+   "score": 1,
+   "thumbs": 25,
+   "date": "2026-06-18",
+   "text": "Terrible interface, if you are looking for an electrical charging station on destination on map goodluck! once you found the charging station good luck matching the number to the station or pod. Also constant \"server error \" when presseing charge. So unreliable it's laughable. In app call function doesn't work and have messaged last week and no reply. Email replies all by AI so dont waste your time."
+  },
+  {
+   "app": "Kia App (EU)",
+   "score": 1,
+   "thumbs": 25,
+   "date": "2025-08-05",
+   "text": "Units are set to miles, so of course it displays in kilometres throughout the app. Menu's too cluttered, not intuitive, adverts are idiotic. I have a car, I don't need adverts for purchasing a new one. won't be using again in its current form. EDIT: Unit function still broken 3 months later. Set it to miles and it displays kilometres even when it says miles is selected. Great job, development team. Really earning your salary with this one."
+  }
+ ],
+ "[불편] 고객센터·응대": [
+  {
+   "app": "My BMW",
+   "score": 1,
+   "thumbs": 55,
+   "date": "2022-03-23",
+   "text": "Completely unreliable. One would think a quality automaker would have solid technology to support their products...nope. The previous version worked maybe 7 out of 10 times I would attempt to remotely connect to my car, however the release of the newer app., all I have ever been able to do is check my fuel status; no remote locking, remote start, etc. Now the app refuses to even update the car status since 2AM on March 11,2022. VERY DISAPPOINTING"
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 2,
+   "thumbs": 46,
+   "date": "2025-12-16",
+   "text": "I don't want to constantly be prompted to buy stuff, in an app where I want to control my car. I'm already paying money each month for the remote control capabilities. Also: don't give me a user guide about the \"Digital Key\" if my car does not support this feature. same for the \"trigger hazard lights and horn.\" it doesn't work, so I want to hide it / not see it."
+  },
+  {
+   "app": "Octopus Energy (EV 관련만)",
+   "score": 1,
+   "thumbs": 46,
+   "date": "2023-06-23",
+   "text": "I am unable to see any of my bills since August 2022. I contacted your customer service 3 times. I was told to reinstall which I did. It didn't change anything. Emailed again with screenshots and was told it can take time to update new records. They are new records. I'm missing almost a year worth of bills. I am unable to see the latest bill and what I'm being charged. Customer have not been very helpful."
+  },
+  {
+   "app": "myAudi",
+   "score": 1,
+   "thumbs": 42,
+   "date": "2026-05-02",
+   "text": "Unreliable connection to my car. a significant amount of times it will not connect, so I can't check on the charge level or send a timer to preheat. Slow responses to requests for support and it usually means waiting for an update to see if the issue is fixed. 2/5/26 Update: the latest version has again disconnected from my car, so I have no access to charging info. The app and in-car software are so bad I would not buy the car again."
+  },
+  {
+   "app": "PlugShare",
+   "score": 1,
+   "thumbs": 41,
+   "date": "2022-02-28",
+   "text": "It misses 3 locations near me where I know there is power. But it captures every restaurant, grocery, feed store, market, etc which fills up the map and that cannot be toggled off. I can't turn off the map blocking ad banner. I get that the developers need ads to support the app but dang move the ad banner somewhere else or charge me $2.99 to get rid of it. Deleting app. Onward in search of another one."
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 38,
+   "date": "2024-03-21",
+   "text": "For the third time in a row I have been unable to use the app to find a station as the map never shows anything regardless of the parameters I put in. Also wasn't able to start a charging session through the app. Was forced to call customer service to try to establish a charging session. I don't know if it's the way I'm using it, or my device or anything else but it's pretty disappointing."
+  },
+  {
+   "app": "MINI",
+   "score": 1,
+   "thumbs": 36,
+   "date": "2022-07-18",
+   "text": "When I first started using the app, I loved that I could remotely vent my 2019 Cooper S. Also, know fuel levels, etc. Was very useful. With the changes that removed support for older vehicles, it is disappointing that Mini has left those of us with 3 year old cars without support. I will certainly take this into account when choosing my next car. Why couldn't there be an update to the vehicle to maintain support?"
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 2,
+   "thumbs": 35,
+   "date": "2025-01-08",
+   "text": "Still disappointing. If the car hasn't been driven for over a day. The system shuts down. It then doesn't operate remotely so no pre heating. The scheduled charge could be good except it keeps forgetting the schedule! Then when you plug it in, it starts charging immediately at peak rate!! Just got worse. Tried to use chat with us in the app and it closed! Checked the charge period and it displayed correctly - then vanished and said set schedule."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 35,
+   "date": "2021-10-04",
+   "text": "could not configure my home station, I kept getting an error message that something unexpected occurred. I power cycled the home station, restarted the app several times getting the same outcome each time. I called support who asked me to do it again- same outcome. I've submitted a copy of the screen shot of the error message - you'd think they knew their own error messages... feels like a waste of time and money."
+  },
+  {
+   "app": "myChevrolet",
+   "score": 1,
+   "thumbs": 33,
+   "date": "2025-12-04",
+   "text": "It's terrible. Long load times just to open the app. Requires two-factor ident, which isn't always possible when traveling. Crashes after two-factor step. Support is unresponsive. \"How can we improve\" screen hangs and crashes. I could go on, but why? Electrify America app works flawlessly. Tesla app works flawlessly. Do better!!!!! Uninstall asap. one year later. still unreliable. They never got back to me."
+  },
+  {
+   "app": "MyHyundai with Bluelink (US)",
+   "score": 1,
+   "thumbs": 33,
+   "date": "2025-03-03",
+   "text": "March 25 update - app stopped working 22 days ago, uninstalled / reinstalled 4 TIMES! It will not connect to my car. The same as in 2022... shock & surprise that my old review is still my same frustration. I didn't really have an issue before the update, but now the remote start feature & lock features will not work at all. I paid for this due to winter weather & the chat feature was of no help."
+  },
+  {
+   "app": "myAudi",
+   "score": 1,
+   "thumbs": 31,
+   "date": "2023-05-25",
+   "text": "If it were possible to give a score of zero, I should give it. So much unreliability in a simple and basic app from a reputable manufacturer with absolutely no support is shameful. The application never works properly and when it does, it is very short-lived. The basic connection with the Q4 where it is important to have information about charging and the rest is never up-to-date, accurate and all together it is quite funny if it were not sad."
+  }
+ ],
+ "[불편] 알림": [
+  {
+   "app": "Tesla",
+   "score": 1,
+   "thumbs": 126,
+   "date": "2026-07-21",
+   "text": "The communication between this app and the car is the worst. I asked for 100% charge SO many times and it kept resetting to 85% eventually it didn't. I wake up and it's at 85%. I have 20 minutes before I leave. So I ask it to charge some more. I look back 5 minutes later. It's not charging. FFS! Now I'm being bombarded with notifications. Connected. Connected. Connected. Connected.... Every minute."
+  },
+  {
+   "app": "ChargePoint",
+   "score": 1,
+   "thumbs": 48,
+   "date": "2024-09-14",
+   "text": "Automatically puts $10 on the card if the balance gets low instead of sending a notification that balance is low and providing the option to refill. I do not use chargepoint frequently enough to justify having $14 sitting there unused; could use this $14 for supercharging and it would go a lot further. Can't seem to get my money back, either. Will uninstall for this reason. Don't toy with people's money."
+  },
+  {
+   "app": "Kia App (EU)",
+   "score": 1,
+   "thumbs": 39,
+   "date": "2026-04-23",
+   "text": "Whilst you very very slowly transform an app that must have been designed by a child with behavioural problems into something logical and usable, please can you give us live notifications. Notifying me the next time I happen to open my phone that my car has been unlocked for 2 hours is no use to me at all. I need to know now."
+  },
+  {
+   "app": "My BMW",
+   "score": 1,
+   "thumbs": 39,
+   "date": "2022-04-01",
+   "text": "This app has been unreliable and frustrating. Notifications are annoying. Remote software upgrades do not process well, hit or miss, and the latest one will not complete. Checking car status is not reliable as it does not promptly update. The app does not consistently connect with my vehicle."
+  },
+  {
+   "app": "MyHyundai with Bluelink (US)",
+   "score": 1,
+   "thumbs": 36,
+   "date": "2024-12-09",
+   "text": "PLEASE fix the notifications! You should be able to see if the remote start was successful or not without having to open the notifications every time just to check and see. It's frustrating. Realistically the app is a solid 4/5 stars but I'm hoping the devs will see this and fix it. If you guys do, I'll happily change it to 5 stars! Just have the notification start with a bold \"SUCCESSFUL\" or \"UNSUCCESSFUL\". I would really appreciate it!"
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 33,
+   "date": "2025-04-18",
+   "text": "Pretty good features, i have good experience with autocharge and checking-in in general.. The ugly is even with notifications within the app disabled, you still receive marketing notifications and other useless noise. Im not changing my car any more or any less with marketing drivel, but it does make me think less of EVgo."
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 2,
+   "thumbs": 33,
+   "date": "2023-06-27",
+   "text": "This app has very basic functions like notifying me that my car is unlocked or starting remotely (which I would prefer to be less complicated than having to open the app set time for start, leaving time etc. Much easier to press a button on a key fob). Now my subscription is ending and the renewal fee is $200 FOR SIX MONTHS??! That's insane. Who would pay that?? Not me."
+  },
+  {
+   "app": "Volkswagen",
+   "score": 1,
+   "thumbs": 31,
+   "date": "2024-06-18",
+   "text": "Update June 17, 2024 Notifications and location updates no longer function at all. Prior review: The app works okay and has good connectivity with our new car. Cons: it requires you to log-in in triplicate, and doesn't stay logged in. No notification for doors locked. Cannot opt out of \"driving data collection\". Ads. Update March 2024, notifications are no longer consistent."
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 31,
+   "date": "2024-03-23",
+   "text": "Between the abysmal performance of your stations and your app, I wonder if you care about keeping users. I avoid using EVgo now but was forced to resort to you today. I came to a station with a broken charger that showed as working in the app (before the app went offline). Went to another EVgo station to encounter the same thing. Now your app has been offline for over an hour. If you're trying to push users away, CONGRATS, you've succeeded."
+  },
+  {
+   "app": "Tesla",
+   "score": 2,
+   "thumbs": 24,
+   "date": "2026-03-30",
+   "text": "Having constant connected and disconnected notifications means that important notifications from the vehicle go by unnoticed. Please make connect/disconnect notifications optional so that I can notice when my car is unlocked or the cabin overheat is on, etc."
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 1,
+   "thumbs": 24,
+   "date": "2023-03-08",
+   "text": "This app leaves much to be desired. The only features I can access are the remote start & locking. I was expecting to see things like my gas level, tire pressure,etc. I have none of that. To compare, my husband recently bought a Toyota, he can manage settings for each key, get alerts if the car is driven over a certain speed or outside of a designated range. This is great if u lend your car to your kid or valet. Very disappointed."
+  },
+  {
+   "app": "MyHyundai with Bluelink (US)",
+   "score": 2,
+   "thumbs": 22,
+   "date": "2026-05-03",
+   "text": "App will notify me 10x a day that the windshield washer fluid is low and not at all that my car is unlocked all day."
+  }
+ ],
+ "[불편] 아파트·완속 요금 격차": [
+  {
+   "app": "Optiwatt",
+   "score": 1,
+   "thumbs": 7,
+   "date": "2023-11-26",
+   "text": "I would not recommend this app to anyone. When I allow optiwatt to schedule charging, it constantly turns off my charging after 12 minutes so that I return to an uncharged car. I am on a flat rate, so I don't have peak or off peak times. Extremely annoying. Doesn't matter the time, late night, early morning. Allowing Optiwatt to schedule my charing is so inconvenient because I can not rely on it."
+  },
+  {
+   "app": "Tesla",
+   "score": 1,
+   "thumbs": 0,
+   "date": "2025-09-11",
+   "text": "I have a flat tyre, the app quoted one price for replacement, the service associate that confirmed the appointment quoted a price 40 dollars higher and would not honor the lower price that was presented in the app when making the appointment."
+  }
+ ],
+ "[불편] 미출차·점유 수수료": [
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 11,
+   "date": "2026-05-06",
+   "text": "plugged in to a 12 bay site to charge. waited 5 minutes to ensure charge was proceeding. went inside to shop. after some time my CAR messages me to tell me it is \"plugged in and not charging\". called support while walking, they have no way to restart the charge. $5 of \"idle fees\" for a completely empty 12 bay charging site because their charger decided \"nah\" after 15 minutes. ALSO, the app logs you out on your own phone for no reason at all."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 8,
+   "date": "2026-06-27",
+   "text": "Really disappointing app and user experience. Despite having all of my notification settings turned on inside the app and also in my internal phone settings, I never receive any notifications. My charging session stopped suddenly and I was charged an idle fee despite never being informed through the app and their customer service was incredibly unhelpful trying to resolve the issue."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 7,
+   "date": "2026-03-19",
+   "text": "Was charging for 6 minutes when the app tried to reload my account. I'd gone to grab food nearby. Bank marked it fraud. When it tried to reload. The app ended my charge session at 42% and then began charging me idle fees. Customer service refused to help. Would not recommend, their system seems designed around this flaw. Seems less like a bug and more like a feature."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 3,
+   "date": "2026-08-08",
+   "text": "Charged for nothing. At this very second I am disconnected from the charger. The computer has frozen and I am being charged $0.40 per minute idle fee. The response from Electrify America? Wait for hours and then request a refund. I don't have $100 to spare right now!"
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 3,
+   "date": "2026-07-04",
+   "text": "the station disconnected me and I got a 17 $ idle fee with almost no electricity delivered. customer service would not help me. never using electrify America again."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 3,
+   "date": "2026-04-25",
+   "text": "Horrific customer service. a charger will turn itself off and charge you an idle fee after charging for 2 minutes and their awful oversea customer service will just tell you the car did it and leave the fee. Avoid at all costs. Just get a supercharger adapter."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 3,
+   "date": "2025-04-15",
+   "text": "People who charge for free just leave their cars or trucks on the charger because there are not idle fees for them why would this even be possible who thinks about these things"
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 2,
+   "date": "2026-08-31",
+   "text": "stop canceling my charging at 30% to steal idle fees from me!"
+  },
+  {
+   "app": "Kia App (EU)",
+   "score": 2,
+   "thumbs": 1,
+   "date": "2026-10-02",
+   "text": "removing charging station pricelists makes it impossible to check for blocking fees during cross-border travel"
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 1,
+   "date": "2025-10-14",
+   "text": "Absurdly high rates and unreliable chargers they talk about this \"One price all day\" feature that cost more than any of the other charge networks. stations are constantly broken, they have absurdly high idle fees but yet people park in front of them all the time and they don't take care of that problem. I can understand if you have to fast charge, use these guys at your own risk, for level 2 charging it's a complete rip off. won't be back."
+  },
+  {
+   "app": "ChargePoint",
+   "score": 2,
+   "thumbs": 0,
+   "date": "2026-10-24",
+   "text": "no one parking in closed area with multiple sites but you get charged a parking fee. go figure"
+  },
+  {
+   "app": "Octopus Electroverse",
+   "score": 1,
+   "thumbs": 0,
+   "date": "2026-10-20",
+   "text": "was great. app works well. used to have fair pricing. now introduced idle fees without an upper limit at my nearest charging station... as other people mentioned it can quickly charge you over a 100 eur if you forget your car at the charger over night. not usable like this. pls implement mandatory upper limits for idle fees as other MSPs have done a long time ago..."
+  }
+ ],
+ "[불편] 리워드 축소·소멸 불만": [
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 18,
+   "date": "2024-04-14",
+   "text": "Although there are few EVgo charging stations in the Midwest, the app shows absolutely nothing. I have installed and reinstalled several times with the same result. The android app is totally worthless. I just hope the card will work on ChargePoint stations, so I can use some of my credits before they expire."
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 4,
+   "date": "2021-09-18",
+   "text": "Utter scam. Never notified me of a fraudulent charge and sent the charge to a credit agency. When I asked why I never got notice of the charge, they said it was my responsibility to check the charges in the app. Avoid at all costs."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 1,
+   "date": "2025-10-04",
+   "text": "I haven't used this app in a while so my credit card was expired. When I went to update my card it told me my name contained invalid characters. The card reader on the machine denied two credit cards. Customer service got my charging going but could not figure out why the app doesn't like my name"
+  },
+  {
+   "app": "EVgo",
+   "score": 2,
+   "thumbs": 0,
+   "date": "2026-07-26",
+   "text": "They wait 2 months to bill you after your credits have expired that you were intending to pay with. Total scam company, do not use!"
+  },
+  {
+   "app": "Kia App (EU)",
+   "score": 1,
+   "thumbs": 0,
+   "date": "2026-04-02",
+   "text": "very disapointed that they have removed the climate control option on the app"
+  },
+  {
+   "app": "ChargePoint",
+   "score": 1,
+   "thumbs": 0,
+   "date": "2025-08-28",
+   "text": "utter garbage. too many hoops to jump through. does not accept GPay. would not send code to authorize credit card. cut off app after too many tries. NOT a safe process for women traveling alone in rural areas where stations are limited. never trusting chargepoint again. deleting app."
+  },
+  {
+   "app": "ChargePoint",
+   "score": 1,
+   "thumbs": 0,
+   "date": "2024-11-06",
+   "text": "terrible billing strategy has my account £80 in credit. ive never paid more than £20 per charge, why so greedy?"
+  }
+ ],
+ "[불편] 충전 인프라(충전소 수·위치·속도)": [
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 37,
+   "date": "2024-06-30",
+   "text": "Three years ought to have been enough time to improve the network and service but it is still unreliable, expensive, and riddled with issues. I wish there were alternatives or competition for this network; it's terrible but the only option for interstate travel. I cannot help but believe the backers genuinely want EVs to fail in the US at this point."
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 1,
+   "thumbs": 34,
+   "date": "2026-02-14",
+   "text": "Poor, fails to send commands to car every time now due to unstable vehicle connection. Nothing has changed, the car is where it always is, with signal, and my own network is available. This has probably happened since last update. Really getting on my nerves. It's stupid because it's the little things like this that'll make me get another manufacturers car next time. What am I even paying for!"
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 1,
+   "thumbs": 29,
+   "date": "2026-04-07",
+   "text": "Bugs are still here and features like switch car (top right) are gone. it was so convenient to switch cars from the main home screen without diving in settings. other problem you cannot name the shared cars like in bluelink... they are all called ioniq5 ... and I often get errors like \"network connection failed\" when I'm only connected to wifi, no cellphone reception in my house. terms of service block the app from opening..."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 22,
+   "date": "2025-12-13",
+   "text": "Charging with EA is flakey. I've only got their level 2 chargers to work once, and it stopped charging early. I've got the fast chargers to work every time, but I've also had them sometimes stop early. The app continues to get worse. They are trying to force users to use passkey for logins, forcing users to re-login every couple weeks, and not honoring the \"do not show me this again\" option to create a passkey."
+  },
+  {
+   "app": "BYD AUTO",
+   "score": 1,
+   "thumbs": 20,
+   "date": "2026-08-30",
+   "text": "constant error - weak network signal, but the signal is fine, makes this app very unreliable. many users are having this issue."
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 19,
+   "date": "2024-06-24",
+   "text": "According to the app, there are NO chargers anywhere! Surpassed my expectations of abominability. NEGATIVE 5 stars! RATES ARE TOO HIGH ANYWAY AT 0.68 PER KWH which is higher than GAS! LOL! I'LL JUST KEEP TO 0.11 / KWH AT HOME OR .33/KWH ALL DAY AT CHARGEPOINT!!! With gas you only see about 10 to 20% difference in price but with Elec You see a span of 20,000% or more! Elec is CHEAPER THAN GAS! DONT BE FOOLED INTO THINKING OTHERWISE!!!"
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 18,
+   "date": "2024-04-14",
+   "text": "Although there are few EVgo charging stations in the Midwest, the app shows absolutely nothing. I have installed and reinstalled several times with the same result. The android app is totally worthless. I just hope the card will work on ChargePoint stations, so I can use some of my credits before they expire."
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 17,
+   "date": "2023-12-04",
+   "text": "The app is completely broken. No chargers appear on the app at all, you can search for location, but no chargers are available, even when you search the actual name of the station you're at. While I have my vehicle added to the autocharge feature, that never works at any evgo station since this version of the app was released. The chargers have been completely useless And the app is broken. The absolute worst chargers out of all options."
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 1,
+   "thumbs": 16,
+   "date": "2022-06-16",
+   "text": "Just moved from a 2019 XC60 T8 to a 2022 XC60 Recharge. Half the app features are gone! No more driving log, can't see gas range (only electric), no GPS location of the car. Had to factory reset the car's head unit to re-pair my phone which was a big waste of time. The app seems to constantly lose features. Apps are never done. At some point they just become obsolete."
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 16,
+   "date": "2021-04-13",
+   "text": "The first time I used an evgo station I used my credit card and was charged 30 cents per kW. I liked that so I got the app and the card. Back at the same charger I used the card to initiate the charge and was instead charged 30 cents per MINUTE. What was a $1.55 charge for 19 minutes the first time became $9.90 for a 30 minute charge. I do not recommend, will be canceling my account and will just use my credit card instead."
+  },
+  {
+   "app": "Tesla",
+   "score": 1,
+   "thumbs": 15,
+   "date": "2026-07-16",
+   "text": "Newest update gives way too many notifications. my car is parked where coverage is spotty and I keep getting \"disconnected\" and \"connected\" messages every few minutes. there's no way to turn these off in the settings so my only option is to turn off notifications all together, which I don't like. fix this."
+  },
+  {
+   "app": "Electrify America",
+   "score": 2,
+   "thumbs": 15,
+   "date": "2020-06-26",
+   "text": "Features for monitoring charging progress are great. But, payment system is extremely glitchy. (I've had to call customer service about 80% of the times I've charged to work around payment system problems.) Map feature is also good, but charger in-use status is not always accurate. Overall, app design and EE charging speed are great, but charging experience frequently marred by not-ready-for-primetime NFC/card readers at stations."
+  }
+ ],
+ "[가설] H1 요금 비교 어려움·손해": [
+  {
+   "app": "Electrify America",
+   "score": 3,
+   "thumbs": 21,
+   "date": "2024-03-23",
+   "text": "For the most part, the charging stations are working. It's a lot better than several months ago when at two stations were always inoperable. Sometimes the lighting late at night is bad. Otherwise, good to go. The cost to charge at certain times appears to have increased...especially for non-membership. Hopefully, this doesn't become expensive like some of the other vendors who are popping up with high per minute charges."
+  },
+  {
+   "app": "EVgo",
+   "score": 5,
+   "thumbs": 11,
+   "date": "2026-02-12",
+   "text": "good except the fact the raised the hold on your card from $5 to $40 and didn't even notify the customers of this change... that is a big price difference and for someone with little or no income ... just saying that an email or a text in advance would have been nice"
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 8,
+   "date": "2026-06-01",
+   "text": "this app doesn't show the price, and when you arrived the charger showed the price $0.65 which is much more expensive than other chargers."
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 8,
+   "date": "2024-10-15",
+   "text": "Horrendous! Zero stars. I haven't used this in the year of owning our EV; my husband has used it once with great difficulty. Recently had to pay non membership rate to charge my vehicle while traveling, Electrify America app wouldn't connect. Also, this particular location had just 6 charging stations, not 12 as stated on locator map."
+  },
+  {
+   "app": "Electrify America",
+   "score": 5,
+   "thumbs": 8,
+   "date": "2020-05-03",
+   "text": "Just signed up for the monthly subscription a day ago, had a chance to use it today and the charging worked perfectly. Though I didn't know at first, if you use a debit card at the chip reader there will be a 50$ hold on your checking account (non members) if you sign up and pay monthly and pay through your phone, you'll be good."
+  },
+  {
+   "app": "Octopus Electroverse",
+   "score": 3,
+   "thumbs": 6,
+   "date": "2025-06-28",
+   "text": "What have you done to the app?!! Several of the cheapest chargers I use regularly don't show on the map any more (no filters set) and the list view is completely broken and doesn't work at all. Just get a \"we're working on it\" message which has been there for weeks now. It used to be great and I could see the cheapest prices around me quickly and at a glance. Now it's pretty much useless!"
+  },
+  {
+   "app": "IONITY",
+   "score": 1,
+   "thumbs": 5,
+   "date": "2026-04-07",
+   "text": "This probably is the most dumb charging app/network I have ever seen. Without login, you don't see any prices. With login, you see prices in foreign currency rather than your local, which makes it hard to compare prices. \"Best\" thing is that it's quite more expensive to charge via the Ionity app on a Ionity column than with a third party app on the very same column. Completely bonkers. Can only suggest everyone to stay away from this app!"
+  },
+  {
+   "app": "Chargemap",
+   "score": 4,
+   "thumbs": 4,
+   "date": "2024-10-28",
+   "text": "Useful but not completely. Great for finding chargers and knowing availability and price. However the trip planner is useless. Suggests wierd routes and worst of all doesnt choose the cheapest chargers."
+  },
+  {
+   "app": "Chargemap",
+   "score": 1,
+   "thumbs": 4,
+   "date": "2019-08-21",
+   "text": "- keeps logging you out all the time (and then u can't see stations on map - high roaming prices - cant filter for high capacity power chargers (100kw+)"
+  },
+  {
+   "app": "PlugShare",
+   "score": 3,
+   "thumbs": 2,
+   "date": "2026-01-04",
+   "text": "Charger is located in a parking lot of a older outlet strip center. There are a lot of vacant store fronts. Chargers are expensive for non members. Next time I will try the Bucee chargers down the street. Charging experience was good with high rates achieved."
+  },
+  {
+   "app": "EVgo",
+   "score": 1,
+   "thumbs": 2,
+   "date": "2022-10-14",
+   "text": "Scammers !!!!! They overcharge hundreds of $ for disconnecting reconnecting and other hidden fees. Plus the app never work"
+  },
+  {
+   "app": "Octopus Energy (EV 관련만)",
+   "score": 1,
+   "thumbs": 1,
+   "date": "2026-07-13",
+   "text": "Absolutely furious to wake up this morning and find that the 'Smart charge' feature did not activate last night, and my car has not charged overnight. The main draw to this energy provider was the ability to charge my car at the cheapest rates, and it failed on the first attempt."
+  },
+  {
+   "app": "Octopus Electroverse",
+   "score": 5,
+   "thumbs": 1,
+   "date": "2026-07-05",
+   "text": "Simplifies the nonsense that is public EV charging. Really simple to use, shows which chargers are free, and I like that I can compare the unit price across all the different charging networks and pick the most cost effective."
+  },
+  {
+   "app": "Electrify America",
+   "score": 2,
+   "thumbs": 1,
+   "date": "2026-02-23",
+   "text": "You will get logged out randomly. sometimes you cannot log in. I have been unable to access the app for 24 hours and have to call to start a charge. awful experience. if this is critical you should not use this network or accept their non member rates. if you have a problem contact your state consumer protection commission this company will not help you I have tried"
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 1,
+   "date": "2025-08-06",
+   "text": "Doesn't show price until you are at the location and plugged in so you can't plan ahead and and compare."
+  }
+ ],
+ "[가설] H2 장거리 충전 계획 부담": [
+  {
+   "app": "Octopus Electroverse",
+   "score": 5,
+   "thumbs": 57,
+   "date": "2024-05-22",
+   "text": "Tentative first steps, like it so far. It would be useful if when planning route the option was available to link to a third party router waze for example. That would give the benefits of that app (real time traffic etc etc). You would then switch back to electroverse when you needed it, for the actual charging etc...dohhh just discovered the fact it does do this linkage..upped to 5 stars"
+  },
+  {
+   "app": "myAudi",
+   "score": 1,
+   "thumbs": 26,
+   "date": "2025-12-18",
+   "text": "The app is shocking! I can only charge the car to 80% as I keep getting error messages. Currently talking to the tech team and have rang Audi service team and I'm not getting anywhere. I travel long distance so this is making it even worse. On top of this I couldn't use the app at all Sunday night and couldn't over write in the car. Very disappointing!"
+  },
+  {
+   "app": "Octopus Electroverse",
+   "score": 3,
+   "thumbs": 26,
+   "date": "2024-01-25",
+   "text": "bit rough in places but the app works pretty well. update for devs: when the map first loads there are so many charge points displayed, phones struggle. I found some points listed were private use only, not open to public which was unexpected. the 'access' info section has resolved one of my previous issues. And the route planning feature is awesome!"
+  },
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 21,
+   "date": "2025-11-30",
+   "text": "Unless you prepay, this app serves no purpose. You can't pay through it without preloading funds on it. It's useless for telling you how full a station is. You can't monitor your charge or setup notifications without having prepaid. Unlike EVgo's app, you can't use it to reserve a slot. I only charge on long road trips — like holidays: I'm not stranding money on an app I'll use a couple times per year."
+  },
+  {
+   "app": "IONITY",
+   "score": 5,
+   "thumbs": 19,
+   "date": "2025-04-22",
+   "text": "Just did a trip throughout Europe across 7 countries by charging exclusively with the IONITY network. No issues whatsoever, plenty of chargers, steady price (the subscriptions are really worth it), always fast and reliable. I'd be lost in trying to figure out local chargers if it wasn't for IONITY. The route planner from the app is also extremely useful!"
+  },
+  {
+   "app": "Octopus Electroverse",
+   "score": 5,
+   "thumbs": 18,
+   "date": "2025-09-30",
+   "text": "We normally charge at home, on a road trip to Scotland we used this app and it works well, with discount at many chargers. mapping is accurate and seems to connect well with most chargepoints. We had a hiccup charging at Alnwick with a different car but that was possibly due to the car not being registered with Tesla at that point. Billing is simple too."
+  },
+  {
+   "app": "myChevrolet",
+   "score": 5,
+   "thumbs": 16,
+   "date": "2026-06-02",
+   "text": "Great app to control your EV, to know it's location and it's status and to find charging stations near you or plan a route."
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 4,
+   "thumbs": 16,
+   "date": "2024-07-16",
+   "text": "Update: Changed rating from 3 stars to 4. Over the 3 years that I've owned my car this has evolved from an infuriating, unreliable and largely pointless app (I originally gave it 1 star) into a solid product with some decent functionality - helped by some important updates to the car firmware along the way such as support for scheduled charging."
+  },
+  {
+   "app": "Chargemap",
+   "score": 4,
+   "thumbs": 16,
+   "date": "2023-07-14",
+   "text": "Great app. Used on our jouney from the UK to the south of France. Easy to use and filter through desired chargers. The route planning works well although the motorway service filter doesn't work when planning a route. It does work though when just using on the map. The card makes charging quick and easy. Highly recommended for driving an EV in Europe."
+  },
+  {
+   "app": "My BMW",
+   "score": 3,
+   "thumbs": 16,
+   "date": "2023-06-06",
+   "text": "Does well with very basic function Can do most of what you'd expect except any serious trip planning. The only options for selecting your starting location is where you phone's gps location is or where your car's gps location is. That's short sighted. It would also be nice to have the function to remotely roll up the windows within the app for when it starts raining and you're inside."
+  },
+  {
+   "app": "Kia App (EU)",
+   "score": 1,
+   "thumbs": 15,
+   "date": "2025-08-01",
+   "text": "Not anywhere near as good as the Kia Connect app. Logs out very few days, shows incorrect total mileage (always seems to be about 20 miles behind the car mileage). Driving safety score is useless, scores remain static including estimate annual mileage, driving hours and average speed whether driving a few miles around town or a 200 mile motorway trip. Also the layout is not as good. Disappointing."
+  },
+  {
+   "app": "Volkswagen",
+   "score": 1,
+   "thumbs": 14,
+   "date": "2024-01-03",
+   "text": "It's a good start, but it there are many features not available such as remote lock/unlock, MyQ integration, a timer for charging, setting desired charge level and more data around usage (miles per KW etc). The trip planner has many bugs. when you create a trip it may or may not be saved. when you click send to car it may or may not be sent. I love my ID4 and I hope the VW team will continue to work on the version of MyVW that it uses."
+  },
+  {
+   "app": "IONITY",
+   "score": 4,
+   "thumbs": 13,
+   "date": "2025-12-19",
+   "text": "Pretty good charging app, considering the other providers. What could improve: - route planning is very rudimental - grouping charging points that are \"near\" each other is really annoying; I don't care if there's another charger nearby if it's on a completely different highway"
+  },
+  {
+   "app": "Octopus Electroverse",
+   "score": 5,
+   "thumbs": 13,
+   "date": "2023-09-12",
+   "text": "This is the best EV journey planning app that I've used so far. It's fast, and is great at suggesting recharging locations along the route. Also, the estimated battery levels at each step are pretty accurate and very useful when planning each journey. If you're suffering from EV \"range anxiety\", then this app is for you!"
+  },
+  {
+   "app": "Chargemap",
+   "score": 2,
+   "thumbs": 13,
+   "date": "2021-08-07",
+   "text": "A good number of charging stations are nicely listed with photos. However, I rate the app mostely negative as distance unit is set according phone language, no in-app setting available on that! Charging costs in Euro instead of local currency. Costs shown are more expensive Chargemap rates instead of local rates. Route planner does list my car, but when panning a route it says that the car is not supported yet."
+  }
+ ],
+ "[가설] H3 통행료·충전비 묶어 판단": [
+  {
+   "app": "Electrify America",
+   "score": 1,
+   "thumbs": 20,
+   "date": "2023-02-05",
+   "text": "Sessions routinely get locked for hours after I have left. Cannot start another without calling their toll free number and waiting to get it rest. Their suggestion was to update my app, but is the current version. Clearly something in THEIR system, not my phone. Also would be amazing if their NFC's readers actually worked with the Android phone app."
+  },
+  {
+   "app": "Volkswagen",
+   "score": 5,
+   "thumbs": 1,
+   "date": "2025-01-16",
+   "text": "This app is a game changer for two groups of people for younger crowd that are busy, busy and for seniors who need comfort and easy of living. For both it makes our life a lot less worried, being able to know you car location is awesome, being able to lock and unlock your car is great. Service scheduling is a great toll to help control our time. Love it!!"
+  },
+  {
+   "app": "Electrify America",
+   "score": 5,
+   "thumbs": 1,
+   "date": "2021-07-30",
+   "text": "Had trouble charging; called the toll free number, and immediately got help!"
+  },
+  {
+   "app": "PlugShare",
+   "score": 5,
+   "thumbs": 0,
+   "date": "2024-12-12",
+   "text": "Had a superb experience with the call centre toll free number person named Sohail Sheikh helped in charging the vehicle remotely as we couldn't charge our car due to some technical issues"
+  },
+  {
+   "app": "Charge myHyundai (EU)",
+   "score": 4,
+   "thumbs": 0,
+   "date": "2024-12-02",
+   "text": "Nur noch die Adresse ans Auto schicken können wäre toll. Ansonsten sehr gute app zum ladesäulen finden mit tollen filtermöglichkeiten"
+  },
+  {
+   "app": "EVgo",
+   "score": 5,
+   "thumbs": 0,
+   "date": "2024-01-14",
+   "text": "it is within the parking structure, but outside the toll gates."
+  },
+  {
+   "app": "PlugShare",
+   "score": 4,
+   "thumbs": 0,
+   "date": "2022-09-03",
+   "text": "The app is more accurate than my car. Some chargers are listed that aren't public making them not very useful. The biggest improvement would be \"avoid tolls\" in route planning."
+  }
+ ],
+ "[가설] H4 충전 대기 지루함": [
+  {
+   "app": "myAudi",
+   "score": 1,
+   "thumbs": 9,
+   "date": "2024-03-19",
+   "text": "I am not really sure what value this app is supposed to offer, and I am bored with the frustrating and dull registration process. Why do password updates never work? It's more like a puzzle game than something that will make life any easier. I am not very motivated to keep the app. Audi, this is like going back two decades to the days before smartphones. With just a little commitment and communication, you could do a lot better!"
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 2,
+   "thumbs": 2,
+   "date": "2024-12-22",
+   "text": "My Volvo XC40 is so buggy. Sometimes the sound completely disappears so there's not even an indicator tick. Sometimes the infotainment reboots on startup leaving me without satnav. No matter what audio choice you make it brings up the current app. The camera system fails randomly cutting off various safety systems. The reversing cam doesn't always work and is juddery. I'm so bored if stuff not working properly."
+  },
+  {
+   "app": "BYD AUTO",
+   "score": 4,
+   "thumbs": 2,
+   "date": "2024-09-01",
+   "text": "The app is handy for turning on aircon heat or cold before getting it, or unlocking/locking the car, and using the function to find it in a car park. I also like that my key can be added to my Google wallet. I find the android widget very boring and in way of colour, text type, and design. Could be more modernized. Otherwise the app has everything necessary"
+  },
+  {
+   "app": "myChevrolet",
+   "score": 4,
+   "thumbs": 1,
+   "date": "2026-05-29",
+   "text": "I love the app but I hate the new look of the controls it is so boring I hope they will change it soon giving 4 stars because of that"
+  },
+  {
+   "app": "Tesla",
+   "score": 5,
+   "thumbs": 1,
+   "date": "2026-05-21",
+   "text": "Simply amazing and simply the best. Very intuitive and easy to learn. Transformative driving innovations and controls reimagined. Now driving my regular car just feels boring."
+  },
+  {
+   "app": "My BMW",
+   "score": 1,
+   "thumbs": 1,
+   "date": "2023-07-04",
+   "text": "After every update, I need to set up again the units to metric. The reachable services from the app are limited. Fancy design, but a simple window down or up is not able to use. Boring, waste the opportunities... The shame of BMW."
+  },
+  {
+   "app": "Mercedes-Benz",
+   "score": 3,
+   "thumbs": 0,
+   "date": "2026-03-23",
+   "text": "Petty good, but the interface is quite boring, doesn't really make me want to use the app. Definitely function over form."
+  },
+  {
+   "app": "Mercedes-Benz",
+   "score": 2,
+   "thumbs": 0,
+   "date": "2025-11-18",
+   "text": "Progress must be done after 3 years of the same boring functionality, can't operate the hatch or windows remotely. We can unlock doors... run AC... flash the lights... using this App, w/ paid subscription, but can not drive without carrying the newly enlarged obnoxiously heavy $500 semi dysfunctional Key. Positive features includes send to Benz address, debuted 2010, and other nastalgic functions... e.g. valet & boundary warning."
+  },
+  {
+   "app": "Mercedes-Benz",
+   "score": 2,
+   "thumbs": 0,
+   "date": "2025-09-26",
+   "text": "Slow app opening, laggy commands, not intuitive and boring appearance. It is obvious that there is no competition if you are a fan of Mercedes. Seriously considering changing the car because of MBUX and software quality and prices."
+  },
+  {
+   "app": "Mercedes-Benz",
+   "score": 5,
+   "thumbs": 0,
+   "date": "2023-12-01",
+   "text": "Boring & reliable. That may not sound like a compliment but it is."
+  },
+  {
+   "app": "PlugShare",
+   "score": 4,
+   "thumbs": 0,
+   "date": "2022-10-28",
+   "text": "Pulled up to the one of four stations that was inoperable (nothing marking it to indicate it wasn't working), but luckily no waiting on the neighboring station."
+  },
+  {
+   "app": "My BMW",
+   "score": 4,
+   "thumbs": 0,
+   "date": "2022-09-19",
+   "text": "Functionality is there, much better than My Audi app, but the backgrounds/themes are inconsistent. For instance, the 50 years of M theme looks great when the 50 year logo is present in the background, but there is no consistently in it. Some days it's there while others you just get a boring solid grey background."
+  }
+ ],
+ "[가설] H5 전비 저하 원인 모름": [
+  {
+   "app": "Volvo Cars",
+   "score": 1,
+   "thumbs": 17,
+   "date": "2023-02-15",
+   "text": "Initial post and previous edit removed to add this: the app settings offers UK mph, litres and miles, but records consumption in litres per 100km. Why? Yet another hole. Where is miles per litre? The driving log also has lost the route information. Where has it gone and why? Volvo, stop asking us what's wrong. Try using the app yourselves. Or do you all have a special version, one which works?"
+  },
+  {
+   "app": "Volkswagen",
+   "score": 1,
+   "thumbs": 12,
+   "date": "2023-11-22",
+   "text": "Does not show correct range on my ID4. Slow to respond. No lock unlock. Start and stop charging often does not work. Update. Reduced to one star. New version, same problem. It's unfortunate that after a year the main issue has not been fixed. Range shows correct in car display but not in app. Seems like it would be a simple fix. Not the level of quality control one would expect with a $50k car."
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 1,
+   "thumbs": 3,
+   "date": "2022-11-08",
+   "text": "Still the finish time of charging is not right. The previous version is excellent and can't even go back to it. Why having a new version which is not good to and old version which is much better. Can't get the logic in it. From good to bad. It's very strange. why can't that be fixed in the new version. why can't I go back to the old version. Please answer this important and urgent questions. Thanks"
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 2,
+   "thumbs": 2,
+   "date": "2024-05-29",
+   "text": "The map feature to find ev charging points that we can use the volvo deals on is tough work. Hardly ever accurate with number of points available and map is not too quick to bring them up. Positive side is it hooks up to the car pretty quick in order to get heating on during winter or to prep battery. Overall could be sooo much better"
+  },
+  {
+   "app": "Kia Access (US)",
+   "score": 1,
+   "thumbs": 1,
+   "date": "2025-02-16",
+   "text": "Most of the time app does not work. Keeps saying car is out network range. That's terrible value of dollar 15 per month. Won't renew."
+  },
+  {
+   "app": "My BMW",
+   "score": 1,
+   "thumbs": 0,
+   "date": "2026-04-09",
+   "text": "Where gone the electric & fuel consumptions & efficiency? Why the map info satellite view looks like 2-3 years ago? It's been 5 months since my last comment no improvement? Update 9/4/2026. Now the fuel tank capacity information gone?"
+  },
+  {
+   "app": "myAudi",
+   "score": 2,
+   "thumbs": 0,
+   "date": "2025-11-04",
+   "text": "Since the latest update, even if I change the consumption units to m/kwh in the units settings, it still shows journey history consumption in kwh/100m. Why can't this be changed? It always used to show m/kwh. Why break something that worked fine?"
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 2,
+   "thumbs": 0,
+   "date": "2025-02-05",
+   "text": "This app needs a lot of improvement: slow to sync and controls within the app are very slow to respond. Also, the same app on iOS shows range, but not this one... why?"
+  },
+  {
+   "app": "myAudi",
+   "score": 1,
+   "thumbs": 0,
+   "date": "2024-10-29",
+   "text": "some of the strangest UX/flows I've ever seen"
+  },
+  {
+   "app": "Volkswagen",
+   "score": 2,
+   "thumbs": 0,
+   "date": "2023-11-21",
+   "text": "Not very functional ... and not getting better. Previous version at least showed car status, locked, windows/doors open, charge/range. New version only shows charge/range. Neither allows lock/unlock which would seem basic to me. Meh."
+  }
+ ],
+ "[가설] H6 리워드 반응": [
+  {
+   "app": "Kia App (EU)",
+   "score": 1,
+   "thumbs": 24,
+   "date": "2025-09-14",
+   "text": "I won't repeat all the problems reported by others, but I'll add a new one: the map does not always display so your destination is just a mark in a blank area. I can't believe this was released with all these faults. I don't think Kia realise how this affects customer loyalty. I love the car, but the brand is tarnished by this awful app. The ads the app serves up are worse than pointless. I'm now looking at other makes."
+  },
+  {
+   "app": "ev.energy",
+   "score": 5,
+   "thumbs": 10,
+   "date": "2021-09-14",
+   "text": "Had a couple of issues after installing the wall pod and app but the technical support was excellent and resolved the problems swiftly. Would be helpful to have a stop charging button in the app but this has not been an issue since setting up smart charging. Obtaining reward points for charging over 10kWh in one session has helped me schedule charging sessions for maximum benefit. Overall excellent."
+  },
+  {
+   "app": "ev.energy",
+   "score": 3,
+   "thumbs": 8,
+   "date": "2022-03-29",
+   "text": "App is somewhat improved. I like the rewards I have Amazon vouchers 👍. However, I tell the app only to charge at off peak times, yet it still charges at peak times. Sort it out !! Very annoying. I have to manually plug in at off-peak times now as the app doesn't do what it should do."
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 1,
+   "thumbs": 7,
+   "date": "2024-02-29",
+   "text": "SLOOOOOOW. Every time I open this app I go to get a cup of coffee. The developers of this app never heard of \"cache\"? And it keeps getting worse: Each new version has fewer and fewer information than in the older versions. You never see a new feature added (maybe once in 5 years? \"driving journal?\" So useful. Wow). Bonus point for having the wrong car color now! (something that always worked and they STILL managed to broke). Great job, kids!"
+  },
+  {
+   "app": "ev.energy",
+   "score": 1,
+   "thumbs": 5,
+   "date": "2026-06-13",
+   "text": "Crashes every time I try to open the app now... Clicking on the Incentives tab appears to have triggered it. Clearing the Storage & cache and logging back in seems to fix the immediate problem for me... until you click on Incentives again... Fix your POS app, please? Edit: I'm not emailing ANYONE. I gave you all the details of the issue, now figure it out."
+  },
+  {
+   "app": "ev.energy",
+   "score": 1,
+   "thumbs": 5,
+   "date": "2025-05-26",
+   "text": "Very often and randomly the car appears to be \"disconnected\" so I don't get any incentives. I always charge at home, between midnight and 7am, once or twice a week. I've contacted their support and they told me they're aware of the glitch but they can't do anything. I can always buy their Wi-Fi charger which would fix this (!)."
+  },
+  {
+   "app": "Genesis Intelligent Assistant (US)",
+   "score": 2,
+   "thumbs": 5,
+   "date": "2020-06-01",
+   "text": "There are so many small annoyances. Let me turn off the calendar, or at least if the location is blank, don't show it (bonus point for not showing it if it isn't an address). Stop asking me to update my profile, the only thing wrong on it is my Sirius status and you won't let me change that. Remember my fingerprint from version to version."
+  },
+  {
+   "app": "Octopus Electroverse",
+   "score": 4,
+   "thumbs": 4,
+   "date": "2026-04-07",
+   "text": "great app, not enough photos of chargers and you cant zoom them (I saw one picture of a charger with a note attached which was unreadable). Suggestions: 1. allow pictures to be zoomable 2. provide incentives for us to provide photos and feedback 3. add a charge time/charge percentage estimators for chargers (for selected car at selected charger)"
+  },
+  {
+   "app": "MyHyundai with Bluelink (US)",
+   "score": 3,
+   "thumbs": 4,
+   "date": "2025-01-30",
+   "text": "it's great for locking and finding my car. However, no matter whether I start with the app or the key in my house, it turns right back off within 10 seconds. Also, when I unlock my car with the app, I have to hurry up and grab the door as soon as I hear it because it will lock back almost immediately. This is how it's always been for over two years. It sucks because it was supposed to be this great perk of buying a brand new car."
+  },
+  {
+   "app": "ev.energy",
+   "score": 5,
+   "thumbs": 4,
+   "date": "2021-02-13",
+   "text": "Great wee app. Allows me to charge my Tesla Model 3 at the cheapest times overnight, starting and stopping at the correct times for my Octopus Agile time of use tariff every 30min. Plus rewards are an amazing bonus. Highly recommended!"
+  },
+  {
+   "app": "myHyundai (EU)",
+   "score": 1,
+   "thumbs": 3,
+   "date": "2026-04-17",
+   "text": "Rubbish compared to the old app, fewer features and no location map which I found was a great security and used several times at airport parking. Feels like it's only purpose is to upsell, unfortunately it's only result is to reduce brand loyalty 😔"
+  },
+  {
+   "app": "Tesla",
+   "score": 1,
+   "thumbs": 3,
+   "date": "2026-01-11",
+   "text": "So many fake privileges and perks! and now all of a sudden it's a requirement to have my location on at all times to use the app?! That serves no other purpose than data mining for more market exploitation. Selling my car. Overhyped, underdelivered."
+  },
+  {
+   "app": "Volvo Cars",
+   "score": 3,
+   "thumbs": 3,
+   "date": "2025-01-23",
+   "text": "App has been stuck with vehicle in use banner since November 2024. It would not be as bad if you were not paying for a yeraly subscription of $200. Hope Volvo sends out a voucher or credit for the period that is not being used. App back up and running as of today, 01/22/25."
+  },
+  {
+   "app": "ev.energy",
+   "score": 5,
+   "thumbs": 3,
+   "date": "2020-06-26",
+   "text": "Very clever app if you have a smart charger or smart ev (especially if you are a Tesla driver). Customer Service is really helpful. App gives credits for charge controlled and I have just planted my first tree with them!! Other rewards include Amazon and Starbucks vouchers."
+  },
+  {
+   "app": "Mercedes-Benz",
+   "score": 1,
+   "thumbs": 2,
+   "date": "2026-08-18",
+   "text": "Since the last update, the app no longer shows basic km, you guys are such a disappointment, just in it for the money! Do are you now also forcing digital service upon me to see this basic data? And then you wonder why you get totally crushed by Chinese brands, you simply don't get the concept of customer loyalty!"
+  }
+ ],
+ "[가설] H6a 주행 연동 리워드(캐시백 드라이빙 등)": [
+  {
+   "app": "Octopus Electroverse",
+   "score": 1,
+   "thumbs": 2,
+   "date": "2025-02-22",
+   "text": "my first time charging an electric car and was very disappointed. this app sent me to a charging point for etaxis only. then the next charging point didn't work. I wasted 2 hours driving around charging points to find one that worked. I didn't have 2 hours spare for that fiasco. I'm furious."
+  },
+  {
+   "app": "Volkswagen",
+   "score": 5,
+   "thumbs": 0,
+   "date": "2024-10-09",
+   "text": "Great app....the driving points thing worries me because it's not accurate"
+  }
+ ]
+}

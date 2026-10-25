@@ -1,0 +1,911 @@
+{
+ "kr_n": 2400,
+ "global_n": 3000,
+ "global_models": {
+  "gemini-3.5-flash-lite": 3000
+ },
+ "human_vs_gemini_global": {
+  "n": 30,
+  "overall_agree": 96.7,
+  "category_precision": 65.8,
+  "category_recall": 69.4,
+  "aspect_sentiment_agree": 84.0,
+  "disagreements": [
+   {
+    "vid": "g02",
+    "human": "긍정",
+    "gemini": "혼합",
+    "text": "It's pretty good but it would be better if I could turn on my heated seats when auto starts."
+   }
+  ]
+ },
+ "global_summary": {
+  "해외 경쟁 완성차": {
+   "n": 800,
+   "글 부정": 54.5,
+   "글 긍정": 32.1,
+   "글 혼합": 10.5,
+   "개선 요청": 18.1,
+   "반어": 0.7,
+   "평균 별점(가중)": 2.84
+  },
+  "해외 리워드·DR 앱": {
+   "n": 600,
+   "글 부정": 58.1,
+   "글 긍정": 27.0,
+   "글 혼합": 10.2,
+   "개선 요청": 18.6,
+   "반어": 1.0,
+   "평균 별점(가중)": 2.71
+  },
+  "해외 충전 앱": {
+   "n": 800,
+   "글 부정": 44.4,
+   "글 긍정": 40.9,
+   "글 혼합": 10.3,
+   "개선 요청": 13.7,
+   "반어": 0.9,
+   "평균 별점(가중)": 3.21
+  },
+  "해외 현대차그룹": {
+   "n": 800,
+   "글 부정": 65.0,
+   "글 긍정": 25.4,
+   "글 혼합": 7.5,
+   "개선 요청": 16.6,
+   "반어": 0.8,
+   "평균 별점(가중)": 2.55
+  }
+ },
+ "kr_summary": {
+  "경쟁 완성차": {
+   "n": 500,
+   "글 부정": 63.6,
+   "글 긍정": 24.0,
+   "글 혼합": 3.7,
+   "개선 요청": 32.1,
+   "반어": 1.5,
+   "평균 별점(가중)": 2.75
+  },
+  "내비(EV 리뷰만)": {
+   "n": 200,
+   "글 부정": 69.7,
+   "글 긍정": 10.9,
+   "글 혼합": 8.0,
+   "개선 요청": 44.8,
+   "반어": 3.0,
+   "평균 별점(가중)": 2.8
+  },
+  "충전 앱": {
+   "n": 1000,
+   "글 부정": 42.9,
+   "글 긍정": 52.4,
+   "글 혼합": 3.4,
+   "개선 요청": 17.5,
+   "반어": 2.3,
+   "평균 별점(가중)": 3.41
+  },
+  "현대차그룹": {
+   "n": 700,
+   "글 부정": 81.3,
+   "글 긍정": 9.1,
+   "글 혼합": 4.5,
+   "개선 요청": 30.3,
+   "반어": 2.3,
+   "평균 별점(가중)": 2.06
+  }
+ },
+ "side_by_side": {
+  "현대차그룹 vs 해외 현대차그룹": [
+   {
+    "category": "앱 안정성·오류",
+    "kr_mention": 27.0,
+    "kr_neg": 96.8,
+    "gl_mention": 30.9,
+    "gl_neg": 85.7
+   },
+   {
+    "category": "UI·UX 불편",
+    "kr_mention": 29.9,
+    "kr_neg": 81.6,
+    "gl_mention": 14.4,
+    "gl_neg": 61.2
+   },
+   {
+    "category": "원격제어·차량연결",
+    "kr_mention": 27.7,
+    "kr_neg": 90.2,
+    "gl_mention": 30.3,
+    "gl_neg": 76.6
+   },
+   {
+    "category": "로그인·인증",
+    "kr_mention": 8.5,
+    "kr_neg": 99.3,
+    "gl_mention": 10.6,
+    "gl_neg": 98.9
+   },
+   {
+    "category": "디지털키",
+    "kr_mention": 7.7,
+    "kr_neg": 82.7,
+    "gl_mention": 1.4,
+    "gl_neg": 70.2
+   },
+   {
+    "category": "고객센터·응대",
+    "kr_mention": 4.8,
+    "kr_neg": 83.2,
+    "gl_mention": 7.3,
+    "gl_neg": 76.3
+   },
+   {
+    "category": "요금·가격",
+    "kr_mention": 1.1,
+    "kr_neg": 77.6,
+    "gl_mention": 4.9,
+    "gl_neg": 93.9
+   },
+   {
+    "category": "결제·청구 오류",
+    "kr_mention": 0.8,
+    "kr_neg": 92.9,
+    "gl_mention": 1.0,
+    "gl_neg": 100.0
+   },
+   {
+    "category": "충전기 고장·충전 실패",
+    "kr_mention": 0.0,
+    "kr_neg": 100.0,
+    "gl_mention": 0.4,
+    "gl_neg": 95.5
+   },
+   {
+    "category": "충전기 정보 부정확",
+    "kr_mention": 0.5,
+    "kr_neg": 85.8,
+    "gl_mention": 2.1,
+    "gl_neg": 100.0
+   },
+   {
+    "category": "충전 인프라(충전소 수·위치·속도)",
+    "kr_mention": 0.5,
+    "kr_neg": 34.1,
+    "gl_mention": 0.3,
+    "gl_neg": 78.1
+   },
+   {
+    "category": "포인트·리워드·멤버십",
+    "kr_mention": 0.7,
+    "kr_neg": 99.1,
+    "gl_mention": 0.2,
+    "gl_neg": 11.8
+   },
+   {
+    "category": "경로·내비 (일반)",
+    "kr_mention": 2.1,
+    "kr_neg": 65.3,
+    "gl_mention": 1.7,
+    "gl_neg": 84.5
+   },
+   {
+    "category": "배터리·전비",
+    "kr_mention": 1.3,
+    "kr_neg": 85.6,
+    "gl_mention": 1.5,
+    "gl_neg": 82.5
+   },
+   {
+    "category": "알림",
+    "kr_mention": 2.4,
+    "kr_neg": 100.0,
+    "gl_mention": 3.1,
+    "gl_neg": 87.3
+   },
+   {
+    "category": "기타",
+    "kr_mention": 4.5,
+    "kr_neg": 41.5,
+    "gl_mention": 15.0,
+    "gl_neg": 28.6
+   }
+  ],
+  "경쟁 완성차 vs 해외 경쟁 완성차": [
+   {
+    "category": "앱 안정성·오류",
+    "kr_mention": 21.0,
+    "kr_neg": 90.5,
+    "gl_mention": 25.5,
+    "gl_neg": 80.1
+   },
+   {
+    "category": "UI·UX 불편",
+    "kr_mention": 9.3,
+    "kr_neg": 33.6,
+    "gl_mention": 12.8,
+    "gl_neg": 49.0
+   },
+   {
+    "category": "원격제어·차량연결",
+    "kr_mention": 30.4,
+    "kr_neg": 66.9,
+    "gl_mention": 28.4,
+    "gl_neg": 75.0
+   },
+   {
+    "category": "로그인·인증",
+    "kr_mention": 15.6,
+    "kr_neg": 95.8,
+    "gl_mention": 10.5,
+    "gl_neg": 98.8
+   },
+   {
+    "category": "디지털키",
+    "kr_mention": 2.6,
+    "kr_neg": 100.0,
+    "gl_mention": 2.0,
+    "gl_neg": 81.1
+   },
+   {
+    "category": "고객센터·응대",
+    "kr_mention": 4.2,
+    "kr_neg": 83.9,
+    "gl_mention": 5.3,
+    "gl_neg": 70.5
+   },
+   {
+    "category": "요금·가격",
+    "kr_mention": 2.3,
+    "kr_neg": 86.5,
+    "gl_mention": 3.4,
+    "gl_neg": 96.2
+   },
+   {
+    "category": "결제·청구 오류",
+    "kr_mention": 0.5,
+    "kr_neg": 100.0,
+    "gl_mention": 0.7,
+    "gl_neg": 84.9
+   },
+   {
+    "category": "충전기 고장·충전 실패",
+    "kr_mention": 0.8,
+    "kr_neg": 100.0,
+    "gl_mention": 1.8,
+    "gl_neg": 92.8
+   },
+   {
+    "category": "충전기 정보 부정확",
+    "kr_mention": 2.5,
+    "kr_neg": 81.3,
+    "gl_mention": 2.3,
+    "gl_neg": 88.9
+   },
+   {
+    "category": "충전 인프라(충전소 수·위치·속도)",
+    "kr_mention": 0.0,
+    "kr_neg": null,
+    "gl_mention": 0.3,
+    "gl_neg": 100.0
+   },
+   {
+    "category": "경로·내비 (일반)",
+    "kr_mention": 1.5,
+    "kr_neg": 100.0,
+    "gl_mention": 1.8,
+    "gl_neg": 51.1
+   },
+   {
+    "category": "배터리·전비",
+    "kr_mention": 0.7,
+    "kr_neg": 22.7,
+    "gl_mention": 1.3,
+    "gl_neg": 39.3
+   },
+   {
+    "category": "알림",
+    "kr_mention": 1.3,
+    "kr_neg": 71.5,
+    "gl_mention": 4.0,
+    "gl_neg": 70.8
+   },
+   {
+    "category": "기타",
+    "kr_mention": 18.8,
+    "kr_neg": 34.7,
+    "gl_mention": 18.4,
+    "gl_neg": 23.8
+   }
+  ],
+  "충전 앱 vs 해외 충전 앱": [
+   {
+    "category": "앱 안정성·오류",
+    "kr_mention": 21.9,
+    "kr_neg": 75.6,
+    "gl_mention": 19.6,
+    "gl_neg": 73.3
+   },
+   {
+    "category": "UI·UX 불편",
+    "kr_mention": 19.7,
+    "kr_neg": 26.0,
+    "gl_mention": 13.7,
+    "gl_neg": 37.4
+   },
+   {
+    "category": "원격제어·차량연결",
+    "kr_mention": 2.0,
+    "kr_neg": 45.7,
+    "gl_mention": 3.6,
+    "gl_neg": 66.8
+   },
+   {
+    "category": "로그인·인증",
+    "kr_mention": 11.8,
+    "kr_neg": 85.2,
+    "gl_mention": 7.6,
+    "gl_neg": 93.8
+   },
+   {
+    "category": "고객센터·응대",
+    "kr_mention": 3.7,
+    "kr_neg": 87.4,
+    "gl_mention": 8.0,
+    "gl_neg": 60.8
+   },
+   {
+    "category": "요금·가격",
+    "kr_mention": 10.1,
+    "kr_neg": 35.6,
+    "gl_mention": 8.3,
+    "gl_neg": 63.2
+   },
+   {
+    "category": "결제·청구 오류",
+    "kr_mention": 7.7,
+    "kr_neg": 61.2,
+    "gl_mention": 9.6,
+    "gl_neg": 95.6
+   },
+   {
+    "category": "충전기 고장·충전 실패",
+    "kr_mention": 5.5,
+    "kr_neg": 91.7,
+    "gl_mention": 14.1,
+    "gl_neg": 77.4
+   },
+   {
+    "category": "충전기 정보 부정확",
+    "kr_mention": 7.8,
+    "kr_neg": 19.8,
+    "gl_mention": 12.2,
+    "gl_neg": 74.2
+   },
+   {
+    "category": "충전 인프라(충전소 수·위치·속도)",
+    "kr_mention": 13.1,
+    "kr_neg": 6.3,
+    "gl_mention": 20.4,
+    "gl_neg": 29.0
+   },
+   {
+    "category": "포인트·리워드·멤버십",
+    "kr_mention": 13.2,
+    "kr_neg": 7.2,
+    "gl_mention": 0.7,
+    "gl_neg": 17.3
+   },
+   {
+    "category": "리워드 축소·소멸 불만",
+    "kr_mention": 1.9,
+    "kr_neg": 100.0,
+    "gl_mention": 0.0,
+    "gl_neg": null
+   },
+   {
+    "category": "경로·내비 (일반)",
+    "kr_mention": 0.9,
+    "kr_neg": 54.1,
+    "gl_mention": 3.2,
+    "gl_neg": 60.9
+   },
+   {
+    "category": "배터리·전비",
+    "kr_mention": 0.0,
+    "kr_neg": null,
+    "gl_mention": 0.3,
+    "gl_neg": 0.0
+   },
+   {
+    "category": "알림",
+    "kr_mention": 0.7,
+    "kr_neg": 36.2,
+    "gl_mention": 1.8,
+    "gl_neg": 84.9
+   },
+   {
+    "category": "대기·혼잡·점유",
+    "kr_mention": 0.5,
+    "kr_neg": 56.4,
+    "gl_mention": 2.6,
+    "gl_neg": 85.7
+   },
+   {
+    "category": "기타",
+    "kr_mention": 9.6,
+    "kr_neg": 17.0,
+    "gl_mention": 9.7,
+    "gl_neg": 10.1
+   }
+  ]
+ },
+ "same_app": [
+  {
+   "국내 앱": "Tesla",
+   "해외 앱": "Tesla",
+   "국내 리뷰": 408,
+   "국내 평균": 3.69,
+   "국내 부정%": 25.7,
+   "해외 리뷰": 2799,
+   "해외 평균": 2.95,
+   "해외 부정%": 46.1
+  },
+  {
+   "국내 앱": "My BMW",
+   "해외 앱": "My BMW",
+   "국내 리뷰": 1907,
+   "국내 평균": 3.38,
+   "국내 부정%": 34.9,
+   "해외 리뷰": 5570,
+   "해외 평균": 3.51,
+   "해외 부정%": 32.4
+  },
+  {
+   "국내 앱": "MINI",
+   "해외 앱": "MINI",
+   "국내 리뷰": 107,
+   "국내 평균": 2.97,
+   "국내 부정%": 39.3,
+   "해외 리뷰": 1205,
+   "해외 평균": 2.9,
+   "해외 부정%": 48.3
+  },
+  {
+   "국내 앱": "Mercedes-Benz",
+   "해외 앱": "Mercedes-Benz",
+   "국내 리뷰": 1771,
+   "국내 평균": 3.41,
+   "국내 부정%": 31.8,
+   "해외 리뷰": 5558,
+   "해외 평균": 3.42,
+   "해외 부정%": 31.9
+  },
+  {
+   "국내 앱": "Volvo Cars",
+   "해외 앱": "Volvo Cars",
+   "국내 리뷰": 131,
+   "국내 평균": 2.37,
+   "국내 부정%": 59.5,
+   "해외 리뷰": 2937,
+   "해외 평균": 2.27,
+   "해외 부정%": 63.1
+  },
+  {
+   "국내 앱": "Polestar",
+   "해외 앱": "Polestar",
+   "국내 리뷰": 66,
+   "국내 평균": 2.71,
+   "국내 부정%": 48.5,
+   "해외 리뷰": 996,
+   "해외 평균": 2.42,
+   "해외 부정%": 57.5
+  },
+  {
+   "국내 앱": "myChevrolet",
+   "해외 앱": "myChevrolet",
+   "국내 리뷰": 410,
+   "국내 평균": 1.9,
+   "국내 부정%": 74.1,
+   "해외 리뷰": 2782,
+   "해외 평균": 2.88,
+   "해외 부정%": 49.1
+  },
+  {
+   "국내 앱": "My Volkswagen",
+   "해외 앱": "Volkswagen",
+   "국내 리뷰": 270,
+   "국내 평균": 1.84,
+   "국내 부정%": 77.8,
+   "해외 리뷰": 5631,
+   "해외 평균": 2.33,
+   "해외 부정%": 61.5
+  },
+  {
+   "국내 앱": "myAudi",
+   "해외 앱": "myAudi",
+   "국내 리뷰": 279,
+   "국내 평균": 2.21,
+   "국내 부정%": 64.2,
+   "해외 리뷰": 2864,
+   "해외 평균": 2.16,
+   "해외 부정%": 68.1
+  },
+  {
+   "국내 앱": "My Porsche",
+   "해외 앱": "My Porsche",
+   "국내 리뷰": 56,
+   "국내 평균": 2.73,
+   "국내 부정%": 46.4,
+   "해외 리뷰": 450,
+   "해외 평균": 2.31,
+   "해외 부정%": 63.3
+  },
+  {
+   "국내 앱": "BYD AUTO",
+   "해외 앱": "BYD AUTO",
+   "국내 리뷰": 41,
+   "국내 평균": 2.85,
+   "국내 부정%": 48.8,
+   "해외 리뷰": 921,
+   "해외 평균": 2.75,
+   "해외 부정%": 45.1
+  },
+  {
+   "국내 앱": "마이현대",
+   "해외 앱": "myHyundai (EU)",
+   "국내 리뷰": 5991,
+   "국내 평균": 2.28,
+   "국내 부정%": 62.4,
+   "해외 리뷰": 1035,
+   "해외 평균": 1.83,
+   "해외 부정%": 76.5
+  },
+  {
+   "국내 앱": "Kia App(기아)",
+   "해외 앱": "Kia App (EU)",
+   "국내 리뷰": 7707,
+   "국내 평균": 2.11,
+   "국내 부정%": 68.1,
+   "해외 리뷰": 1509,
+   "해외 평균": 1.7,
+   "해외 부정%": 80.0
+  },
+  {
+   "국내 앱": "MY GENESIS",
+   "해외 앱": "MY GENESIS (EU)",
+   "국내 리뷰": 2372,
+   "국내 평균": 2.36,
+   "국내 부정%": 59.5,
+   "해외 리뷰": 10,
+   "해외 평균": 2.4,
+   "해외 부정%": 60.0
+  }
+ ],
+ "reward_dr": {
+  "summary": {
+   "n": 600,
+   "글 부정": 58.1,
+   "글 긍정": 27.0,
+   "글 혼합": 10.2,
+   "개선 요청": 18.6,
+   "반어": 1.0,
+   "평균 별점(가중)": 2.71
+  },
+  "aspects": [
+   {
+    "group": "해외 리워드·DR 앱",
+    "category": "앱 안정성·오류",
+    "n": 146,
+    "mention_pct": 24.5,
+    "pos_pct": 22.6,
+    "neg_pct": 76.1
+   },
+   {
+    "group": "해외 리워드·DR 앱",
+    "category": "UI·UX 불편",
+    "n": 80,
+    "mention_pct": 13.4,
+    "pos_pct": 52.4,
+    "neg_pct": 40.9
+   },
+   {
+    "group": "해외 리워드·DR 앱",
+    "category": "원격제어·차량연결",
+    "n": 120,
+    "mention_pct": 20.4,
+    "pos_pct": 12.2,
+    "neg_pct": 86.9
+   },
+   {
+    "group": "해외 리워드·DR 앱",
+    "category": "로그인·인증",
+    "n": 55,
+    "mention_pct": 9.0,
+    "pos_pct": 1.8,
+    "neg_pct": 98.2
+   },
+   {
+    "group": "해외 리워드·DR 앱",
+    "category": "디지털키",
+    "n": 1,
+    "mention_pct": 0.1,
+    "pos_pct": 0.0,
+    "neg_pct": 0.0
+   },
+   {
+    "group": "해외 리워드·DR 앱",
+    "category": "고객센터·응대",
+    "n": 118,
+    "mention_pct": 20.1,
+    "pos_pct": 37.5,
+    "neg_pct": 60.9
+   },
+   {
+    "group": "해외 리워드·DR 앱",
+    "category": "요금·가격",
+    "n": 87,
+    "mention_pct": 14.6,
+    "pos_pct": 45.3,
+    "neg_pct": 51.7
+   },
+   {
+    "group": "해외 리워드·DR 앱",
+    "category": "결제·청구 오류",
+    "n": 26,
+    "mention_pct": 4.3,
+    "pos_pct": 0.0,
+    "neg_pct": 96.3
+   },
+   {
+    "group": "해외 리워드·DR 앱",
+    "category": "충전기 고장·충전 실패",
+    "n": 70,
+    "mention_pct": 12.0,
+    "pos_pct": 7.2,
+    "neg_pct": 92.8
+   },
+   {
+    "group": "해외 리워드·DR 앱",
+    "category": "충전기 정보 부정확",
+    "n": 11,
+    "mention_pct": 1.7,
+    "pos_pct": 0.0,
+    "neg_pct": 100.0
+   },
+   {
+    "group": "해외 리워드·DR 앱",
+    "category": "충전 인프라(충전소 수·위치·속도)",
+    "n": 9,
+    "mention_pct": 1.6,
+    "pos_pct": 25.1,
+    "neg_pct": 64.8
+   },
+   {
+    "group": "해외 리워드·DR 앱",
+    "category": "포인트·리워드·멤버십",
+    "n": 22,
+    "mention_pct": 3.9,
+    "pos_pct": 82.1,
+    "neg_pct": 13.4
+   },
+   {
+    "group": "해외 리워드·DR 앱",
+    "category": "리워드 축소·소멸 불만",
+    "n": 2,
+    "mention_pct": 0.4,
+    "pos_pct": 0.0,
+    "neg_pct": 100.0
+   },
+   {
+    "group": "해외 리워드·DR 앱",
+    "category": "배터리·전비",
+    "n": 6,
+    "mention_pct": 1.0,
+    "pos_pct": 31.4,
+    "neg_pct": 68.6
+   },
+   {
+    "group": "해외 리워드·DR 앱",
+    "category": "알림",
+    "n": 12,
+    "mention_pct": 2.0,
+    "pos_pct": 0.0,
+    "neg_pct": 90.4
+   },
+   {
+    "group": "해외 리워드·DR 앱",
+    "category": "기타",
+    "n": 34,
+    "mention_pct": 5.1,
+    "pos_pct": 58.8,
+    "neg_pct": 29.8
+   }
+  ],
+  "by_app": {
+   "Octopus Energy (EV 관련만)": {
+    "n": 206,
+    "글 부정": 64.5,
+    "글 긍정": 13.9,
+    "글 혼합": 17.3,
+    "개선 요청": 18.2,
+    "반어": 0.9,
+    "평균 별점(가중)": 2.53
+   },
+   "Optiwatt": {
+    "n": 150,
+    "글 부정": 51.4,
+    "글 긍정": 36.9,
+    "글 혼합": 7.0,
+    "개선 요청": 19.3,
+    "반어": 0.0,
+    "평균 별점(가중)": 2.87
+   },
+   "ev.energy": {
+    "n": 244,
+    "글 부정": 56.3,
+    "글 긍정": 32.5,
+    "글 혼합": 6.3,
+    "개선 요청": 18.6,
+    "반어": 1.6,
+    "평균 별점(가중)": 2.76
+   }
+  },
+  "evidence": {
+   "포인트·리워드·멤버십": {
+    "긍정": [
+     "you get Amazon gift card",
+     "Smart Charge NY rebate program",
+     "rewards are a nice perk!",
+     "earn an Amazon gift card",
+     "rewards are an amazing bonus",
+     "Great opportunity to earn some cash back",
+     "I like the rewards I have Amazon vouchers",
+     "good to get rewards for charging",
+     "rewards are a great bonus",
+     "gives bonus treats"
+    ],
+    "부정": [
+     "never received any of them",
+     "get a bonus point towards rewards",
+     "reward system is not very clear"
+    ]
+   },
+   "요금·가격": {
+    "긍정": [
+     "getting low overnight rates",
+     "charges my EV at the cheapest times",
+     "Octopus Go cheap rate electricity",
+     "keeps you updated on cost and energy usage",
+     "economical",
+     "saves you money",
+     "Enjoying the savings",
+     "affordable",
+     "shows my charging usage and the cost",
+     "I get cheap electricity 3 times a day"
+    ],
+    "부정": [
+     "stopped tracking costs",
+     "typo in the rate for PSEG residential rates",
+     "App does not allow settings for Duke Energy",
+     "randomly charges outside set hours and pricing",
+     "Started charging during peak rate time!",
+     "carried on charging all morning",
+     "charging at high peak rates",
+     "resulted in costing me more despite smart charging",
+     "This app cannot save me any money.",
+     "want £5 a month"
+    ]
+   },
+   "원격제어·차량연결": {
+    "긍정": [
+     "car going into a deep sleep and not waking",
+     "controlling my Tesla",
+     "Smart Charge the car remotely",
+     "app talks to my car",
+     "Works perfectly alongside the Tesla model 3",
+     "Works fantastically well with our Tesla",
+     "works great with tesla",
+     "great control over EV charging",
+     "Tesla integration is now working on the Android platform",
+     "Connecting my car charger to the app"
+    ],
+    "부정": [
+     "app also was constantly waking my vehicle",
+     "app says it is full when it is clearly charging",
+     "rather slow to connect and report that connection",
+     "fails to connect despite rebooting the rolec system",
+     "make pre-conditioning less convenient",
+     "didn't found my Vehicle",
+     "does not sync with the charger",
+     "connect to your car, find it's location",
+     "Cannot setup my vehicle",
+     "version won't connect to tesla account"
+    ]
+   },
+   "앱 안정성·오류": {
+    "긍정": [
+     "application works great on Google Pixel",
+     "works well",
+     "nice app too",
+     "Rarely any issues",
+     "App works great with my Tesla",
+     "latest version is much better",
+     "Works fine",
+     "The app works well",
+     "This seems to work well",
+     "Works very well for programming charging"
+    ],
+    "부정": [
+     "display will sometimes say not charging",
+     "Hope an update will fix this soon",
+     "The app crashes as soon as I try to add my car",
+     "Since the update nothing works",
+     "every other day it doesn't work",
+     "Doesn't appear to work unless one has a home supply with them",
+     "The app takes ages, if at all, to display my statistics",
+     "The app is very unstable, virtually everyday I have to re boot the phone",
+     "No longer updating charges!",
+     "app keeps on crashing so not able to set tariffs or settings!"
+    ]
+   },
+   "기타": {
+    "긍정": [
+     "new solar panel charging function",
+     "Very rewarding app",
+     "Very helpful app.",
+     "Great and handy app!",
+     "All good, does what it says on the tin.",
+     "very useful",
+     "Great smart charging app",
+     "every Tesla owner NEEDS to have this app",
+     "this app solves a complicated problem",
+     "Lots of improvements as far as scheduled charging"
+    ],
+    "부정": [
+     "Scheduled charge between certian hours is MISSING",
+     "The solar charging settings need to be adjusted.",
+     "Seems like a scam to rob your EV information",
+     "that is against personal privacy.",
+     "Its only for homeowers evs not EVs",
+     "pick my own car for fuel saving",
+     "Google put this Sponsored app on top",
+     "wants wayyyyyyyy too much personal information",
+     "Scam. Please do not install",
+     "Useless for Home Energy"
+    ]
+   }
+  }
+ },
+ "reward_aspect_kr_vs_global": {
+  "kr_charge": [
+   {
+    "group": "충전 앱",
+    "category": "포인트·리워드·멤버십",
+    "n": 137,
+    "mention_pct": 13.2,
+    "pos_pct": 89.0,
+    "neg_pct": 7.2
+   }
+  ],
+  "global_reward": [
+   {
+    "group": "해외 리워드·DR 앱",
+    "category": "포인트·리워드·멤버십",
+    "n": 22,
+    "mention_pct": 3.9,
+    "pos_pct": 82.1,
+    "neg_pct": 13.4
+   }
+  ],
+  "global_charge": [
+   {
+    "group": "해외 충전 앱",
+    "category": "포인트·리워드·멤버십",
+    "n": 6,
+    "mention_pct": 0.7,
+    "pos_pct": 82.7,
+    "neg_pct": 17.3
+   }
+  ]
+ }
+}
