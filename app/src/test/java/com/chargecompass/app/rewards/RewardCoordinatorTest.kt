@@ -14,6 +14,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class RewardCoordinatorTest {
     private val data = MockDataLoader.load { javaClass.classLoader.getResource(it)!!.readText() }
@@ -106,5 +107,34 @@ class RewardCoordinatorTest {
         now = now.plusSeconds(5); vehicle.setCharging(true)
         now = now.plusSeconds(5); vehicle.setCharging(true)
         assertEquals(30, ledger.balance(now))
+    }
+
+    @Test
+    fun `이번 충전으로 받은 포인트는 현재 세션 적립분만이다`() = runTest(UnconfinedTestDispatcher()) {
+        val (vehicle, _, voice) = env()
+        // 시연 시계로 미래 시각에 쌓인 같은 충전소의 기록이 이미 있어도 섞이면 안 된다
+        val ledger = InMemoryRewardLedger(listOf(
+            RewardEntry(RewardKind.CHARGE, 10, now.plusHours(9), yangjae.id),
+            RewardEntry(RewardKind.NEW_STAMP, 20, now.plusHours(9), yangjae.id),
+        ))
+        val c = RewardCoordinator(vehicle, ledger, data, { car }, voice, backgroundScope)
+        vehicle.setLocation(yangjae.lat, yangjae.lng)
+        vehicle.setCharging(true)
+        assertEquals(listOf(RewardKind.CHARGE), c.sessionEarned.value.map { it.kind })
+        assertEquals(10, c.sessionEarned.value.sumOf { it.points })
+    }
+
+    @Test
+    fun `충전이 끝나면 세션 적립분을 비우고 위치가 늦게 잡히면 그때 적립분을 보여준다`() = runTest(UnconfinedTestDispatcher()) {
+        val (vehicle, ledger, voice) = env()
+        val c = RewardCoordinator(vehicle, ledger, data, { car }, voice, backgroundScope)
+        vehicle.clearLocation()
+        vehicle.setCharging(true)
+        assertTrue(c.sessionEarned.value.isEmpty())
+        vehicle.setLocation(yangjae.lat, yangjae.lng)
+        now = now.plusSeconds(5); vehicle.setCharging(true)
+        assertEquals(30, c.sessionEarned.value.sumOf { it.points })
+        now = now.plusMinutes(10); vehicle.endCharging()
+        assertTrue(c.sessionEarned.value.isEmpty())
     }
 }
