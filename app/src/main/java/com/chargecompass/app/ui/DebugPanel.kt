@@ -27,8 +27,10 @@ import androidx.compose.ui.unit.sp
 import com.chargecompass.app.AppContainer
 import com.chargecompass.app.DataMode
 import com.chargecompass.app.drivestate.DriveState
+import com.chargecompass.app.navi.PleosNaviRepository
 import com.chargecompass.app.navi.RouteSnapshot
 import com.chargecompass.app.vehicle.TripSummary
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 /** 디버그 빌드 전용 시연 패널. Mock 모드에서 차량·경로 상태를 직접 바꾼다. */
@@ -54,6 +56,11 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
                 val other = if (c.mode == DataMode.MOCK) DataMode.PLEOS else DataMode.MOCK
                 OutlinedButton(onClick = { onSwitchMode(other) }) { Text("$other 모드로") }
                 OutlinedButton(onClick = { open = false }) { Text("닫기") }
+                OutlinedButton(onClick = { c.demoClock.jumpTo(LocalDate.now().atTime(23, 30)) }) { Text("밤 11:30으로") }
+                OutlinedButton(onClick = { c.demoClock.reset() }) { Text("실제 시각") }
+                (c.navi as? PleosNaviRepository)?.let { navi ->
+                    OutlinedButton(onClick = { navi.requestDemoRoute() }) { Text("서울역 경로 요청") }
+                }
             }
             if (c.mode == DataMode.MOCK) {
                 val v = c.mockVehicle

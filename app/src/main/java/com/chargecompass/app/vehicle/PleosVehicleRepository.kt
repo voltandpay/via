@@ -36,6 +36,7 @@ import kotlin.coroutines.resume
 class PleosVehicleRepository(
     context: Context,
     private val scope: CoroutineScope,
+    private val clock: () -> LocalDateTime = LocalDateTime::now,
 ) : VehicleRepository {
     private val vehicle = Vehicle(context)
     private val location = FusedLocation(context)
@@ -92,7 +93,7 @@ class PleosVehicleRepository(
                 val on = chargeSwitch()
                 if (on != null) {
                     val loc = lastLocation
-                    _charging.emit(ChargingSample(LocalDateTime.now(), on, _energy.value.socPct, loc?.first, loc?.second))
+                    _charging.emit(ChargingSample(clock(), on, _energy.value.socPct, loc?.first, loc?.second))
                 }
                 delay(CHARGE_POLL_MS)
             }
@@ -143,7 +144,13 @@ class PleosVehicleRepository(
         val usedKwh = if (startWh != null && energyWh != null) (startWh - energyWh!!) / 1000f else null
         val efficiency = _energy.value.efficiencyKmPerKwh
             ?: usedKwh?.takeIf { it > 0f }?.let { (km / it).toDouble() }
-        _trips.tryEmit(TripSummary(km.toDouble(), efficiency, LocalDateTime.now()))
+        _trips.tryEmit(TripSummary(km.toDouble(), efficiency, clock()))
+    }
+
+    /** 첫 실행에서 위치 권한을 앱 시작 뒤에 허용한 경우 다시 붙는다. */
+    fun retryLocation() {
+        stopLocation()
+        startLocation()
     }
 
     /** 위치를 못 쓰면 충전소 매칭만 안 될 뿐 나머지는 동작해야 한다. */

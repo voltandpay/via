@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -15,6 +17,32 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "0.1.0"
+    }
+
+    // 릴리스 서명: 키스토어는 저장소 밖에 두고 local.properties에 경로·비밀번호를 적는다.
+    // (release.storeFile, release.storePassword, release.keyAlias, release.keyPassword)
+    // 없으면 디버그 키로 서명한다 — 제출 전에는 반드시 릴리스 키로 다시 빌드한다.
+    val local = Properties().apply {
+        rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use(::load)
+    }
+    signingConfigs {
+        create("release") {
+            val store = local.getProperty("release.storeFile")
+            if (store != null) {
+                storeFile = file(store)
+                storePassword = local.getProperty("release.storePassword")
+                keyAlias = local.getProperty("release.keyAlias")
+                keyPassword = local.getProperty("release.keyPassword")
+            } else {
+                initWith(getByName("debug"))
+            }
+        }
+    }
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
+        }
     }
 
     buildFeatures {

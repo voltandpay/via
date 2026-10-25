@@ -1,6 +1,7 @@
 package com.chargecompass.app
 
 import android.content.Context
+import com.chargecompass.app.demo.DemoClock
 import com.chargecompass.app.drivestate.DriveStateProvider
 import com.chargecompass.app.drivestate.GearDriveStateProvider
 import com.chargecompass.app.drivestate.ToggleDriveStateProvider
@@ -44,9 +45,10 @@ class AppContainer(context: Context, val mode: DataMode, scope: CoroutineScope) 
     val membership: MembershipStore = FileMembershipStore(File(context.filesDir, "profile.txt"))
     val ledger: RewardLedger = FileRewardLedger(File(context.filesDir, "ledger.txt"))
 
-    val mockVehicle = MockVehicleRepository()
+    val demoClock = DemoClock()
+    val mockVehicle = MockVehicleRepository(demoClock::now)
     val mockNavi = MockNaviRepository()
-    val vehicle: VehicleRepository = if (mode == DataMode.MOCK) mockVehicle else PleosVehicleRepository(context, scope)
+    val vehicle: VehicleRepository = if (mode == DataMode.MOCK) mockVehicle else PleosVehicleRepository(context, scope, demoClock::now)
     val navi: NaviRepository = if (mode == DataMode.MOCK) mockNavi else PleosNaviRepository(context)
     val voice: VoiceGateway = PleosVoiceGateway(context)
 

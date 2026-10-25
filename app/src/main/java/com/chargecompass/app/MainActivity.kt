@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.lifecycle.lifecycleScope
 import com.chargecompass.app.ui.AppRoot
+import com.chargecompass.app.vehicle.PleosVehicleRepository
 
 class MainActivity : ComponentActivity() {
     private lateinit var container: AppContainer
@@ -27,6 +28,11 @@ class MainActivity : ComponentActivity() {
     private fun requestMissingPermissions() {
         val missing = RUNTIME_PERMISSIONS.filter { checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED }
         if (missing.isNotEmpty()) requestPermissions(missing.toTypedArray(), 1)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        (container.vehicle as? PleosVehicleRepository)?.retryLocation()
     }
 
     override fun onDestroy() {

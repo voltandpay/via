@@ -4,6 +4,7 @@ import ai.pleos.playground.navi.constants.NaviErrorCode
 import ai.pleos.playground.navi.constants.NaviMode
 import ai.pleos.playground.navi.constants.WaypointIndex
 import ai.pleos.playground.navi.data.RequestWaypointInfo
+import ai.pleos.playground.navi.data.RouteInfo
 import ai.pleos.playground.navi.data.RouteStartInfo
 import ai.pleos.playground.navi.data.RouteStateInfo
 import ai.pleos.playground.navi.data.WaypointChangedInfo
@@ -68,6 +69,11 @@ class PleosNaviRepository(context: Context) : NaviRepository {
         val current = _route.value
         val id = if (current != null && current.destinationName == info.name) current.routeId else nextRouteId++
         _route.value = RouteSnapshot(id, info.name, info.distance / 1000.0, info.duration)
+    }
+
+    /** 시연용(디버그 패널): 서울역으로 경로를 요청한다. 실제 사용자는 내비에서 목적지를 정한다. */
+    fun requestDemoRoute() {
+        navi.requestRoute(RouteInfo(latitude = 37.5547, longitude = 126.9707, poiName = "서울역", poiId = "0", address = "서울특별시 용산구 한강대로 405", poiSubId = "0"))
     }
 
     override suspend fun addChargingStop(station: Station): StopResult {
