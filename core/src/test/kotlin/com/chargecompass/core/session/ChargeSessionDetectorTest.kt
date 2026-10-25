@@ -52,4 +52,17 @@ class ChargeSessionDetectorTest {
         assertIs<SessionEvent.Started>(e)
         assertNull(e.session.stationId)
     }
+
+    @Test
+    fun `시작 때 위치가 없었으면 위치가 잡히는 샘플에서 충전소를 붙여 다시 Started`() {
+        val d = detector()
+        val first = d.onSample(s(0, true, lat = null, lng = null))
+        assertIs<SessionEvent.Started>(first)
+        assertNull(first.session.stationId)
+        assertNull(d.onSample(s(5, true, lat = null, lng = null)))
+        val matched = d.onSample(s(10, true))
+        assertIs<SessionEvent.Started>(matched)
+        assertEquals(ChargeSession("st-1", t0, null, 30, null), matched.session)
+        assertNull(d.onSample(s(15, true)))
+    }
 }

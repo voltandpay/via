@@ -14,7 +14,7 @@ interface VoiceGateway {
 
 object YesNoParser {
     private val yes = listOf("응", "네", "예", "그래", "좋아", "추가")
-    private val no = listOf("아니", "됐어", "싫어", "취소")
+    private val no = listOf("아니", "됐어", "싫어", "취소", "하지마", "말아", "안해", "안돼")
 
     fun parse(utterance: String?): Answer {
         val text = utterance?.filter { it.isLetterOrDigit() }.orEmpty()

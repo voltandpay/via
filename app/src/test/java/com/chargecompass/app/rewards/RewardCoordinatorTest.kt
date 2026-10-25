@@ -85,4 +85,26 @@ class RewardCoordinatorTest {
         }
         assertEquals(10, ledger.balance(now))
     }
+
+    @Test
+    fun `시연용 충전 종료는 한 번으로 세션을 끝낸다`() = runTest(UnconfinedTestDispatcher()) {
+        val (vehicle, ledger, voice) = env()
+        val c = RewardCoordinator(vehicle, ledger, data, { car }, voice, backgroundScope)
+        vehicle.setCharging(true)
+        vehicle.endCharging()
+        assertNull(c.activeSession.value)
+    }
+
+    @Test
+    fun `충전 시작 뒤 위치가 잡히면 그때 충전소를 찾아 적립한다`() = runTest(UnconfinedTestDispatcher()) {
+        val (vehicle, ledger, voice) = env()
+        RewardCoordinator(vehicle, ledger, data, { car }, voice, backgroundScope)
+        vehicle.clearLocation()
+        vehicle.setCharging(true)
+        assertEquals(0, ledger.balance(now))
+        vehicle.setLocation(yangjae.lat, yangjae.lng)
+        now = now.plusSeconds(5); vehicle.setCharging(true)
+        now = now.plusSeconds(5); vehicle.setCharging(true)
+        assertEquals(30, ledger.balance(now))
+    }
 }

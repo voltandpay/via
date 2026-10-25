@@ -5,20 +5,18 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.lifecycle.lifecycleScope
 import com.chargecompass.app.ui.AppRoot
 import com.chargecompass.app.vehicle.PleosVehicleRepository
 
 class MainActivity : ComponentActivity() {
-    private lateinit var container: AppContainer
+    private val app get() = application as ChargeCompassApp
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestMissingPermissions()
-        container = AppContainer(this, AppContainer.savedMode(this), lifecycleScope)
         setContent {
-            AppRoot(container, onSwitchMode = { mode ->
-                AppContainer.saveMode(this, mode)
+            AppRoot(app.container, onSwitchMode = { mode ->
+                app.switchMode(mode)
                 recreate()
             })
         }
@@ -32,12 +30,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        (container.vehicle as? PleosVehicleRepository)?.retryLocation()
-    }
-
-    override fun onDestroy() {
-        container.stop()
-        super.onDestroy()
+        (app.container.vehicle as? PleosVehicleRepository)?.retryLocation()
     }
 
     private companion object {

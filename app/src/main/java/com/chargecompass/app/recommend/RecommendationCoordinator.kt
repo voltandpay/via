@@ -27,6 +27,8 @@ sealed interface RecoState {
     data class Suggested(val routeId: Long, val arrivalSoc: Double, val top: List<RankedStation>) : RecoState
     /** 음성으로 확인하지 못했다. 정차 화면에서 터치 한 번으로 추가한다. */
     data class AwaitingTouch(val routeId: Long, val choice: RankedStation, val top: List<RankedStation>) : RecoState
+    /** 경유지 추가 요청 중. 이 동안 들어오는 터치는 무시한다(중복 추가 방지). */
+    data class Adding(val station: RankedStation) : RecoState
     data class Added(val station: RankedStation, val result: StopResult) : RecoState
     data object NoneAvailable : RecoState
 }
@@ -62,6 +64,7 @@ class RecommendationCoordinator(
             is RecoState.Suggested -> s.top.firstOrNull { it.station.id == stationId }
             else -> null
         } ?: return
+        _state.value = RecoState.Adding(choice)
         scope.launch { add(choice) }
     }
 
@@ -77,11 +80,12 @@ class RecommendationCoordinator(
 
         val car = vehicleModel() ?: return
         val arrival = ArrivalCalculator.socAfter(energy, car, route.remainingKm) ?: return
+        // 경로 거리는 출발 때 값이라, 경로마다 처음 한 번만 판단한다(주행 중 다시 계산하면 지나친 충전소를 추천한다)
+        handledRouteId = route.routeId
         if (!ArrivalCalculator.needsCharge(arrival)) {
             _state.value = RecoState.Enough(arrival)
             return
         }
-        handledRouteId = route.routeId
         val ranked = StationRanker.rank(data.stations, data.tariffs, ownedMemberships(), energy, car)
             .take(Defaults.COMPARE_SUGGESTIONS)
         if (ranked.isEmpty()) {
@@ -109,6 +113,7 @@ class RecommendationCoordinator(
     }
 
     private suspend fun add(choice: RankedStation) {
+        _state.value = RecoState.Adding(choice)
         _state.value = RecoState.Added(choice, navi.addChargingStop(choice.station))
     }
 

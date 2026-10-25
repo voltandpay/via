@@ -12,7 +12,7 @@ sealed interface SessionEvent {
 }
 
 /**
- * 충전 여부 샘플을 세션으로 묶는다. 충전 신호가 [gapTolerance] 안에서 깜빡이면 같은 세션으로 본다
+ * 충전 여부 샘플을 세션으로 묶는다. 시작 때 충전소를 못 찾았으면 나중에 찾았을 때 Started를 한 번 더 낸다. 충전 신호가 [gapTolerance] 안에서 깜빡이면 같은 세션으로 본다
  * (그래야 스탬프·포인트가 두 번 쌓이지 않는다).
  */
 class ChargeSessionDetector(
@@ -29,6 +29,11 @@ class ChargeSessionDetector(
             stoppedAt = null
             if (session != null) {
                 lastChargingSoc = sample.socPct ?: lastChargingSoc
+                // 충전을 시작할 때 위치가 아직 없었으면, 위치가 잡히는 대로 충전소를 붙인다
+                if (session.stationId == null && sample.lat != null && sample.lng != null) {
+                    val stationId = stationMatcher(sample.lat, sample.lng) ?: return null
+                    return SessionEvent.Started(session.copy(stationId = stationId).also { current = it })
+                }
                 return null
             }
             lastChargingSoc = sample.socPct

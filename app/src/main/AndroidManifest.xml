@@ -22,6 +22,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
+        android:name=".ChargeCompassApp"
         android:label="충전 나침반"
         android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
         <activity

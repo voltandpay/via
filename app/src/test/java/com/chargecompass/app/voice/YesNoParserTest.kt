@@ -13,7 +13,7 @@ class YesNoParserTest {
 
     @Test
     fun `부정 표현은 NO`() {
-        listOf("아니", "아니요", "됐어", "싫어", "취소", "아니 됐어").forEach {
+        listOf("아니", "아니요", "됐어", "싫어", "취소", "아니 됐어", "추가하지 마", "하지마", "추가 안 해", "넣지 말아줘").forEach {
             assertEquals(Answer.NO, YesNoParser.parse(it), it)
         }
     }

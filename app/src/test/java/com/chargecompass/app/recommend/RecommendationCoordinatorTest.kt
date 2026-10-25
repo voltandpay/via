@@ -163,4 +163,44 @@ class RecommendationCoordinatorTest {
         env.navi.setRoute(null)
         assertIs<RecoState.Idle>(c.state.value)
     }
+
+    @Test
+    fun `한 경로에서 처음 넉넉하다고 판단했으면 주행 중 SoC가 줄어도 다시 계산해 묻지 않는다`() = runTest(UnconfinedTestDispatcher()) {
+        // 경로 거리는 출발 때 값 그대로라, 주행 중 SoC로 다시 계산하면 이미 지나친 충전소를 추천하게 된다
+        val voice = MockVoiceGateway()
+        val env = Env(voice = voice)
+        val c = start(env)
+        env.vehicle.setSoc(45)
+        env.navi.setRoute(RouteSnapshot(7, "대전", 100.0, 4000))
+        assertIs<RecoState.Enough>(c.state.value)
+        env.vehicle.setSoc(33)
+        assertIs<RecoState.Enough>(c.state.value)
+        assertTrue(voice.asked.isEmpty())
+    }
+
+    @Test
+    fun `경유지 추가를 두 번 눌러도 한 번만 추가한다`() = runTest(UnconfinedTestDispatcher()) {
+        val gate = CompletableDeferred<Unit>()
+        val navi = object : com.chargecompass.app.navi.NaviRepository {
+            val calls = mutableListOf<String>()
+            override val route = kotlinx.coroutines.flow.MutableStateFlow<RouteSnapshot?>(null)
+            override suspend fun addChargingStop(station: com.chargecompass.core.model.Station): StopResult {
+                calls += station.id; gate.await(); return StopResult.WAYPOINT_ADDED
+            }
+            override fun start() = Unit
+            override fun stop() = Unit
+        }
+        val vehicle = MockVehicleRepository()
+        val c = RecommendationCoordinator(vehicle, navi, MockVoiceGateway(sttAvailable = false), data, { car }, { setOf("m-chaevi") }, backgroundScope)
+        vehicle.setSoc(15)
+        navi.route.value = route
+        val s = c.state.value
+        assertIs<RecoState.AwaitingTouch>(s)
+        c.confirmByTouch(s.choice.station.id)
+        assertIs<RecoState.Adding>(c.state.value)
+        c.confirmByTouch(s.choice.station.id)
+        gate.complete(Unit)
+        assertEquals(1, navi.calls.size)
+        assertIs<RecoState.Added>(c.state.value)
+    }
 }

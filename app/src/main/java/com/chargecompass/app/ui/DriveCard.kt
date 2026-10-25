@@ -41,6 +41,7 @@ fun DriveCard(c: AppContainer) {
                     Title(s.station.station.name, if (s.result == StopResult.FAILED) Warn else Accent)
                     Body("${s.station.price.wonPerKwh}원/kWh · ${won(s.station.savingWon)} 절약 예상")
                 }
+                is RecoState.Adding -> { Caption("경유지로 추가하는 중"); Title(s.station.station.name) }
                 RecoState.NoneAvailable -> Body("경로 위에 쓸 수 있는 충전소가 없어요", Warn)
             }
         }

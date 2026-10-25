@@ -75,7 +75,7 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
                         c.data.stations.first { it.id == "st-yangjae-chaevi" }.let { v.setLocation(it.lat, it.lng) }
                     }) { Text("양재 채비 도착") }
                     OutlinedButton(onClick = { v.setCharging(true) }) { Text("충전 시작") }
-                    OutlinedButton(onClick = { v.setCharging(false) }) { Text("충전 끝") }
+                    OutlinedButton(onClick = { v.endCharging() }) { Text("충전 끝") }
                     OutlinedButton(onClick = { v.endTrip(TripSummary(12.0, 5.6, LocalDateTime.now())) }) { Text("효율 트립 종료") }
                 }
             }
