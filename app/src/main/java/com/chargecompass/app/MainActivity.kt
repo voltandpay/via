@@ -1,50 +1,44 @@
 package com.chargecompass.app
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
-import com.chargecompass.app.drivestate.GearDriveStateProvider
-import com.chargecompass.app.navi.PleosNaviRepository
-import com.chargecompass.app.vehicle.PleosVehicleRepository
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.chargecompass.app.ui.AppRoot
 
 class MainActivity : ComponentActivity() {
-    private lateinit var vehicle: PleosVehicleRepository
-    private lateinit var navi: PleosNaviRepository
+    private lateinit var container: AppContainer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        vehicle = PleosVehicleRepository(this, lifecycleScope).also { it.start() }
-        navi = PleosNaviRepository(this).also { it.start() }
-        val drive = GearDriveStateProvider(vehicle.parked, MutableStateFlow(false), lifecycleScope)
+        requestMissingPermissions()
+        container = AppContainer(this, AppContainer.savedMode(this), lifecycleScope)
         setContent {
-            val energy by vehicle.energy.collectAsState()
-            val state by drive.state.collectAsState()
-            val route by navi.route.collectAsState()
-            val charging = remember { mutableStateOf<Boolean?>(null) }
-            LaunchedEffect(Unit) { vehicle.charging.collect { charging.value = it.charging } }
-            Column(Modifier.padding(48.dp)) {
-                listOf("SoC ${energy.socPct}", "전비 ${energy.efficiencyKmPerKwh}", "상태 $state", "충전 ${charging.value}", "경로 $route")
-                    .forEach { Text(it, fontSize = 28.sp) }
-            }
+            AppRoot(container, onSwitchMode = { mode ->
+                AppContainer.saveMode(this, mode)
+                recreate()
+            })
         }
     }
 
+    /** 위치(충전소 매칭)와 마이크(음성 응답)는 실행 중 승인이 필요하다. 거절해도 나머지 기능은 동작한다. */
+    private fun requestMissingPermissions() {
+        val missing = RUNTIME_PERMISSIONS.filter { checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED }
+        if (missing.isNotEmpty()) requestPermissions(missing.toTypedArray(), 1)
+    }
+
     override fun onDestroy() {
-        vehicle.stop()
-        navi.stop()
+        container.stop()
         super.onDestroy()
+    }
+
+    private companion object {
+        val RUNTIME_PERMISSIONS = listOf(
+            "pleos.car.permission.FUSED_LOCATION",
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.RECORD_AUDIO,
+        )
     }
 }
