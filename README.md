@@ -1,8 +1,12 @@
-# 충전 나침반 (가칭) — Pleos Connect 앱
+# VIA — Pleos Connect 앱
 
+> **V**erified rewards · **I**n-route · **A**ffordable — 가는 길에, 가장 싸게, 차가 확인한 보상
+>
 > 차 안에서 지금 배터리와 목적지를 보고, **내가 가진 멤버십 기준으로 가장 싸고 확실히 되는 충전소**를 경로에 넣어주고, 아낀 돈과 효율 운전을 **차가 직접 확인해 보상**해 주는 앱.
 
-현대자동차그룹 차량용 앱 개발 공모전(2026) 출품작. 1차 MVP.
+현대자동차그룹 차량용 앱 개발 공모전(2026) 출품작 · 팀 **볼트앤페이(Volt&Pay)** · 1차 MVP.
+
+이름의 뜻: *via*는 "~을 경유하여"라는 뜻이다. 충전소를 경로의 경유지로 넣는 이 앱의 핵심 동작과 같다.
 
 ## 핵심 장면
 1. **주행 중 — 경로상 최저가 충전소 추천**: 도착 시 배터리가 15% 아래면, 고장·사용 중이 아니고 내 차 커넥터가 맞는 충전소 중 내 멤버십 기준 총비용이 가장 싼 곳을 **음성으로** 묻고("경유지로 추가할까요?"), "응" 하면 내비 경유지로 넣는다. 주행 중 화면은 터치할 것이 없는 상태 카드뿐이다.
@@ -25,6 +29,9 @@
 ## 구조
 - `core/` — 순수 Kotlin. 도착 잔량(`ArrivalCalculator`), 멤버십 기준 실효 단가·순위(`StationRanker`), 리워드 규칙(`RewardEngine`), 충전 세션 감지(`ChargeSessionDetector`), 목업 데이터. JVM 단위 테스트.
 - `app/` — Android(Compose). SDK는 Repository 뒤에 숨기고(`Pleos*`/`Mock*`), 추천 흐름(`RecommendationCoordinator`)과 리워드 적립(`RewardCoordinator`)이 이를 조합한다.
+
+## 제출 APK
+`apk/VoltAndPay_VIA_release.apk` (공모전 규칙: `팀명_앱이름_release.apk`)
 
 ## 빌드
 ```bash

@@ -23,7 +23,7 @@
 
     <application
         android:name=".ChargeCompassApp"
-        android:label="충전 나침반"
+        android:label="VIA"
         android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
         <activity
             android:name=".MainActivity"

@@ -1,4 +1,4 @@
-# 충전 나침반 1차 MVP 구현 계획
+# VIA 1차 MVP 구현 계획
 
 > **에이전트 작업자용:** 필수 하위 스킬 — superpowers:subagent-driven-development(권장) 또는 superpowers:executing-plans로 태스크 단위 실행. 단계는 체크박스(`- [ ]`)로 추적한다.
 
@@ -24,7 +24,7 @@
 - 광고·판매 배너 없음. 앱 분류는 충전 유틸리티(게임 아님).
 - 포인트는 현금성 아님. 제휴 할인 쿠폰 교환 화면만 있고, 실제 교환은 하지 않는다.
 - 서버 없음. 영속 데이터는 로컬 저장소만.
-- 결과 APK 경로·이름: `apk/팀명_앱이름_release.apk` (팀명은 패키징 때 정한다).
+- 결과 APK 경로·이름: `apk/VoltAndPay_VIA_release.apk` (팀 볼트앤페이, 앱 VIA — 2026-10-25 확정).
 - 기본값([제안], 설정 상수 한 곳에 모은다): 충전 필요 기준 도착 SoC **15%**, 목표 SoC **80%**, 우회 시간 가치 **0원**, 음성 추천 **1곳**, 비교 화면 **3곳**, 효율 운전 최소 트립 **10km**, 이벤트 배수 **2배**(하루 1회), 스탬프 충전소당 1회, 포인트 유효기간 **12개월**.
 - 이 계획이 정한 포인트 값(설계 문서에서 "조정 가능"으로 남긴 것): 효율 운전 트립 **10점**, 새 스탬프 **20점**, 충전 1회 기본 **10점**(이벤트면 ×2).
 
@@ -511,13 +511,13 @@ class RewardCoordinator(vehicle: VehicleRepository, ledger: RewardLedger, data: 
 ### Task 13: 시연 시나리오 · 패키징 · 제출물
 
 **Files:**
-- Create: `doc/시연-시나리오.md`, `README.md`, `apk/팀명_앱이름_release.apk`
+- Create: `doc/시연-시나리오.md`, `README.md`, `apk/VoltAndPay_VIA_release.apk`
 - Modify: `app/build.gradle.kts` (release 서명 설정 — 키스토어는 저장소 밖, 경로는 `local.properties`)
 
 - [ ] **Step 1:** `doc/시연-시나리오.md` — 장면 A·C·도감을 Pleos 모드와 Mock 모드 각각으로 재현하는 순서. Pleos 모드에서는 Virtual Console에서 **SoC와 Battery Energy를 함께 맞추는** 단계를 포함한다(스파이크 2-2). 각 단계에서 화면·음성으로 확인할 것을 적는다.
 - [ ] **Step 2:** 시나리오대로 에뮬레이터에서 처음부터 끝까지 2회 실행. 막히는 곳이 있으면 해당 태스크로 돌아가 고친다.
 - [ ] **Step 3:** README — 한 줄 정의, 핵심 장면, 사용 SDK와 권한, 빌드 방법, Mock 모드, 설계·조사 문서 링크.
-- [ ] **Step 4:** Release APK 빌드 → `apk/팀명_앱이름_release.apk`로 복사(팀명·앱 이름 확정 후).
+- [ ] **Step 4:** Release APK 빌드 → `apk/VoltAndPay_VIA_release.apk`로 복사.
   Run: `./gradlew :core:test :app:testDebugUnitTest :app:assembleRelease`
   Expected: 테스트 전부 PASS, `BUILD SUCCESSFUL`. 새로 깐 에뮬레이터에 `adb install`해서 10초 안에 실행된다.
 - [ ] **Step 5:** 시연 영상 녹화(장면 A → C → 도감), 접수양식 5번(개발 계획: 사용 SDK·API와 쓰는 곳 표)은 이 계획의 Task 8~11 인터페이스 표로 작성.

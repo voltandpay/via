@@ -33,7 +33,8 @@ fun Onboarding(c: AppContainer) {
     var vehicle by remember { mutableStateOf<String?>(null) }
     var owned by remember { mutableStateOf(c.membership.owned.value) }
     Column(Modifier.fillMaxSize().padding(40.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        Title("충전 나침반 시작하기")
+        Title("VIA 시작하기")
+        Caption("가는 길에, 가장 싸게, 차가 확인한 보상")
         Caption("읽는 데이터: 배터리·전비·충전 상태·주행거리·위치 — 충전소 추천과 포인트 확인에만 씁니다")
         Body("내 차")
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
