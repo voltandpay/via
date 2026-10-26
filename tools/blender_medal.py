@@ -1,8 +1,9 @@
-# 도감 메달 시안: blender -b -P medal.py -- <font.ttf> <out.png> <hex색> <글자> [locked]
+# 도감 메달: blender -b -P blender_medal.py -- <font.ttf> <out.png> <hex색> <글자> [locked|bronze|silver|gold]
 import bpy, sys, math
 argv = sys.argv[sys.argv.index("--") + 1:]
 font_path, out, hexcol, glyph = argv[:4]
-locked = len(argv) > 4 and argv[4] == "locked"
+variant = argv[4] if len(argv) > 4 else ""
+locked = variant == "locked"
 
 def srgb(h):
     h = h.lstrip("#"); c = [int(h[i:i+2], 16) / 255 for i in (0, 2, 4)]
@@ -21,7 +22,8 @@ bpy.ops.wm.read_factory_settings(use_empty=True)
 sc = bpy.context.scene
 
 base = srgb("#8E959E") if locked else srgb(hexcol)
-rimc = srgb("#C9CED4") if locked else srgb("#E9D9A6")   # 잠긴 메달은 은회색, 모은 메달은 연금빛 테두리
+# 테두리: 잠긴 메달은 은회색, 단계별로 동·은·금(기본은 연금빛)
+rimc = srgb({"locked": "#C9CED4", "bronze": "#C07A4A", "silver": "#DDE2E8", "gold": "#F2C24A"}.get(variant, "#E9D9A6"))
 face = mat("face", base, 0.05, 0.42, clearcoat=0.25)
 rim = mat("rim", rimc, 0.9, 0.22)
 ink = mat("ink", srgb("#F7F8FA") if not locked else srgb("#E6E8EB"), 0.0, 0.4)

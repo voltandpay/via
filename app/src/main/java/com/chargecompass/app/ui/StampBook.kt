@@ -1,6 +1,28 @@
 package com.chargecompass.app.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
+import com.chargecompass.app.R
+import com.chargecompass.core.Defaults
+import com.chargecompass.core.dex.Dex
+import com.chargecompass.core.dex.DexEntry
+import com.chargecompass.core.dex.DexState
+import com.chargecompass.core.dex.MedalTier
+import com.chargecompass.core.dex.PowerType
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -20,42 +42,121 @@ import com.chargecompass.core.rewards.RewardKind
 import java.time.Duration
 import java.time.LocalDateTime
 
-/** 충전소 스탬프 도감: 진행 링 + 배지 판(모은 곳은 사업자 색, 못 모은 곳은 자물쇠). */
+/**
+ * 충전소 도감(포켓몬 도감처럼): 지역 탭과 지역별 진행 링, 도감 번호, 출력 타입,
+ * 못 본 곳(???) → 추천에 나와 발견(실루엣) → 충전해 등록(컬러 메달), 다시 충전하면 동 → 은 → 금.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun StampBook(c: AppContainer) {
     val entries by c.ledger.entries.collectAsState()
+    val seen by c.seen.seen.collectAsState()
     val flatBadges by c.flatBadges.collectAsState()
+    var region by rememberSaveable { mutableStateOf<String?>(null) }
     val col = colors
-    val stamps = entries.filter { it.kind == RewardKind.NEW_STAMP }.associateBy { it.stationId }
-    val total = c.data.stations.size
     val now = c.demoClock.now()
-    ViaCard(padding = 40.dp) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(40.dp)) {
-            RingGauge(stamps.size / total.toFloat(), col.active.c(), size = 180.dp, stroke = 18.dp) {
-                T("${stamps.size}/$total", ViaType.titleM)
+    val visits = entries.filter { it.kind == RewardKind.CHARGE }.mapNotNull { it.stationId }.groupingBy { it }.eachCount()
+    val stampedAt = entries.filter { it.kind == RewardKind.NEW_STAMP }.associate { it.stationId to it.at }
+    val dex = Dex.build(c.data.stations, seen, visits)
+    val registered = dex.count { it.state == DexState.REGISTERED }
+
+    ViaCard(padding = 36.dp) {
+        Adaptive(Arrangement.spacedBy(36.dp)) { first ->
+            Row(first, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(32.dp)) {
+                RingGauge(registered / dex.size.toFloat(), col.active.c(), size = 160.dp, stroke = 16.dp) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        T("$registered/${dex.size}", ViaType.titleM)
+                        T("등록", ViaType.labelS, col.text3.c())
+                    }
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    T("충전소 도감", ViaType.titleM)
+                    T("발견 ${dex.count { it.state != DexState.UNSEEN }}곳 · 등록 ${registered}곳", ViaType.bodyM, col.text2.c())
+                    T("지역을 다 모으면 +${Defaults.POINTS_REGION_COMPLETE}P", ViaType.labelM, col.text3.c())
+                }
             }
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                T("충전소 도감", ViaType.titleM)
-                T("처음 충전한 충전소마다 스탬프 +20P", ViaType.bodyM, col.text2.c())
-                T(if (stamps.size == total) "시연 경로의 충전소를 모두 모았어요!" else "${total - stamps.size}곳 남았어요", ViaType.labelM, col.text3.c())
+            // 지역별 진행: 작은 링 3개
+            Row(horizontalArrangement = Arrangement.spacedBy(28.dp)) {
+                Dex.regions.forEach { r ->
+                    val (got, total) = Dex.progress(dex, r.id)
+                    val done = got == total
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        RingGauge(got / total.toFloat(), if (done) Color(0xFFF2C24A) else col.pos.c(), size = 96.dp, stroke = 10.dp) {
+                            T("$got/$total", ViaType.labelM.copy(fontWeight = FontWeight.Bold))
+                        }
+                        T(if (done) "${r.label} 완성" else r.label, ViaType.labelS.copy(fontWeight = if (done) FontWeight.Bold else FontWeight.Normal), if (done) col.text.c() else col.text3.c())
+                    }
+                }
             }
         }
     }
-    FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(24.dp), verticalArrangement = Arrangement.spacedBy(28.dp)) {
-        c.data.stations.forEach { st ->
-            val stamp = stamps[st.id]
-            val op = c.data.memberships.firstOrNull { it.operatorId == st.operatorId }
-            // 방금(2분 안에) 받은 스탬프는 톡 커지며 나타난다
-            val fresh = stamp != null && Duration.between(stamp.at, now).abs() < Duration.ofMinutes(2)
-            Column(Modifier.width(if (isWide) 180.dp else 150.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                StationBadge(op?.name?.take(1) ?: "?", badgeColor(st.operatorId), stamp != null, fresh, size = if (isWide) 112.dp else 96.dp,
-                    medal = if (flatBadges) null else medalRes(st.operatorId, stamp != null))
-                T(st.name, ViaType.labelM.copy(fontWeight = if (stamp != null) FontWeight.Bold else FontWeight.Normal, textAlign = TextAlign.Center),
-                    if (stamp != null) col.text.c() else col.text3.c())
-                T(stamp?.let { "${it.at.toLocalDate().monthValue}/${it.at.toLocalDate().dayOfMonth} 첫 충전" } ?: "아직 안 가봤어요", ViaType.labelS, col.text3.c())
+
+    // 지역 탭
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        ChoiceChip("전체 ${dex.size}", region == null) { region = null }
+        Dex.regions.forEach { r -> ChoiceChip("${r.label} ${Dex.progress(dex, r.id).let { (g, t) -> "$g/$t" }}", region == r.id) { region = r.id } }
+    }
+
+    FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(20.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
+        dex.filter { region == null || it.station.region == region }.forEach { e ->
+            val at = stampedAt[e.station.id]
+            // 방금(2분 안에) 등록한 곳은 톡 커지며 나타난다
+            val fresh = at != null && Duration.between(at, now).abs() < Duration.ofMinutes(2)
+            DexCard(c, e, fresh, flatBadges, Modifier.width(if (isWide) 260.dp else 230.dp))
+        }
+    }
+}
+
+@Composable
+private fun DexCard(c: AppContainer, e: DexEntry, fresh: Boolean, flat: Boolean, modifier: Modifier) {
+    val col = colors
+    val st = e.station
+    val op = c.data.memberships.firstOrNull { it.operatorId == st.operatorId }
+    val initial = op?.name?.take(1) ?: "?"
+    ViaCard(modifier, padding = 24.dp, highlight = if (e.tier == MedalTier.GOLD) Color(0xFFF2C24A) else null) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            T(Dex.label(e.no), ViaType.labelM.copy(fontWeight = FontWeight.Bold), col.text3.c(), Modifier.weight(1f))
+            if (e.state != DexState.UNSEEN) TypeChip(e.type)
+        }
+        Box(Modifier.fillMaxWidth().height(132.dp), contentAlignment = Alignment.Center) {
+            when {
+                flat -> StationBadge(initial, badgeColor(st.operatorId), e.state == DexState.REGISTERED, fresh, size = 112.dp)
+                e.state == DexState.REGISTERED -> StationBadge(initial, badgeColor(st.operatorId), true, fresh, size = 120.dp, medal = medalRes(st.operatorId, e.tier ?: MedalTier.BRONZE))
+                // 발견: 흑백으로 어둡게 바랜 메달(포켓몬 도감의 그림자처럼 모양만 보인다)
+                e.state == DexState.SEEN -> medalRes(st.operatorId, MedalTier.BRONZE)?.let {
+                    Image(painterResource(it), "발견한 충전소", Modifier.size(120.dp), alpha = 0.7f, colorFilter = silhouette)
+                } ?: StationBadge(initial, badgeColor(st.operatorId), false, size = 112.dp)
+                else -> Image(painterResource(R.drawable.medal_locked), "못 본 충전소", Modifier.size(120.dp), alpha = 0.4f)
             }
         }
+        T(if (e.state == DexState.UNSEEN) "???" else st.name, ViaType.bodyM.copy(fontWeight = FontWeight.Bold), if (e.state == DexState.UNSEEN) col.text3.c() else col.text.c(), maxLines = 1)
+        val line = when (e.state) {
+            DexState.UNSEEN -> "추천에 나오면 발견"
+            DexState.SEEN -> "발견 · 충전하면 등록돼요"
+            DexState.REGISTERED -> {
+                val next = MedalTier.visitsToNext(e.visits)
+                "${e.tier?.label ?: ""} 메달 · ${e.visits}회 충전" + (next?.let { " · 다음까지 ${it}번" } ?: "")
+            }
+        }
+        T(line, ViaType.labelS, col.text2.c(), maxLines = 2)
+    }
+}
+
+/** 채도를 빼고 밝기를 낮춘 색 필터(발견만 한 충전소의 메달). */
+private val silhouette = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f); timesAssign(ColorMatrix().apply { setToScale(0.55f, 0.55f, 0.6f, 1f) }) })
+
+/** 출력 타입 칩: 초급속은 진한 파랑, 급속은 옅은 파랑, 완속은 회색. */
+@Composable
+private fun TypeChip(type: PowerType) {
+    val col = colors
+    val (bg, fg) = when (type) {
+        PowerType.ULTRA -> col.pos.c() to Color.White
+        PowerType.FAST -> col.posSoft.c() to col.pos.c()
+        PowerType.SLOW -> col.chip.c() to col.text2.c()
+    }
+    Row(Modifier.clip(RoundedCornerShape(999.dp)).background(bg).padding(horizontal = 14.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        if (type == PowerType.ULTRA) BoltIcon(18.dp, fg)
+        T(type.label, ViaType.labelS.copy(fontWeight = FontWeight.Bold), fg)
     }
 }
 

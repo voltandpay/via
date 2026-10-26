@@ -13,6 +13,7 @@ object Defaults {
     const val POINTS_EFFICIENT_TRIP = 10
     const val POINTS_NEW_STAMP = 20
     const val POINTS_CHARGE = 10
+    const val POINTS_REGION_COMPLETE = 50
 
     const val STATION_MATCH_RADIUS_M = 100.0
     const val CHARGE_GAP_TOLERANCE_SEC = 60L

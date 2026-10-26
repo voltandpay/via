@@ -51,4 +51,10 @@ class MockDataLoaderTest {
         assertEquals("a", nearestStation(listOf(far, st), 37.50045, 127.0))
         assertNull(nearestStation(listOf(st), 37.50135, 127.0))
     }
+
+    @Test
+    fun `시연 충전소는 모두 도감 지역이 정해져 있다`() {
+        val known = com.chargecompass.core.dex.Dex.regions.map { it.id }.toSet()
+        data.stations.forEach { assertTrue(it.region in known, "${it.id}: ${it.region}") }
+    }
 }

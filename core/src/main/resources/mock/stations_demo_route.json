@@ -1,11 +1,11 @@
 [
-  {"id": "st-pangyo-skel", "name": "판교테크노밸리 SK일렉링크", "operatorId": "skel", "lat": 37.4020, "lng": 127.1086, "maxKw": 200, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 1.0, "detourKm": 0.8},
-  {"id": "st-cheonggye-me", "name": "청계산입구역 환경부", "operatorId": "me", "lat": 37.4473, "lng": 127.0560, "maxKw": 100, "connectors": ["DC_COMBO", "CHADEMO"], "status": "AVAILABLE", "alongRouteKm": 6.0, "detourKm": 0.6},
-  {"id": "st-yangjae-gscv", "name": "양재 aT센터 GS차지비", "operatorId": "gscv", "lat": 37.4686, "lng": 127.0399, "maxKw": 100, "connectors": ["DC_COMBO"], "status": "BROKEN", "alongRouteKm": 10.0, "detourKm": 0.9},
-  {"id": "st-yangjae-chaevi", "name": "양재 채비 충전소", "operatorId": "chaevi", "lat": 37.4840, "lng": 127.0350, "maxKw": 200, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 11.0, "detourKm": 0.3},
-  {"id": "st-seocho-evsis", "name": "서초 이브이시스", "operatorId": "evsis", "lat": 37.4919, "lng": 127.0076, "maxKw": 100, "connectors": ["DC_COMBO"], "status": "IN_USE", "alongRouteKm": 13.0, "detourKm": 1.2},
-  {"id": "st-banpo-kepco", "name": "반포 한전 충전소", "operatorId": "kepco", "lat": 37.5048, "lng": 126.9989, "maxKw": 100, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 15.0, "detourKm": 0.7},
-  {"id": "st-hannam-everon", "name": "한남 에버온", "operatorId": "everon", "lat": 37.5341, "lng": 127.0026, "maxKw": 50, "connectors": ["CHADEMO"], "status": "AVAILABLE", "alongRouteKm": 18.0, "detourKm": 1.5},
-  {"id": "st-yongsan-water", "name": "용산 워터 초급속", "operatorId": "water", "lat": 37.5298, "lng": 126.9648, "maxKw": 350, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 20.0, "detourKm": 0.5},
-  {"id": "st-seoulstn-pluglink", "name": "서울역 플러그링크", "operatorId": "pluglink", "lat": 37.5560, "lng": 126.9723, "maxKw": 100, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 23.0, "detourKm": 0.2}
+  {"id": "st-pangyo-skel", "name": "판교테크노밸리 SK일렉링크", "operatorId": "skel", "lat": 37.4020, "lng": 127.1086, "maxKw": 200, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 1.0, "detourKm": 0.8, "region": "gyeonggi"},
+  {"id": "st-cheonggye-me", "name": "청계산입구역 환경부", "operatorId": "me", "lat": 37.4473, "lng": 127.0560, "maxKw": 100, "connectors": ["DC_COMBO", "CHADEMO"], "status": "AVAILABLE", "alongRouteKm": 6.0, "detourKm": 0.6, "region": "gyeonggi"},
+  {"id": "st-yangjae-gscv", "name": "양재 aT센터 GS차지비", "operatorId": "gscv", "lat": 37.4686, "lng": 127.0399, "maxKw": 100, "connectors": ["DC_COMBO"], "status": "BROKEN", "alongRouteKm": 10.0, "detourKm": 0.9, "region": "gangnam"},
+  {"id": "st-yangjae-chaevi", "name": "양재 채비 충전소", "operatorId": "chaevi", "lat": 37.4840, "lng": 127.0350, "maxKw": 200, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 11.0, "detourKm": 0.3, "region": "gangnam"},
+  {"id": "st-seocho-evsis", "name": "서초 이브이시스", "operatorId": "evsis", "lat": 37.4919, "lng": 127.0076, "maxKw": 100, "connectors": ["DC_COMBO"], "status": "IN_USE", "alongRouteKm": 13.0, "detourKm": 1.2, "region": "gangnam"},
+  {"id": "st-banpo-kepco", "name": "반포 한전 충전소", "operatorId": "kepco", "lat": 37.5048, "lng": 126.9989, "maxKw": 100, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 15.0, "detourKm": 0.7, "region": "gangnam"},
+  {"id": "st-hannam-everon", "name": "한남 에버온", "operatorId": "everon", "lat": 37.5341, "lng": 127.0026, "maxKw": 50, "connectors": ["CHADEMO"], "status": "AVAILABLE", "alongRouteKm": 18.0, "detourKm": 1.5, "region": "downtown"},
+  {"id": "st-yongsan-water", "name": "용산 워터 초급속", "operatorId": "water", "lat": 37.5298, "lng": 126.9648, "maxKw": 350, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 20.0, "detourKm": 0.5, "region": "downtown"},
+  {"id": "st-seoulstn-pluglink", "name": "서울역 플러그링크", "operatorId": "pluglink", "lat": 37.5560, "lng": 126.9723, "maxKw": 100, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 23.0, "detourKm": 0.2, "region": "downtown"}
 ]

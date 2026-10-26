@@ -44,6 +44,8 @@ data class Station(
     val status: ChargerStatus,
     val alongRouteKm: Double,
     val detourKm: Double,
+    /** 도감 지역 id(Dex.regions). */
+    val region: String = "",
 )
 
 /** 레이드형 이벤트 충전소. 시간대는 22~2시처럼 자정을 넘을 수 있다. */

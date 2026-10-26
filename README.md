@@ -29,9 +29,15 @@
 ## 서체
 Pleos Connect System UI 서체 **Asta Sans**(42dot)를 앱에 포함한다. [SIL Open Font License 1.1](app/src/main/assets/licenses/AstaSans-OFL.txt) · 출처 https://github.com/42dot/Asta-Sans
 
-## 도감 3D 메달
-도감 배지는 Blender(Cycles)로 렌더링한 메달 이미지다(`app/src/main/res/drawable-nodpi/medal_*.webp`). 사업자 색과 글자를 바꿔 다시 만들 수 있다.
-`Blender -b -P tools/blender_medal.py -- <asta_sans.ttf> <out.png> "#00A06A" "채" [locked]`
+## 충전소 도감
+포켓몬 도감처럼 번호(No.001~), 지역(서울 도심·강남·서초·경기 남부), 출력 타입(초급속·급속·완속)으로 나눈다.
+- 경로 추천에 나온 곳은 **발견**(흑백 실루엣), 충전한 곳은 **등록**(컬러 메달), 못 본 곳은 ???
+- 같은 곳을 다시 충전하면 메달 테두리가 동(1회) → 은(3회) → 금(5회)
+- 지역을 다 모으면 +50P와 음성 안내
+
+메달은 Blender(Cycles)로 렌더링한 이미지다(`app/src/main/res/drawable-nodpi/medal_*.webp`, 사업자 9곳 × 동·은·금 + 잠긴 메달).
+`Blender -b -P tools/blender_medal.py -- <asta_sans.ttf> <out.png> "#00A06A" "채" [bronze|silver|gold|locked]`
+`python3 tools/medal_to_webp.py <out.png>... app/src/main/res/drawable-nodpi`
 
 ## 구조
 - `core/` — 순수 Kotlin. 도착 잔량(`ArrivalCalculator`), 멤버십 기준 실효 단가·순위(`StationRanker`), 리워드 규칙(`RewardEngine`), 충전 세션 감지(`ChargeSessionDetector`), 목업 데이터. JVM 단위 테스트.

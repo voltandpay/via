@@ -101,4 +101,26 @@ class RewardEngineTest {
         assertEquals(LocalDate.of(2026, 11, 3), RewardEngine.eventOccurrenceDate(day, LocalDateTime.of(2026, 11, 3, 13, 59)))
         assertEquals(null, RewardEngine.eventOccurrenceDate(day, LocalDateTime.of(2026, 11, 3, 14, 0)))
     }
+
+    private fun station(id: String, region: String) = com.chargecompass.core.model.Station(
+        id, id, "op", 37.5, 127.0, 100, setOf(Connector.DC_COMBO), com.chargecompass.core.model.ChargerStatus.AVAILABLE, 0.0, 0.0, region)
+
+    @Test
+    fun `지역의 마지막 충전소에 처음 충전하면 지역 완성 보너스`() {
+        val stations = listOf(station("a", "downtown"), station("b", "downtown"), station("c", "gangnam"))
+        val r = RewardEngine.onChargeStarted(session("b", now.withHour(12)), emptyList(), History(stamps = setOf("a")), stations)
+        val bonus = r.single { it.kind == RewardKind.REGION_COMPLETE }
+        assertEquals(50, bonus.points)
+        assertEquals("downtown", bonus.regionId)
+    }
+
+    @Test
+    fun `지역이 덜 찼거나 이미 스탬프가 있으면 지역 완성 보너스 없음`() {
+        val stations = listOf(station("a", "downtown"), station("b", "downtown"), station("c", "downtown"))
+        val notYet = RewardEngine.onChargeStarted(session("b", now.withHour(12)), emptyList(), History(stamps = setOf("a")), stations)
+        assertTrue(notYet.none { it.kind == RewardKind.REGION_COMPLETE })
+        // 다 모은 지역에서 다시 충전해도 또 주지 않는다
+        val again = RewardEngine.onChargeStarted(session("b", now.withHour(12)), emptyList(), History(stamps = setOf("a", "b", "c")), stations)
+        assertTrue(again.none { it.kind == RewardKind.REGION_COMPLETE })
+    }
 }

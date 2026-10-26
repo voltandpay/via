@@ -174,14 +174,19 @@ fun StationBadge(initial: String, color: Color, collected: Boolean, fresh: Boole
     }
 }
 
-/** 도감 3D 메달(Blender 렌더, tools/blender_medal.py). 못 모은 곳은 공통 잠긴 메달, 메달이 없는 사업자는 null(평면 배지). */
+/** 도감 3D 메달(Blender 렌더, tools/blender_medal.py): 사업자별 동·은·금. 메달이 없는 사업자는 null(평면 배지). */
 private val operatorMedals = mapOf(
-    "me" to R.drawable.medal_me, "kepco" to R.drawable.medal_kepco, "skel" to R.drawable.medal_skel,
-    "chaevi" to R.drawable.medal_chaevi, "evsis" to R.drawable.medal_evsis, "gscv" to R.drawable.medal_gscv,
-    "everon" to R.drawable.medal_everon, "water" to R.drawable.medal_water, "pluglink" to R.drawable.medal_pluglink,
+    "me" to listOf(R.drawable.medal_me_bronze, R.drawable.medal_me_silver, R.drawable.medal_me_gold),
+    "kepco" to listOf(R.drawable.medal_kepco_bronze, R.drawable.medal_kepco_silver, R.drawable.medal_kepco_gold),
+    "skel" to listOf(R.drawable.medal_skel_bronze, R.drawable.medal_skel_silver, R.drawable.medal_skel_gold),
+    "chaevi" to listOf(R.drawable.medal_chaevi_bronze, R.drawable.medal_chaevi_silver, R.drawable.medal_chaevi_gold),
+    "evsis" to listOf(R.drawable.medal_evsis_bronze, R.drawable.medal_evsis_silver, R.drawable.medal_evsis_gold),
+    "gscv" to listOf(R.drawable.medal_gscv_bronze, R.drawable.medal_gscv_silver, R.drawable.medal_gscv_gold),
+    "everon" to listOf(R.drawable.medal_everon_bronze, R.drawable.medal_everon_silver, R.drawable.medal_everon_gold),
+    "water" to listOf(R.drawable.medal_water_bronze, R.drawable.medal_water_silver, R.drawable.medal_water_gold),
+    "pluglink" to listOf(R.drawable.medal_pluglink_bronze, R.drawable.medal_pluglink_silver, R.drawable.medal_pluglink_gold),
 )
-fun medalRes(operatorId: String, collected: Boolean): Int? =
-    if (!collected) R.drawable.medal_locked else operatorMedals[operatorId]
+fun medalRes(operatorId: String, tier: com.chargecompass.core.dex.MedalTier): Int? = operatorMedals[operatorId]?.get(tier.ordinal)
 
 @Composable
 fun LockIcon(size: Dp = 36.dp, color: Color) {
