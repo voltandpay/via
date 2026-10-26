@@ -70,10 +70,14 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
                 OutlinedButton(onClick = { scope.launch { c.ledger.append(demoPastMissions(c.demoClock.now(), c.ledger.entries.value)) } }) { Text("미션 스탬프 6개") }
                 // 같은 충전소 보상은 2시간에 한 번이라, 메달 단계(동→은→금)를 보여 줄 때는 하루씩 넘긴다
                 OutlinedButton(onClick = { c.demoClock.jumpTo(c.demoClock.now().plusDays(1)) }) { Text("하루 뒤로") }
+                // 가는 도중 상태 변화 시연: 1위 충전소가 사용 중이 된다 / 되돌린다
+                OutlinedButton(onClick = { c.statusBoard.set("st-yangjae-chaevi", com.chargecompass.core.model.ChargerStatus.IN_USE) }) { Text("양재 채비 사용 중") }
+                OutlinedButton(onClick = { c.statusBoard.clear() }) { Text("상태 되돌리기") }
                 // 월간 절약 리포트 시연: 다음 달 1일 아침으로(지난달 = 이번 달 기록)
                 OutlinedButton(onClick = { c.demoClock.jumpTo(c.demoClock.now().toLocalDate().withDayOfMonth(1).plusMonths(1).atTime(8, 0)) }) { Text("다음 달 1일로") }
                 (c.navi as? PleosNaviRepository)?.let { navi ->
                     OutlinedButton(onClick = { navi.requestDemoRoute() }) { Text("서울역 경로 요청") }
+                    OutlinedButton(onClick = { navi.requestLongTripRoute() }) { Text("부산역 경로 요청") }
                 }
             }
             if (c.mode == DataMode.MOCK) {
@@ -84,6 +88,8 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
                     OutlinedButton(onClick = { v.setSoc(15) }) { Text("SoC 15") }
                     OutlinedButton(onClick = { v.setSoc(80) }) { Text("SoC 80") }
                     OutlinedButton(onClick = { c.mockNavi.setRoute(RouteSnapshot(1, "서울역", 23.0, 2040)) }) { Text("서울역 안내") }
+                    // 장거리 다중 충전 시연: 410km, 충전 2~3번
+                    OutlinedButton(onClick = { v.setSoc(40); c.mockNavi.setRoute(RouteSnapshot(9, "부산역", 410.0, 16_200)) }) { Text("부산 안내(SoC 40)") }
                     OutlinedButton(onClick = { c.mockNavi.setRoute(null) }) { Text("안내 종료") }
                     OutlinedButton(onClick = {
                         c.data.stations.first { it.id == "st-yangjae-chaevi" }.let { v.setLocation(it.lat, it.lng) }

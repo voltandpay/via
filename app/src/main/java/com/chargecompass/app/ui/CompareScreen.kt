@@ -41,6 +41,7 @@ fun CompareScreen(c: AppContainer) {
     val (top, arrival) = when (val s = reco) {
         is RecoState.Suggested -> s.top to s.arrivalSoc
         is RecoState.AwaitingTouch -> s.top to s.arrivalSoc
+        is RecoState.Switch -> s.top to s.arrivalSoc
         else -> emptyList<com.chargecompass.core.pricing.RankedStation>() to null
     }
     val addingId = (reco as? RecoState.Adding)?.station?.station?.id

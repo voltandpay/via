@@ -53,12 +53,14 @@ fun DriveCard(c: AppContainer) {
             is RecoState.Enough -> s.arrivalSoc
             is RecoState.Suggested -> s.arrivalSoc
             is RecoState.AwaitingTouch -> s.arrivalSoc
+            is RecoState.Switch -> s.arrivalSoc
             else -> null
         }
         val best = when (val s = reco) {
             is RecoState.Suggested -> s.top.first()
             is RecoState.AwaitingTouch -> s.choice
             is RecoState.Adding -> s.station
+            is RecoState.Switch -> s.to
             is RecoState.Added -> s.station
             else -> null
         }
@@ -173,6 +175,7 @@ private fun VoiceBar(reco: RecoState) {
     val (title, sub) = when (reco) {
         is RecoState.Suggested -> "경유지로 추가할까요?" to "\"응\"이라고 말하면 내비에 추가돼요 · 화면은 만지지 않아도 돼요"
         is RecoState.AwaitingTouch -> "대답을 듣지 못했어요" to "정차하면 화면에서 한 번에 추가할 수 있어요"
+        is RecoState.Switch -> "${com.chargecompass.app.voice.withSubjectParticle(reco.from.station.name)} 지금 쓸 수 없어요" to "\"응\"이라고 하면 ${reco.to.station.name}로 경유지를 바꿔요"
         is RecoState.Adding -> "경유지로 추가하는 중" to "내비에 반영하고 있어요"
         is RecoState.Added -> if (reco.result == StopResult.FAILED) "경유지 추가에 실패했어요" to "정차 후 다시 시도해 주세요" else "경유지로 추가했어요" to "내비 안내를 따라가세요"
         else -> return

@@ -76,6 +76,11 @@ class PleosNaviRepository(context: Context) : NaviRepository {
         navi.requestRoute(RouteInfo(latitude = 37.5547, longitude = 126.9707, poiName = "서울역", poiId = "0", address = "서울특별시 용산구 한강대로 405", poiSubId = "0"))
     }
 
+    /** 장거리 다중 충전 시연용: 부산역으로 안내 요청. */
+    fun requestLongTripRoute() {
+        navi.requestRoute(RouteInfo(latitude = 35.1151, longitude = 129.0422, poiName = "부산역", poiId = "0", address = "부산광역시 동구 중앙대로 206", poiSubId = "0"))
+    }
+
     override suspend fun addChargingStop(station: Station): StopResult {
         val done = CompletableDeferred<Boolean>().also { pendingWaypoint = it }
         tracker.expectReroute()
@@ -93,6 +98,13 @@ class PleosNaviRepository(context: Context) : NaviRepository {
         val ok = withTimeoutOrNull(WAYPOINT_TIMEOUT_MS) { done.await() } ?: false
         pendingWaypoint = null
         return if (ok) StopResult.WAYPOINT_ADDED else StopResult.FAILED
+    }
+
+    /** 첫 경유지(앞서 넣은 충전소)를 지우고 새 충전소를 넣는다. */
+    override suspend fun replaceChargingStop(station: Station): StopResult {
+        tracker.expectReroute()
+        navi.removeWaypoint(WaypointIndex.FIRST)
+        return addChargingStop(station)
     }
 
     companion object {

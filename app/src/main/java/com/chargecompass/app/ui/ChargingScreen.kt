@@ -34,7 +34,7 @@ fun ChargingScreen(c: AppContainer) {
     val earned by c.rewards.sessionEarned.collectAsState()
     val col = colors
     val s = session ?: return
-    val station = c.data.stations.firstOrNull { it.id == s.stationId }
+    val station = c.data.allStations.firstOrNull { it.id == s.stationId }
     val car = c.vehicleModel()
     val ranked = if (station != null && car != null) {
         StationRanker.rank(listOf(station.copy(alongRouteKm = 0.0, detourKm = 0.0, status = ChargerStatus.AVAILABLE)), c.data.tariffs, owned, energy, car).firstOrNull()
