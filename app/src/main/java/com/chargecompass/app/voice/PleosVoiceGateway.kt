@@ -91,15 +91,27 @@ class PleosVoiceGateway(context: Context) : VoiceGateway {
     override suspend fun ask(question: String, timeoutMs: Long): Answer = voiceLock.withLock {
         speakLocked(question)
         if (!sttAvailable) return@withLock Answer.UNKNOWN
+        val (text, timedOut) = hearLocked(timeoutMs)
+        if (timedOut) Answer.TIMEOUT else YesNoParser.parse(text)
+    }
+
+    override suspend fun listen(prompt: String, timeoutMs: Long): String? = voiceLock.withLock {
+        speakLocked(prompt)
+        if (!sttAvailable) return@withLock null
+        hearLocked(timeoutMs).first
+    }
+
+    /** 한 번 듣는다. (들은 말, 시간 초과 여부) */
+    private suspend fun hearLocked(timeoutMs: Long): Pair<String?, Boolean> {
         val heard = CompletableDeferred<String?>().also { listening = it }
         try {
             stt.request()
             val text = withTimeoutOrNull(timeoutMs) { heard.await() }
             if (text == null && !heard.isCompleted) {
                 stt.stop()
-                return@withLock Answer.TIMEOUT
+                return null to true
             }
-            YesNoParser.parse(text)
+            return text to false
         } catch (e: CancellationException) {
             stt.stop()
             throw e

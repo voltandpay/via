@@ -456,3 +456,18 @@ fun ConfettiBurst(key: Any, modifier: Modifier = Modifier) {
     }
 }
 
+
+/** 말하기 버튼: 누르면 "무엇을 도와드릴까요?" 하고 듣는다(주행 중에도 하나뿐인 큰 버튼). */
+@Composable
+fun VoiceAskButton(c: com.chargecompass.app.AppContainer, modifier: Modifier = Modifier) {
+    val col = colors
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    Row(
+        modifier.clip(RoundedCornerShape(999.dp)).background(col.pos.c()).pressable { c.askAssistant(scope) }
+            .padding(horizontal = 28.dp, vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        MicIcon(30.dp)
+        T("말하기", ViaType.bodyM.copy(fontWeight = FontWeight.Bold), Color.White)
+    }
+}

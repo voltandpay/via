@@ -13,7 +13,8 @@
 2. **충전 — 요금·절약액·스탬프**: 충전을 시작하면 위치로 충전소를 찾아 적용 요금(회원가/로밍가/비회원가)과 비회원가 대비 절약 예상액을 보여주고, 처음 온 충전소면 스탬프를 찍는다.
 3. **레이드형 이벤트 충전소**: 한산한 시간·장소(예: 22~02시)에 충전하면 포인트 2배 — 충전 수요를 분산하는 대가를 사업자가 낸다.
 4. **차량 데이터로 자동 검증되는 리워드**: 충전·스탬프·이벤트·효율 운전 포인트는 사용자가 아무것도 누르지 않아도 차량 신호로 쌓인다. 포인트는 현금성이 아니라 제휴 충전 할인 쿠폰 교환용이다.
-5. **수집과 꾸준함**: 포켓몬 도감식 충전소 도감(지역·발견/등록·동·은·금 3D 메달), 주간 미션·리서치 돌파, 경부하 부스트, 사업자 데이(한정 메달), 4주 단위 충전 혜택 시즌. 수집·시즌 화면은 **차를 세워 둔 충전 중에만** 보여 주고, 홈·주행 화면은 충전 유틸리티로 둔다.
+5. **아낀 돈을 체감하게**: 멤버십 코치(최근 30일 충전을 다시 계산해 "이 카드가 있었다면 얼마 덜 냈을지"), 음성으로 묻기(말하기 버튼 → "제일 싼 충전소 어디야?", "이번 달 얼마 아꼈어?", "도착하면 몇 퍼센트야?"), 월간 절약 리포트(매월 처음 정차할 때 한 줄 + 1~7일 홈 카드).
+6. **수집과 꾸준함**: 포켓몬 도감식 충전소 도감(지역·발견/등록·동·은·금 3D 메달), 주간 미션·리서치 돌파, 경부하 부스트, 사업자 데이(한정 메달), 4주 단위 충전 혜택 시즌. 수집·시즌 화면은 **차를 세워 둔 충전 중에만** 보여 주고, 홈·주행 화면은 충전 유틸리티로 둔다.
 
 ## 사용 SDK와 권한
 
@@ -60,10 +61,10 @@ Pleos Connect System UI 서체 **Asta Sans**(42dot)를 앱에 포함한다. [SIL
 새 스탬프 획득 연출은 메달을 `--spin 0~315`(45° 간격)로 8장면 렌더링한다. PT 표지·영상 썸네일용 히어로 컷 `doc/assets/via_hero_1920x1080.png`은 `python3 tools/compose_hero.py <렌더 폴더> <symbol.png> <asta_sans.ttf> <out.png>`로 만든다.
 
 ## 구조
-- `core/` — 순수 Kotlin. 도착 잔량(`ArrivalCalculator`), 멤버십 기준 실효 단가·순위(`StationRanker`), 리워드 규칙(`RewardEngine`), 충전 세션 감지(`ChargeSessionDetector`), 도감(`dex/Dex`), 주간 미션(`missions/Missions`), 충전 혜택 시즌(`season/Seasons`), 목업 데이터. JVM 단위 테스트.
+- `core/` — 순수 Kotlin. 도착 잔량(`ArrivalCalculator`), 멤버십 기준 실효 단가·순위(`StationRanker`), 리워드 규칙(`RewardEngine`), 충전 세션 감지(`ChargeSessionDetector`), 도감(`dex/Dex`), 주간 미션(`missions/Missions`), 충전 혜택 시즌(`season/Seasons`), 멤버십 코치(`coach/MembershipCoach`), 목업 데이터. JVM 단위 테스트.
 - `app/` — Android(Compose). SDK는 Repository 뒤에 숨기고(`Pleos*`/`Mock*`), 추천 흐름(`RecommendationCoordinator`)과 리워드 적립(`RewardCoordinator`)이 이를 조합한다. 기록은 앱 내부 파일(포인트 원장·발견한 충전소·충전 요약)에 남는다(서버 없음).
 - `tools/` — Blender 3D 렌더 스크립트(`blender_style.py`·`blender_medal.py`·`blender_props.py`, 전체는 `render_all.sh`), Virtual Console 조작(`vc.sh`).
-- 단위 테스트 157개(core 66 · app 91).
+- 단위 테스트 172개(core 69 · app 103).
 
 ## 제출 APK
 `apk/VoltAndPay_VIA_release.apk` (공모전 규칙: `팀명_앱이름_release.apk`)

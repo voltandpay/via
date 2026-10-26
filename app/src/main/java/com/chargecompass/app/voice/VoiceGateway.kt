@@ -8,6 +8,8 @@ interface VoiceGateway {
     suspend fun speak(text: String)
     /** 질문을 읽고 답을 듣는다. STT를 못 쓰면 바로 UNKNOWN. */
     suspend fun ask(question: String, timeoutMs: Long = 8_000): Answer
+    /** [prompt]를 읽고 사용자가 한 말을 그대로 돌려준다(음성 명령). 못 들었거나 STT를 못 쓰면 null. */
+    suspend fun listen(prompt: String, timeoutMs: Long = 8_000): String? = null
     fun start()
     fun stop()
     /** 마이크 권한을 앱 시작 뒤에 허용했을 때 음성 인식을 다시 붙인다. */

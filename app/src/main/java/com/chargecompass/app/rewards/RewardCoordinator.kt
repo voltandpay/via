@@ -134,7 +134,7 @@ class RewardCoordinator(
         val price = StationRanker.effectivePrice(tariff, ownedMemberships())
         val cost = (kwh * price.wonPerKwh).roundToInt()
         val nonMember = (kwh * tariff.nonMemberWonPerKwh).roundToInt()
-        return ChargeSummary(station.name, kwh, cost, nonMember - cost, earned.sumOf { it.points }, session.endedAt ?: session.startedAt)
+        return ChargeSummary(station.name, kwh, cost, nonMember - cost, earned.sumOf { it.points }, session.endedAt ?: session.startedAt, station.id)
     }
 
     companion object {
@@ -151,4 +151,6 @@ fun discountCharges(summaries: List<ChargeSummary>, date: java.time.LocalDate): 
 data class ChargeSummary(
     val stationName: String, val chargedKwh: Double, val costWon: Int, val savingWon: Int, val points: Int,
     val endedAt: java.time.LocalDateTime,
+    /** 어느 충전소였는지(멤버십 코치가 사업자별로 다시 계산한다). 예전 기록에는 없다. */
+    val stationId: String? = null,
 )

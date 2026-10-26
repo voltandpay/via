@@ -70,6 +70,8 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
                 OutlinedButton(onClick = { scope.launch { c.ledger.append(demoPastMissions(c.demoClock.now(), c.ledger.entries.value)) } }) { Text("미션 스탬프 6개") }
                 // 같은 충전소 보상은 2시간에 한 번이라, 메달 단계(동→은→금)를 보여 줄 때는 하루씩 넘긴다
                 OutlinedButton(onClick = { c.demoClock.jumpTo(c.demoClock.now().plusDays(1)) }) { Text("하루 뒤로") }
+                // 월간 절약 리포트 시연: 다음 달 1일 아침으로(지난달 = 이번 달 기록)
+                OutlinedButton(onClick = { c.demoClock.jumpTo(c.demoClock.now().toLocalDate().withDayOfMonth(1).plusMonths(1).atTime(8, 0)) }) { Text("다음 달 1일로") }
                 (c.navi as? PleosNaviRepository)?.let { navi ->
                     OutlinedButton(onClick = { navi.requestDemoRoute() }) { Text("서울역 경로 요청") }
                 }
@@ -97,8 +99,13 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
 
 /** 지난 6일(오늘 제외) 중 4일에 충전한 예시 요약. */
 internal fun demoWeekSummaries(now: LocalDateTime): List<ChargeSummary> = listOf(
-    Triple(6, "판교테크노밸리 SK일렉링크", 2860), Triple(4, "양재 채비 충전소", 4120), Triple(3, "반포 한전 충전소", 1980), Triple(1, "서초 이브이시스", 3350),
-).map { (back, name, saving) -> ChargeSummary(name, 32.0, 9800, saving, 10, now.minusDays(back.toLong()).withHour(19).withMinute(0)) }
+    Triple(6, "st-pangyo-skel", 2860), Triple(4, "st-yangjae-chaevi", 4120), Triple(3, "st-banpo-kepco", 1980), Triple(1, "st-seocho-evsis", 3350),
+).map { (back, id, saving) -> ChargeSummary(stationNames[id] ?: id, 32.0, 9800, saving, 10, now.minusDays(back.toLong()).withHour(19).withMinute(0), id) }
+
+private val stationNames = mapOf(
+    "st-pangyo-skel" to "판교테크노밸리 SK일렉링크", "st-yangjae-chaevi" to "양재 채비 충전소",
+    "st-banpo-kepco" to "반포 한전 충전소", "st-seocho-evsis" to "서초 이브이시스",
+)
 
 /** 지난 6주에 미션을 하나씩 달성한 기록(리서치 돌파 시연용). */
 internal fun demoPastMissions(now: LocalDateTime, existing: List<com.chargecompass.core.rewards.RewardEntry>): List<com.chargecompass.core.rewards.RewardEntry> = (1..6).map { w ->
