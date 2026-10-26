@@ -77,6 +77,9 @@ class AppContainer(context: Context, val mode: DataMode, scope: CoroutineScope) 
 
     val summaries: SummaryLog = FileSummaryLog(File(context.filesDir, "summaries.txt"))
     val seen: SeenStore = FileSeenStore(File(context.filesDir, "seen.txt"))
+    /** 주행 기록(평소 경로 학습). 내비에 넣었던 목적지가 있으면 함께 남긴다. */
+    val tripLog: com.chargecompass.app.store.TripLog = com.chargecompass.app.store.FileTripLog(File(context.filesDir, "trips.txt"))
+    private var lastRouteName: String? = null
     val rewards = RewardCoordinator(vehicle, ledger, data, ::vehicleModel, voice, scope, { membership.owned.value }, summaries)
     private val chargingActive: StateFlow<Boolean> =
         rewards.activeSession.map { it != null }.stateIn(scope, SharingStarted.Eagerly, false)
@@ -124,10 +127,34 @@ class AppContainer(context: Context, val mode: DataMode, scope: CoroutineScope) 
         }
         // 충전 중 목적지까지 충분히 찼으면 "지금 끝내도 돼요"를 충전 1회에 한 번 말한다
         scope.launch {
-            kotlinx.coroutines.flow.combine(rewards.activeSession, vehicle.energy) { s, e -> s to e }.collect { (s, e) ->
+            // 운전석이 비었으면(차 밖에서 기다리는 중) 말하지 않고, 돌아와 앉으면 그때 말한다
+            kotlinx.coroutines.flow.combine(rewards.activeSession, vehicle.energy, vehicle.driverSeated) { s, e, seated -> Triple(s, e, seated) }.collect { (s, e, seated) ->
                 val session = s ?: return@collect
+                if (seated == false) return@collect
                 val (destination, advice) = chargeStopAdvice(session, e) ?: return@collect
                 chargeStopAnnouncer.onUpdate(session, e.socPct, destination, advice)?.let { voice.speak(it) }
+            }
+        }
+        // 주행 기록: 끝난 주행을 출발·도착 위치, 차가 잰 거리, 그때 내비 목적지와 함께 남긴다(차 안에만)
+        scope.launch { navi.route.collect { r -> if (r != null) lastRouteName = r.destinationName } }
+        scope.launch {
+            vehicle.tripEnded.collect { t ->
+                val from = t.start
+                val to = t.end
+                if (from != null && to != null) {
+                    tripLog.append(listOf(com.chargecompass.core.usual.TripRecord(from.first, from.second, to.first, to.second, t.distanceKm, t.startedAt ?: t.at, lastRouteName)))
+                }
+                lastRouteName = navi.route.value?.destinationName
+            }
+        }
+        // 내비 없이 출발하면 평소 이 시간 경로로 배터리가 모자라는지 한 번 알린다
+        scope.launch {
+            var wasDriving = driving.value
+            var check: kotlinx.coroutines.Job? = null
+            driving.collect { now ->
+                if (now && !wasDriving) check = scope.launch { checkUsualRoute() }
+                if (!now) check?.cancel()
+                wasDriving = now
             }
         }
         scope.launch {
@@ -182,6 +209,17 @@ class AppContainer(context: Context, val mode: DataMode, scope: CoroutineScope) 
     }
 
 
+    /** 출발 위치·시각은 출발할 때 잡고, 내비에 목적지를 넣을 시간을 준 뒤에도 경로가 없을 때만 말한다. */
+    private suspend fun checkUsualRoute() {
+        val (lat, lng) = vehicle.currentLocation() ?: return
+        val departedAt = demoClock.now()
+        kotlinx.coroutines.delay(USUAL_ROUTE_WAIT_MS)
+        if (navi.route.value != null) return
+        val car = vehicleModel() ?: return
+        val usual = com.chargecompass.core.usual.UsualRoutes.predict(tripLog.trips.value, lat, lng, departedAt) ?: return
+        com.chargecompass.app.usual.UsualRouteAdvisor.speech(usual, vehicle.energy.value, car)?.let { voice.speak(it) }
+    }
+
     private suspend fun announceMonthlyReport() {
         // init 블록의 수집이 아래쪽 프로퍼티 초기화보다 먼저 돌 수 있어, 파일은 맨 위의 appContext로 여기서 만든다
         val reportMark = File(appContext.filesDir, "report.txt")
@@ -199,6 +237,9 @@ class AppContainer(context: Context, val mode: DataMode, scope: CoroutineScope) 
     }
 
     companion object {
+        /** 출발 직후 내비에 목적지를 넣을 시간. */
+        const val USUAL_ROUTE_WAIT_MS = 10_000L
+
         fun savedMode(context: Context): DataMode =
             File(context.filesDir, "mode.txt").takeIf { it.exists() }?.readText()?.trim()
                 ?.let { runCatching { DataMode.valueOf(it) }.getOrNull() } ?: DataMode.PLEOS

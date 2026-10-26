@@ -77,4 +77,16 @@ class FileStoresTest {
         FileSummaryLog(sum).append(com.chargecompass.app.rewards.ChargeSummary("반포", 20.0, 6000, 1000, 10, at))
         assertEquals(listOf("양재", "반포"), FileSummaryLog(sum).summaries.value.map { it.stationName })
     }
+
+    @Test
+    fun `주행 기록은 다시 열어도 남아 있다(목적지 없는 주행 포함)`() = runBlocking {
+        val file = File(dir, "trips.txt")
+        FileTripLog(file).append(listOf(
+            com.chargecompass.core.usual.TripRecord(37.41, 127.09, 37.55, 126.97, 23.4, at, "서울역"),
+            com.chargecompass.core.usual.TripRecord(37.55, 126.97, 37.41, 127.09, 22.8, at.plusHours(9), null),
+        ))
+        val reopened = FileTripLog(file).trips.value
+        assertEquals(listOf("서울역", null), reopened.map { it.destination })
+        assertEquals(23.4, reopened[0].distanceKm)
+    }
 }

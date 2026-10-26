@@ -57,7 +57,8 @@ fun nearestStation(stations: List<Station>, lat: Double, lng: Double, radiusM: D
         .filter { it.second <= radiusM }
         .minByOrNull { it.second }?.first
 
-private fun distanceM(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
+/** 두 좌표 사이 거리(m, 하버사인). */
+fun distanceM(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
     val r = 6_371_000.0
     val dLat = Math.toRadians(lat2 - lat1)
     val dLng = Math.toRadians(lng2 - lng1)
