@@ -36,6 +36,16 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.File
+import com.chargecompass.app.recommend.RecoState
+import com.chargecompass.app.voice.AnswerContext
+import com.chargecompass.app.voice.BestStation
+import com.chargecompass.app.voice.VoiceAssistant
+import com.chargecompass.core.energy.ArrivalCalculator
+import kotlin.math.roundToInt
+import java.time.YearMonth
+import com.chargecompass.app.insights.monthlyReport
+import com.chargecompass.app.insights.reportDue
+import com.chargecompass.app.insights.reportSpeech
 
 enum class DataMode { PLEOS, MOCK }
 
@@ -44,6 +54,7 @@ enum class DataMode { PLEOS, MOCK }
  * 음성은 두 모드 모두 Pleos TTS/STT를 쓴다(에뮬레이터에서 On-device로 동작).
  */
 class AppContainer(context: Context, val mode: DataMode, scope: CoroutineScope) {
+    private val appContext = context.applicationContext
     val data: MockData = MockDataLoader.load { path ->
         checkNotNull(javaClass.classLoader?.getResourceAsStream(path)) { "리소스 없음: $path" }.bufferedReader().use { it.readText() }
     }
@@ -87,6 +98,10 @@ class AppContainer(context: Context, val mode: DataMode, scope: CoroutineScope) 
         navi.start()
         voice.start()
         // 출발(정차 → 주행)할 때 오늘의 이벤트 충전소를 하루 한 번 음성으로 알린다
+        // 달이 바뀐 뒤 처음 정차했을 때 지난달 절약 리포트를 한 번 말한다(주행 중에는 말하지 않는다)
+        scope.launch {
+            driving.collect { now -> if (!now) announceMonthlyReport() }
+        }
         scope.launch {
             var wasDriving = driving.value
             driving.collect { now ->
@@ -98,6 +113,55 @@ class AppContainer(context: Context, val mode: DataMode, scope: CoroutineScope) 
         scope.launch {
             if (membership.vehicleModelId.value == null) catalog.byVin(vehicle.vin())?.let { membership.setVehicle(it.id) }
         }
+    }
+
+    /** 말하기 버튼: 가장 싼 충전소·이번 달 아낀 돈·도착 배터리 등을 음성으로 묻고 답한다. */
+    val assistant = VoiceAssistant(voice, ::answerContext, offerStation = {
+        when (val s = reco.state.value) {
+            is RecoState.AwaitingTouch -> s.choice.station.id
+            is RecoState.Suggested -> s.top.first().station.id
+            else -> null
+        }
+    }, addStation = reco::confirmByTouch)
+    private var assistantJob: kotlinx.coroutines.Job? = null
+
+    fun askAssistant(scope: kotlinx.coroutines.CoroutineScope) {
+        if (assistantJob?.isActive == true) return   // 이미 듣는 중
+        assistantJob = scope.launch { assistant.handle() }
+    }
+
+    private fun answerContext(): AnswerContext {
+        val now = demoClock.now()
+        val route = navi.route.value
+        val car = vehicleModel()
+        val energy = vehicle.energy.value
+        val (arrival, best) = when (val s = reco.state.value) {
+            is RecoState.Suggested -> s.arrivalSoc to s.top.first()
+            is RecoState.AwaitingTouch -> s.arrivalSoc to s.choice
+            is RecoState.Enough -> s.arrivalSoc to null
+            else -> (route?.let { r -> car?.let { ArrivalCalculator.socAfter(energy, it, r.remainingKm) } }) to null
+        }
+        val eff = energy.efficiencyKmPerKwh?.takeIf { it > 0 } ?: car?.baseEfficiencyKmPerKwh
+        return AnswerContext(
+            destination = route?.destinationName,
+            arrivalSoc = arrival?.roundToInt()?.coerceAtLeast(0),
+            best = best?.let { BestStation(it.station.name, it.station.alongRouteKm.roundToInt(), it.price.wonPerKwh, it.savingWon) },
+            monthSavingWon = summaries.summaries.value.filter { YearMonth.from(it.endedAt) == YearMonth.from(now) }.sumOf { it.savingWon },
+            balance = ledger.balance(now),
+            rangeKm = if (car != null && eff != null) energy.socPct?.let { (it / 100.0 * car.batteryKwh * eff).toInt() } else null,
+            socPct = energy.socPct,
+        )
+    }
+
+
+    private suspend fun announceMonthlyReport() {
+        // init 블록의 수집이 아래쪽 프로퍼티 초기화보다 먼저 돌 수 있어, 파일은 맨 위의 appContext로 여기서 만든다
+        val reportMark = File(appContext.filesDir, "report.txt")
+        val now = demoClock.now()
+        val last = reportMark.takeIf { it.exists() }?.readText()?.trim()?.let { runCatching { YearMonth.parse(it) }.getOrNull() }
+        val month = reportDue(now, last) { m -> monthlyReport(m, summaries.summaries.value, ledger.entries.value) != null } ?: return
+        reportMark.writeText(month.toString())
+        monthlyReport(month, summaries.summaries.value, ledger.entries.value)?.let { voice.speak(reportSpeech(it)) }
     }
 
     fun stop() {

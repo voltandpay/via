@@ -7,6 +7,9 @@ class MockVoiceGateway(
 ) : VoiceGateway {
     val spoken = mutableListOf<String>()
     val asked = mutableListOf<String>()
+    val listened = mutableListOf<String>()
+    /** listen()이 차례로 돌려줄 말. */
+    val heard = ArrayDeque<String>()
     private val queue = ArrayDeque(answers)
 
     fun enqueue(answer: Answer) = queue.addLast(answer)
@@ -17,6 +20,12 @@ class MockVoiceGateway(
         asked += question
         if (!sttAvailable) return Answer.UNKNOWN
         return queue.removeFirstOrNull() ?: Answer.TIMEOUT
+    }
+
+    override suspend fun listen(prompt: String, timeoutMs: Long): String? {
+        listened += prompt
+        if (!sttAvailable) return null
+        return heard.removeFirstOrNull()
     }
 
     override fun start() = Unit

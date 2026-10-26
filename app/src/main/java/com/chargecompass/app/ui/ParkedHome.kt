@@ -98,6 +98,8 @@ private fun HomeTab(c: AppContainer) {
     // 오늘이 사업자 데이면 맨 위에 알린다(포켓몬 고의 커뮤니티 데이)
     upcomingOperatorDay(c.data.operatorDays, c.demoClock.now().toLocalDate())?.takeIf { it.date == c.demoClock.now().toLocalDate() }?.let { OperatorDayCard(c, it) }
 
+    MonthlyReportCard(c)
+
     // 방금 끝난 충전: 영수증 카드(보상 고리의 마무리). 정차 중 화면이라 처음 나타날 때 한 번 축하 효과
     val summary by c.rewards.lastSummary.collectAsState()
     summary?.let { sum ->
@@ -212,6 +214,8 @@ private fun HomeTab(c: AppContainer) {
         WeekBars(week, (6 downTo 0).map { back -> if (back == 0) "오늘" else today.minusDays(back.toLong()).dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.KOREAN) }, height = if (isWide) 140.dp else 110.dp)
     }
 
+    MembershipCoachCard(c)
+
     when (val s = reco) {
         is RecoState.Added -> if (s.result != StopResult.FAILED) ViaCard { T("경유지로 추가한 충전소", ViaType.labelM, col.text3.c()); T(s.station.station.name, ViaType.titleM, col.activeText.c()) }
         is RecoState.Enough -> ViaCard { T("지금 경로는 충전 없이 도착할 수 있어요", ViaType.bodyL) }
@@ -263,7 +267,7 @@ private fun BatteryHero(c: AppContainer) {
             }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    T(car?.name ?: "차종을 골라 주세요", ViaType.labelM, col.text3.c())
+                    T(car?.name ?: "차종을 골라 주세요", ViaType.labelM, col.text3.c(), Modifier.weight(1f, fill = false))
                     val now = c.demoClock.now()
                     if (com.chargecompass.core.rewards.RewardEngine.isOffPeak(now.hour)) T("경부하 부스트 중 · 충전 포인트 2배", ViaType.labelS.copy(fontWeight = FontWeight.Bold), Color.White,
                         Modifier.clip(RoundedCornerShape(999.dp)).background(col.pos.c()).padding(horizontal = 14.dp, vertical = 4.dp))
@@ -280,6 +284,7 @@ private fun BatteryHero(c: AppContainer) {
                     T("목적지를 정하면 도착할 때 남는 배터리를 계산해요", ViaType.bodyM, col.text2.c())
                 }
             }
+            VoiceAskButton(c)
         }
     }
 }

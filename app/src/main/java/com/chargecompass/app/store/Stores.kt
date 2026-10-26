@@ -108,11 +108,11 @@ open class InMemorySummaryLog(initial: List<ChargeSummary> = emptyList()) : Summ
     override suspend fun append(s: ChargeSummary) { _summaries.value = _summaries.value + s }
 }
 
-/** 한 줄에 하나: stationName|chargedKwh|costWon|savingWon|points|endedAt */
+/** 한 줄에 하나: stationName|chargedKwh|costWon|savingWon|points|endedAt|stationId (예전 줄은 stationId 없음) */
 class FileSummaryLog(private val file: File) : InMemorySummaryLog(read(file)) {
     override suspend fun append(s: ChargeSummary) {
         super.append(s)
-        appendLines(file, listOf(s.stationName.replace("|", " "), s.chargedKwh, s.costWon, s.savingWon, s.points, s.endedAt).joinToString("|") + "\n")
+        appendLines(file, listOf(s.stationName.replace("|", " "), s.chargedKwh, s.costWon, s.savingWon, s.points, s.endedAt, s.stationId ?: "").joinToString("|") + "\n")
     }
 
     private companion object {
@@ -120,7 +120,7 @@ class FileSummaryLog(private val file: File) : InMemorySummaryLog(read(file)) {
             .filter { it.isNotBlank() }
             .mapNotNull { line ->
                 val p = line.split("|")
-                runCatching { ChargeSummary(p[0], p[1].toDouble(), p[2].toInt(), p[3].toInt(), p[4].toInt(), LocalDateTime.parse(p[5])) }.getOrNull()
+                runCatching { ChargeSummary(p[0], p[1].toDouble(), p[2].toInt(), p[3].toInt(), p[4].toInt(), LocalDateTime.parse(p[5]), p.getOrNull(6)?.ifEmpty { null }) }.getOrNull()
             }
     }
 }

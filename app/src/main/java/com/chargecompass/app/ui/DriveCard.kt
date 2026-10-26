@@ -44,8 +44,10 @@ fun DriveCard(c: AppContainer) {
     Column(Modifier.fillMaxSize().padding(48.dp), verticalArrangement = Arrangement.spacedBy(32.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             ViaMark()
-            T("주행 중 · 안내는 음성으로 드려요", ViaType.labelM, col.text2.c(), Modifier.weight(1f))
+            T("주행 중 · 안내는 음성으로 드려요 · \"제일 싼 충전소 어디야?\"", ViaType.labelM, col.text2.c(), Modifier.weight(1f))
             route?.let { Chip("${it.destinationName}까지 ${it.remainingKm.roundToInt()}km · ${it.remainingSec / 60}분", fg = col.text2.c()) }
+            // 주행 중 화면의 유일한 터치 요소: 큰 말하기 버튼(누른 뒤에는 음성으로만 주고받는다)
+            VoiceAskButton(c)
         }
         val arrival = when (val s = reco) {
             is RecoState.Enough -> s.arrivalSoc
