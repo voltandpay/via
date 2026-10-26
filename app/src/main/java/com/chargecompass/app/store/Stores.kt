@@ -1,5 +1,6 @@
 package com.chargecompass.app.store
 
+import com.chargecompass.app.rewards.ChargeSummary
 import com.chargecompass.core.Defaults
 import com.chargecompass.core.rewards.RewardEntry
 import com.chargecompass.core.rewards.RewardHistory
@@ -84,5 +85,35 @@ class FileMembershipStore(private val file: File) : MembershipStore {
             file.delete()
             tmp.renameTo(file)
         }
+    }
+}
+
+/** 끝난 충전의 요약 기록(홈의 최근 7일 절약 차트). */
+interface SummaryLog {
+    val summaries: StateFlow<List<ChargeSummary>>
+    suspend fun append(s: ChargeSummary)
+}
+
+open class InMemorySummaryLog(initial: List<ChargeSummary> = emptyList()) : SummaryLog {
+    protected val _summaries = MutableStateFlow(initial)
+    override val summaries: StateFlow<List<ChargeSummary>> = _summaries
+    override suspend fun append(s: ChargeSummary) { _summaries.value = _summaries.value + s }
+}
+
+/** 한 줄에 하나: stationName|chargedKwh|costWon|savingWon|points|endedAt */
+class FileSummaryLog(private val file: File) : InMemorySummaryLog(read(file)) {
+    override suspend fun append(s: ChargeSummary) {
+        super.append(s)
+        file.parentFile?.mkdirs()
+        file.appendText(listOf(s.stationName.replace("|", " "), s.chargedKwh, s.costWon, s.savingWon, s.points, s.endedAt).joinToString("|") + "\n")
+    }
+
+    private companion object {
+        fun read(file: File): List<ChargeSummary> = if (!file.exists()) emptyList() else file.readLines()
+            .filter { it.isNotBlank() }
+            .mapNotNull { line ->
+                val p = line.split("|")
+                runCatching { ChargeSummary(p[0], p[1].toDouble(), p[2].toInt(), p[3].toInt(), p[4].toInt(), LocalDateTime.parse(p[5])) }.getOrNull()
+            }
     }
 }

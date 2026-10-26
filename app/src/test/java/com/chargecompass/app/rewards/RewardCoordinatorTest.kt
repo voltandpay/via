@@ -170,4 +170,18 @@ class RewardCoordinatorTest {
         now = now.plusMinutes(20); vehicle.endCharging()
         assertNull(c.lastSummary.value)
     }
+
+    @Test
+    fun `충전 요약은 기록에 남아 앱을 다시 켜도 7일 차트에 쓸 수 있다`() = runTest(UnconfinedTestDispatcher()) {
+        val (vehicle, ledger, voice) = env()
+        val log = com.chargecompass.app.store.InMemorySummaryLog()
+        RewardCoordinator(vehicle, ledger, data, { car }, voice, backgroundScope, { setOf("m-chaevi") }, log)
+        vehicle.setLocation(yangjae.lat, yangjae.lng)
+        vehicle.setSoc(30); vehicle.setCharging(true)
+        vehicle.setSoc(55); now = now.plusMinutes(20); vehicle.setCharging(true)
+        now = now.plusMinutes(1); vehicle.endCharging()
+        assertEquals(1, log.summaries.value.size)
+        assertEquals(4276, log.summaries.value.single().savingWon)
+        assertEquals(now, log.summaries.value.single().endedAt)
+    }
 }

@@ -16,6 +16,8 @@ import com.chargecompass.app.store.FileMembershipStore
 import com.chargecompass.app.store.FileRewardLedger
 import com.chargecompass.app.store.MembershipStore
 import com.chargecompass.app.store.RewardLedger
+import com.chargecompass.app.store.FileSummaryLog
+import com.chargecompass.app.store.SummaryLog
 import com.chargecompass.app.vehicle.MockVehicleRepository
 import com.chargecompass.app.vehicle.PleosVehicleRepository
 import com.chargecompass.app.vehicle.VehicleRepository
@@ -58,7 +60,8 @@ class AppContainer(context: Context, val mode: DataMode, scope: CoroutineScope) 
 
     fun vehicleModel(): VehicleModel? = membership.vehicleModelId.value?.let(catalog::byId)
 
-    val rewards = RewardCoordinator(vehicle, ledger, data, ::vehicleModel, voice, scope, { membership.owned.value })
+    val summaries: SummaryLog = FileSummaryLog(File(context.filesDir, "summaries.txt"))
+    val rewards = RewardCoordinator(vehicle, ledger, data, ::vehicleModel, voice, scope, { membership.owned.value }, summaries)
     private val chargingActive: StateFlow<Boolean> =
         rewards.activeSession.map { it != null }.stateIn(scope, SharingStarted.Eagerly, false)
 

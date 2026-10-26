@@ -57,33 +57,34 @@ fun ChargingScreen(c: AppContainer) {
             return@Column
         }
         val nonMemberTotal = ranked.nonMemberCostWon
+        val eta = car?.let { chargeEtaMinutes(energy.socPct, Defaults.TARGET_SOC.toInt(), it.batteryKwh, station.maxKw) }
         Adaptive(Arrangement.spacedBy(28.dp)) { first ->
             ViaCard(first, padding = 48.dp) {
-                T("비회원가보다 절약 예상", ViaType.bodyM, col.text2.c())
-                T(won(ranked.savingWon), if (isWide) ViaType.display else ViaType.display.copy(fontSize = ViaType.headline.fontSize * 1.4f), col.activeText.c())
-                T("${Defaults.TARGET_SOC.toInt()}%까지 충전 기준 · ${ranked.price.basis.label()} 적용", ViaType.labelM, col.text3.c())
-                Row(Modifier.fillMaxWidth()) {
-                    T("내 요금 · ${ranked.price.basis.label()}", ViaType.bodyM.copy(fontWeight = FontWeight.Bold), modifier = Modifier.weight(1f))
-                    T(won(ranked.totalCostWon), ViaType.bodyM.copy(fontWeight = FontWeight.Bold))
-                }
-                Bar(ranked.totalCostWon / nonMemberTotal.toFloat().coerceAtLeast(1f), col.active.c())
-                Row(Modifier.fillMaxWidth()) {
-                    T("비회원가였다면", ViaType.bodyM, col.text2.c(), Modifier.weight(1f))
-                    T(won(nonMemberTotal), ViaType.bodyM, col.text2.c())
-                }
-                Bar(1f, col.muted.c())
-            }
-            Column(if (isWide) Modifier.weight(0.85f) else Modifier, verticalArrangement = Arrangement.spacedBy(28.dp)) {
-                ViaCard(padding = 36.dp) {
-                    Row(Modifier.fillMaxWidth()) {
-                        T("배터리", ViaType.labelM, col.text3.c(), Modifier.weight(1f))
-                        T("목표 ${Defaults.TARGET_SOC.toInt()}%", ViaType.labelM, col.text3.c())
+                Adaptive(Arrangement.spacedBy(48.dp)) { textSide ->
+                    // 배터리: 현재 → 목표 80% 원형 게이지(충전 중이라 차오르는 애니메이션 허용)
+                    RingGauge(
+                        (energy.socPct ?: 0) / 100f, col.pos.c(), size = if (isWide) 300.dp else 260.dp,
+                        marker = (Defaults.TARGET_SOC / 100).toFloat(),
+                        modifier = if (isWide) Modifier else Modifier.align(Alignment.CenterHorizontally),
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            T("${energy.socPct ?: "-"}%", ViaType.headline)
+                            T("목표 ${Defaults.TARGET_SOC.toInt()}%" + (eta?.let { " · 약 ${it}분" } ?: ""), ViaType.labelM, col.text3.c())
+                        }
                     }
-                    T("${energy.socPct ?: "-"}%", ViaType.headline)
-                    Bar((energy.socPct ?: 0) / 100f, col.pos.c(), height = 28.dp, marker = (Defaults.TARGET_SOC / 100).toFloat())
-                    val nonMemberUnit = c.data.tariffs[station.operatorId]?.nonMemberWonPerKwh
-                    T("적용 요금 ${ranked.price.wonPerKwh}원/kWh" + (nonMemberUnit?.let { " · 비회원가 ${it}원/kWh" } ?: ""), ViaType.bodyM, col.text2.c())
+                    Column(textSide, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        T("비회원가보다 절약 예상", ViaType.bodyM, col.text2.c())
+                        CountUpWon(ranked.savingWon, if (isWide) ViaType.display else ViaType.display.copy(fontSize = ViaType.headline.fontSize * 1.4f), col.activeText.c())
+                        T("${Defaults.TARGET_SOC.toInt()}%까지 · ${ranked.price.wonPerKwh}원/kWh ${ranked.price.basis.label()}", ViaType.labelM, col.text3.c())
+                        SavingBar(ranked.totalCostWon, nonMemberTotal, col.active.c(), height = 24.dp)
+                        Row(Modifier.fillMaxWidth()) {
+                            T("내 요금 ${won(ranked.totalCostWon)}", ViaType.bodyM.copy(fontWeight = FontWeight.Bold), modifier = Modifier.weight(1f))
+                            T("비회원가 ${won(nonMemberTotal)}", ViaType.bodyM, col.text3.c())
+                        }
+                    }
                 }
+            }
+            Column(if (isWide) Modifier.weight(0.6f) else Modifier, verticalArrangement = Arrangement.spacedBy(28.dp)) {
                 if (earned.isNotEmpty()) ViaCard(padding = 36.dp) {
                     T("이번 충전으로 받은 포인트", ViaType.labelM, col.text3.c())
                     T("+${earned.sumOf { it.points }}P", ViaType.headline, col.activeText.c())

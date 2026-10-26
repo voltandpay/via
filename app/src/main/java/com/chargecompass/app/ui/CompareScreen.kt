@@ -70,7 +70,8 @@ fun CompareScreen(c: AppContainer) {
                 }
                 Column(if (isWide) Modifier.weight(0.8f) else Modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     T("${r.price.wonPerKwh}원/kWh · ${r.price.basis.label()}", ViaType.bodyM.copy(fontWeight = FontWeight.Bold))
-                    Bar(r.price.wonPerKwh / nonMember.toFloat(), if (first) col.active.c() else col.muted.c(), height = 14.dp)
+                    // 비회원가(전체) 안에 내 단가, 남는 옅은 초록 = 아낀 만큼
+                    SavingBar(r.price.wonPerKwh, nonMember, if (first) col.active.c() else col.muted.c(), height = 16.dp)
                     T("비회원가 ${nonMember}원/kWh", ViaType.labelS, col.text3.c())
                 }
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

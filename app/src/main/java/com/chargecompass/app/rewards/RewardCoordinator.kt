@@ -1,6 +1,7 @@
 package com.chargecompass.app.rewards
 
 import com.chargecompass.app.store.RewardLedger
+import com.chargecompass.app.store.SummaryLog
 import com.chargecompass.app.vehicle.VehicleRepository
 import com.chargecompass.app.voice.VoiceGateway
 import com.chargecompass.core.Defaults
@@ -29,6 +30,7 @@ class RewardCoordinator(
     private val voice: VoiceGateway,
     scope: CoroutineScope,
     private val ownedMemberships: () -> Set<String> = { emptySet() },
+    private val summaryLog: SummaryLog? = null,
 ) {
     private val _active = MutableStateFlow<ChargeSession?>(null)
     /** 진행 중인 충전 세션. 주행 상태 CHARGING 판단에도 쓴다. */
@@ -54,7 +56,9 @@ class RewardCoordinator(
                 when (val event = detector.onSample(sample)) {
                     is SessionEvent.Started -> onStarted(event.session)
                     is SessionEvent.Ended -> {
-                        _lastSummary.value = summarize(event.session, _sessionEarned.value)
+                        val summary = summarize(event.session, _sessionEarned.value)
+                        _lastSummary.value = summary
+                        summary?.let { summaryLog?.append(it) }
                         _active.value = null
                         _sessionEarned.value = emptyList()
                     }
@@ -90,7 +94,7 @@ class RewardCoordinator(
         val price = StationRanker.effectivePrice(tariff, ownedMemberships())
         val cost = (kwh * price.wonPerKwh).roundToInt()
         val nonMember = (kwh * tariff.nonMemberWonPerKwh).roundToInt()
-        return ChargeSummary(station.name, kwh, cost, nonMember - cost, earned.sumOf { it.points })
+        return ChargeSummary(station.name, kwh, cost, nonMember - cost, earned.sumOf { it.points }, session.endedAt ?: session.startedAt)
     }
 
     companion object {
@@ -98,4 +102,7 @@ class RewardCoordinator(
     }
 }
 
-data class ChargeSummary(val stationName: String, val chargedKwh: Double, val costWon: Int, val savingWon: Int, val points: Int)
+data class ChargeSummary(
+    val stationName: String, val chargedKwh: Double, val costWon: Int, val savingWon: Int, val points: Int,
+    val endedAt: java.time.LocalDateTime,
+)
