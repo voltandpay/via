@@ -119,7 +119,7 @@ fun OperatorDayCard(c: AppContainer, day: OperatorDay) {
     val stations = c.data.stations.filter { it.operatorId == day.operatorId }
     ViaCard(padding = 36.dp, highlight = if (live) col.event.c() else null) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-            StationBadge(day.title.take(1), badgeColor(day.operatorId), true, size = 72.dp, medal = eventMedalRes(day.operatorId))
+            StationBadge(day.operatorId, day.title, true, size = 72.dp, medal = eventMedalRes(day.operatorId))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 T(day.title, ViaType.titleS)
                 T("${day.date.monthValue}/${day.date.dayOfMonth}(${day.date.dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.KOREAN)}) · 포인트 ${day.multiplier}배 + 한정 메달", ViaType.bodyM, col.text2.c())

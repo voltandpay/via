@@ -120,7 +120,7 @@ private fun DexCard(c: AppContainer, e: DexEntry, fresh: Boolean, flat: Boolean,
     val col = colors
     val st = e.station
     val op = c.data.memberships.firstOrNull { it.operatorId == st.operatorId }
-    val initial = op?.name?.take(1) ?: "?"
+    val label = op?.name ?: st.name
     ViaCard(modifier, padding = 24.dp, highlight = if (e.tier == MedalTier.GOLD) Color(0xFFF2C24A) else null) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             T(Dex.label(e.no), ViaType.labelM.copy(fontWeight = FontWeight.Bold), col.text3.c(), Modifier.weight(1f))
@@ -128,15 +128,15 @@ private fun DexCard(c: AppContainer, e: DexEntry, fresh: Boolean, flat: Boolean,
         }
         Box(Modifier.fillMaxWidth().height(132.dp), contentAlignment = Alignment.Center) {
             when {
-                flat -> StationBadge(initial, badgeColor(st.operatorId), e.state == DexState.REGISTERED, fresh, size = 112.dp)
+                flat -> StationBadge(st.operatorId, label, e.state == DexState.REGISTERED, fresh, size = 112.dp)
                 // 사업자 데이에 충전했으면 한정 메달(보라 테두리)을 보여 준다
-                e.state == DexState.REGISTERED -> StationBadge(initial, badgeColor(st.operatorId), true, fresh, size = 120.dp,
+                e.state == DexState.REGISTERED -> StationBadge(st.operatorId, label, true, fresh, size = 120.dp,
                     medal = (if (limited) eventMedalRes(st.operatorId) else null) ?: medalRes(st.operatorId, e.tier ?: MedalTier.BRONZE))
                 // 발견: 흑백으로 어둡게 바랜 메달(포켓몬 도감의 그림자처럼 모양만 보인다)
                 e.state == DexState.SEEN -> medalRes(st.operatorId, MedalTier.BRONZE)?.let {
                     // 다크 모드에서는 어두운 카드에 묻히지 않게 더 밝은 실루엣
                     Image(painterResource(it), "발견한 충전소", Modifier.size(120.dp), alpha = if (col.isDark) 0.95f else 0.7f, colorFilter = if (col.isDark) silhouetteDark else silhouette)
-                } ?: StationBadge(initial, badgeColor(st.operatorId), false, size = 112.dp)
+                } ?: StationBadge(st.operatorId, label, false, size = 112.dp)
                 else -> Image(painterResource(R.drawable.medal_locked), "못 본 충전소", Modifier.size(120.dp), alpha = 0.6f)
             }
         }

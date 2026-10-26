@@ -184,7 +184,7 @@ private fun NewStampCard(c: AppContainer, operatorId: String, stationName: Strin
                 Prop(frames[i], 150.dp)
             } else {
                 val dex = c.data.memberships.firstOrNull { it.operatorId == operatorId }
-                StationBadge(dex?.name?.take(1) ?: "?", badgeColor(operatorId), true, fresh = true, size = 120.dp,
+                StationBadge(operatorId, dex?.name ?: stationName, true, fresh = true, size = 120.dp,
                     medal = medalRes(operatorId, com.chargecompass.core.dex.MedalTier.BRONZE))
             }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {

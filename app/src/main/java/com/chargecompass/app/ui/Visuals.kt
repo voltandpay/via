@@ -150,30 +150,92 @@ private val badgePalette = listOf(
 fun badgeColor(operatorId: String): Color =
     Color(operatorColors[operatorId] ?: badgePalette[Math.floorMod(operatorId.hashCode(), badgePalette.size)])
 
-/** 도감 배지: 모으면 사업자 색 원에 첫 글자, 못 모았으면 점선 원에 자물쇠. 방금 모았으면 톡 커지며 나타난다. */
+/** 도감 배지: 모으면 사업자 색 원에 흰 문양, 못 모았으면 점선 원에 자물쇠. 방금 모았으면 톡 커지며 나타난다. [label]은 읽어 주기용 이름. */
 @Composable
-fun StationBadge(initial: String, color: Color, collected: Boolean, fresh: Boolean = false, size: Dp = 112.dp, medal: Int? = null) {
+fun StationBadge(operatorId: String, label: String, collected: Boolean, fresh: Boolean = false, size: Dp = 112.dp, medal: Int? = null) {
     val c = colors
     val pop = remember { Animatable(if (fresh) 0.4f else 1f) }
     LaunchedEffect(fresh) { if (fresh) pop.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow)) }
     if (medal != null) {
         // 3D 메달: 메달 테두리까지 꽉 찬 이미지라 평면 배지와 거의 같은 크기
         // 못 모은 메달은 반투명으로 물러나 보이게(모은 메달이 돋보이도록)
-        androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(medal), initial, Modifier.size(size * 1.05f).scale(pop.value),
+        androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(medal), label, Modifier.size(size * 1.05f).scale(pop.value),
             alpha = if (collected) 1f else 0.45f)
         return
     }
     Box(Modifier.size(size).scale(pop.value), contentAlignment = Alignment.Center) {
+        val color = badgeColor(operatorId)
+        val symbol = operatorSymbol(operatorId)
         Canvas(Modifier.size(size)) {
             val r = this.size.width / 2
             if (collected) {
                 drawCircle(color, r)
                 drawCircle(Color.White.copy(alpha = 0.35f), r - 6.dp.toPx(), style = Stroke(3.dp.toPx()))
+                drawPath(symbolPath(symbol, center, r * 0.44f), Color.White)
             } else {
                 drawCircle(c.line.c(), r - 2.dp.toPx(), style = Stroke(3.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 10f))))
             }
         }
-        if (collected) T(initial, ViaType.titleM, Color.White) else LockIcon(color = c.text3.c())
+        if (!collected) LockIcon(color = c.text3.c())
+    }
+}
+
+/**
+ * 사업자 문양: 3D 메달(tools/blender_style.py SHAPES)과 같은 윤곽. 글자 대신 모양으로 사업자를 가른다(같은 계열 색이 많다).
+ * 좌표는 대략 -1~1, 위가 +y. 사업자 로고를 흉내 내지 않는 단순한 도형.
+ */
+private fun star(n: Int, r1: Float, r2: Float) = List(2 * n) { i ->
+    val a = Math.toRadians(90.0 + 180.0 * i / n); val r = if (i % 2 == 0) r1 else r2
+    (r * kotlin.math.cos(a)).toFloat() to (r * kotlin.math.sin(a)).toFloat()
+}
+private fun ngon(n: Int, r: Float, a0: Double, dy: Float = 0f) = List(n) { i ->
+    val a = Math.toRadians(a0 + 360.0 * i / n)
+    (r * kotlin.math.cos(a)).toFloat() to (dy + r * kotlin.math.sin(a)).toFloat()
+}
+private fun rotate45(pts: List<Pair<Float, Float>>): List<Pair<Float, Float>> {
+    val k = kotlin.math.sqrt(0.5f)
+    return pts.map { (x, y) -> (x - y) * k to (x + y) * k }
+}
+private val symbolShapes: Map<String, List<List<Pair<Float, Float>>>> = mapOf(
+    "bolt" to listOf(listOf(0.2f to 1f, -0.7f to -0.2f, -0.1f to -0.2f, -0.2f to -1f, 0.7f to 0.2f, 0.1f to 0.2f)),
+    "plug" to listOf(listOf(-0.1f to -0.95f, 0.1f to -0.95f, 0.1f to -0.5f, 0.35f to -0.42f, 0.55f to -0.15f, 0.55f to 0.5f, 0.4f to 0.5f,
+        0.4f to 0.95f, 0.22f to 0.95f, 0.22f to 0.5f, -0.22f to 0.5f, -0.22f to 0.95f, -0.4f to 0.95f, -0.4f to 0.5f, -0.55f to 0.5f,
+        -0.55f to -0.15f, -0.35f to -0.42f, -0.1f to -0.5f)),
+    "hexagon" to listOf(ngon(6, 0.92f, 0.0)),
+    "sparkle" to listOf(star(4, 1f, 0.3f)),
+    "star" to listOf(star(5, 1f, 0.45f)),
+    "triangle" to listOf(ngon(3, 0.95f, 90.0, dy = -0.1f)),
+    "plus" to listOf(listOf(-0.2f to -0.85f, 0.2f to -0.85f, 0.2f to -0.2f, 0.85f to -0.2f, 0.85f to 0.2f, 0.2f to 0.2f, 0.2f to 0.85f,
+        -0.2f to 0.85f, -0.2f to 0.2f, -0.85f to 0.2f, -0.85f to -0.2f, -0.2f to -0.2f)),
+    "drop" to listOf(run {
+        val a = Math.toDegrees(kotlin.math.acos(0.62 / 1.3))   // 꼭짓점(0,1)에서 원(중심 0,-0.3)에 그은 접선
+        listOf(0f to 1f) + (0..30).map { i ->
+            val t = Math.toRadians(90 + a + (360 - 2 * a) * i / 30)
+            (0.62 * kotlin.math.cos(t)).toFloat() to (-0.3 + 0.62 * kotlin.math.sin(t)).toFloat()
+        }
+    }),
+    "leaf" to run {   // 끝이 뾰족한 잎 + 꼭지(꼭지가 없으면 작게 볼 때 타원처럼 읽힌다)
+        val top = (0..24).map { i -> -0.8f + 1.7f * i / 24 to (0.46 * Math.pow(kotlin.math.sin(Math.PI * i / 24), 0.8)).toFloat() }
+        val leaf = top.map { (x, y) -> x to -y } + top.drop(1).dropLast(1).reversed()
+        listOf(rotate45(leaf), rotate45(listOf(-1.05f to -0.05f, -0.6f to -0.05f, -0.6f to 0.05f, -1.05f to 0.05f)))
+    },
+    "chevron" to listOf(listOf(-0.55f to 0.9f, -0.1f to 0.9f, 0.6f to 0f, -0.1f to -0.9f, -0.55f to -0.9f, 0.15f to 0f)),
+    "diamond" to listOf(listOf(0f to 1f, -0.7f to 0f, 0f to -1f, 0.7f to 0f)),
+)
+private val operatorSymbols = mapOf(
+    "me" to "leaf", "kepco" to "plug", "skel" to "hexagon", "chaevi" to "bolt", "evsis" to "sparkle",
+    "gscv" to "triangle", "everon" to "plus", "water" to "drop", "pluglink" to "chevron",
+)
+/** 문양이 정해지지 않은 사업자(이피트 등)는 마름모. */
+fun operatorSymbol(operatorId: String): String = operatorSymbols[operatorId] ?: "diamond"
+
+fun symbolPath(name: String, center: Offset, scale: Float): Path = Path().apply {
+    symbolShapes.getValue(name).forEach { pts ->
+        pts.forEachIndexed { i, (x, y) ->
+            val px = center.x + x * scale; val py = center.y - y * scale
+            if (i == 0) moveTo(px, py) else lineTo(px, py)
+        }
+        close()
     }
 }
 

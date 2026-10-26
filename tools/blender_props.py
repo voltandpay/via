@@ -1,11 +1,11 @@
 # VIA 3D 소품: blender -b -P blender_props.py -- <font.ttf> <out.png> <종류> [옵션...] [--size N]
 #   coin                       포인트 코인(P)
 #   chest closed|open [t]      미션 상자. t(0~1)는 열린 정도(애니메이션 장면용, 기본 1)
-#   emblem <글자> locked|gold   지역 엠블럼(방패)
+#   emblem <글자|@문양> locked|gold  지역 엠블럼(방패)
 #   symbol                     VIA 심볼(경로 + 번개 경유지)
 #   moon                       경부하 부스트(달 + 번개)
-#   card <hex색> <글자>          충전 멤버십 카드(사업자 색)
-#   ticket <hex색> [금액]        제휴 할인 쿠폰 티켓. 금액은 화면 글자로 따로 보여 주므로 그림에는 번개만 넣는다
+#   card <hex색> [글자]          충전 멤버십 카드(사업자 색). 글자를 빼면 칩·번호 줄만
+#   ticket <hex색> [금액]        제휴 할인 쿠폰 티켓(두 겹 유리). 금액은 화면 글자로 따로 보여 주므로 그림에는 번개만 넣는다
 #   shelf [dark]               메달 진열장 선반(가로로 긴 그림, --aspect로 세로 비율). dark는 다크 모드용 짙은 유리
 # 재질·조명·렌더 설정은 메달과 같은 tools/blender_style.py를 쓴다.
 import bpy, bmesh, sys, os, math
@@ -80,49 +80,66 @@ def bolt(scale, z, m, depth, cx=0.0, cy=0.0):
 
 gold = mat("gold", "#FFBE0B")
 goldDark = mat("goldDark", "#F59E0B", grad=0.15)
-white = mat("white", st.WHITE, grad=0, rough=0.35)
+white = mat("white", st.WHITE, grad=0, rough=0.25, coat=0.8)
 blue = mat("blue", "#1E6BFF", grad=0.35)
+def glass(tint="#F7FAFF", k=0.2, name="glass"): return st.frosted(name, tint, rough=0.24, tint_k=k)
+
+def rounded_rect(w, h, r, notch=0.0):
+    """둥근 사각형 윤곽(반시계). notch가 있으면 왼쪽·오른쪽 가운데에 반원 홈(쿠폰 모양)."""
+    def arc(cx, cy, a0): return [(cx + r * math.cos(math.radians(a0 + k)), cy + r * math.sin(math.radians(a0 + k))) for k in range(0, 91, 10)]
+    def dent(side, sign): return [(side + sign * notch * math.cos(math.radians(t)), notch * math.sin(math.radians(t * -sign))) for t in range(-90, 91, 10)]
+    pts = arc(w / 2 - r, h / 2 - r, 0) + arc(-w / 2 + r, h / 2 - r, 90)
+    if notch: pts += dent(-w / 2, 1)
+    pts += arc(-w / 2 + r, -h / 2 + r, 180) + arc(w / 2 - r, -h / 2 + r, 270)
+    if notch: pts += dent(w / 2, -1)
+    return pts
+
+def shield(sx, sy):
+    right = [(0.68, 1.05), (0.82, 0.93)] + [(0.85, y / 10) for y in range(8, -2, -2)]
+    for i in range(1, 13):   # 오른쪽 아래 곡선 → 아래 꼭짓점(0, -1.15)
+        t = i / 12
+        right.append(((1 - t) ** 2 * 0.85 + 2 * (1 - t) * t * 0.85, (1 - t) ** 2 * -0.2 + 2 * (1 - t) * t * -0.85 + t * t * -1.15))
+    left = [(-x, y) for x, y in reversed(right[:-1])]
+    return [(x * sx, y * sy) for x, y in right + left]
 
 flat = True   # 원판·방패처럼 XY 평면에 만들어 앞(+Z)을 카메라 쪽으로 세우는 것
 if kind == "coin":
-    cyl(1.0, 0.3, m=gold, bevel=0.13)
-    cyl(0.76, 0.06, loc=(0, 0, 0.15), m=goldDark, bevel=0.03)
-    text("P", 1.0, 0.19, white, extrude=0.07, y=0.03)   # 흰 글자로 또렷하게
+    # 메달과 같은 유리 동전: 속에 금빛 원판, 둘레에 금 고리, 앞에 흰 P
+    cyl(1.0, 0.44, m=glass(), bevel=0.08)
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.86, minor_radius=0.1, major_segments=128, minor_segments=20)
+    o = own(bpy.context.object, st.glow("ring", "#FFBE0B", 3.0, grad=0.2)); o.scale = (1, 1, 1.25)
+    cyl(0.8, 0.16, loc=(0, 0, -0.03), m=st.glow("core", "#FFB020", 2.2, grad=0.5), bevel=0.06)
+    text("P", 1.0, 0.22, white, extrude=0.04, y=0.03, bevel=0.012)
 
 elif kind == "emblem":
     glyph, state = opts[0], opts[1]
     done = state == "gold"
-    def shield(sx, sy):
-        right = [(0.68, 1.05), (0.82, 0.93)] + [(0.85, y / 10) for y in range(8, -2, -2)]
-        for i in range(1, 13):   # 오른쪽 아래 곡선 → 아래 꼭짓점(0, -1.15)
-            t = i / 12
-            right.append(((1 - t) ** 2 * 0.85 + 2 * (1 - t) * t * 0.85, (1 - t) ** 2 * -0.2 + 2 * (1 - t) * t * -0.85 + t * t * -1.15))
-        left = [(-x, y) for x, y in reversed(right[:-1])]
-        return [(x * sx, y * sy) for x, y in right + left]
-    body = mat("body", "#FFBE0B") if done else st.metal("body", "#B9C6D8", 0.22)
-    # 잠긴 면은 유리 대신 차분한 회청색 플라스틱: 유리 반사가 글자를 가리지 않게
-    face = mat("face", "#1E6BFF", grad=0.35) if done else mat("face", "#8D9BB4", grad=0.25)
-    prism(shield(1, 1), 0.22, -0.11, body, bevel=0.05, name="shield")
-    prism(shield(0.8, 0.8), 0.06, 0.11, face, bevel=0.02, name="face")
-    text(glyph, 0.95, 0.19, white, y=0.05)
+    # 두 겹: 뒤에 진한 색 방패(완성 금빛 · 잠김 회청색), 앞에 살짝 비켜 겹친 맑은 서리 유리 방패
+    back = prism(shield(1, 1), 0.16, -0.26, st.glow("back", "#FFB020" if done else "#8D9BB4", 2.2 if done else 0.8), bevel=0.04, name="back")
+    back.location = (0.3, 0.1, 0)
+    prism(shield(1, 1), 0.14, -0.04, glass("#F4F8FF", 0.12, "front"), bevel=0.05, name="front")
+    if glyph.startswith("@"): st.shape(sc, glyph[1:], 0.5, 0.07, 0.09, white, root, offset=(0, -0.05))
+    else: text(glyph, 0.95, 0.11, white, extrude=0.04, y=0.03, bevel=0.012)
 
 elif kind == "symbol":
-    tile = box(2.0, 2.0, 0.34, m=blue, bevel=0.32)
+    # 두 겹: 뒤에 진한 파랑 타일, 앞에 서리 유리 타일. 흰 경로·번개는 유리 앞에
+    back = box(2.0, 2.0, 0.24, loc=(0.18, 0.14, -0.3), m=st.glow("back", "#1E6BFF", 1.6, grad=0.4), bevel=0.3)
+    back.modifiers["bevel"].segments = 10
+    tile = box(2.0, 2.0, 0.24, m=glass("#DCE9FF", 0.2, "tile"), bevel=0.3)
     tile.modifiers["bevel"].segments = 10
-    # 경로: 왼쪽 아래 출발점 → 가운데 경유지 → 오른쪽 위 목적지
     cu = bpy.data.curves.new("road", "CURVE"); cu.dimensions = "3D"; cu.bevel_depth = 0.07; cu.bevel_resolution = 6
     sp = cu.splines.new("BEZIER"); sp.bezier_points.add(2)
     for bp, (co, h1, h2) in zip(sp.bezier_points, [
-        ((-0.55, -0.6, 0.2), (-0.55, -0.9, 0.2), (-0.55, -0.25, 0.2)),
-        ((0, 0, 0.2), (-0.3, -0.05, 0.2), (0.3, 0.05, 0.2)),
-        ((0.55, 0.6, 0.2), (0.55, 0.25, 0.2), (0.55, 0.9, 0.2)),
+        ((-0.55, -0.6, 0.16), (-0.55, -0.9, 0.16), (-0.55, -0.25, 0.16)),
+        ((0, 0, 0.16), (-0.3, -0.05, 0.16), (0.3, 0.05, 0.16)),
+        ((0.55, 0.6, 0.16), (0.55, 0.25, 0.16), (0.55, 0.9, 0.16)),
     ]):
         bp.co, bp.handle_left, bp.handle_right = co, h1, h2
     road = bpy.data.objects.new("road", cu); sc.collection.objects.link(road); road.parent = root; cu.materials.append(white)
-    bpy.ops.mesh.primitive_uv_sphere_add(radius=0.13, location=(-0.55, -0.6, 0.2)); own(bpy.context.object, white)
-    box(0.24, 0.24, 0.16, loc=(0.55, 0.62, 0.22), m=white, bevel=0.03)
-    cyl(0.36, 0.14, loc=(0, 0, 0.24), m=white, bevel=0.04)
-    bolt(0.026, 0.3, blue, 0.07)
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=0.13, location=(-0.55, -0.6, 0.16)); own(bpy.context.object, white)
+    box(0.24, 0.24, 0.16, loc=(0.55, 0.62, 0.18), m=white, bevel=0.03)
+    cyl(0.36, 0.14, loc=(0, 0, 0.2), m=white, bevel=0.04)
+    bolt(0.026, 0.26, blue, 0.07)
 
 elif kind == "moon":
     # 초승달: 바깥 원(반지름 1)에서 오른쪽 위 원(중심 0.5,0.36 · 반지름 0.86)을 뺀 윤곽을 다각형으로
@@ -138,66 +155,66 @@ elif kind == "moon":
     inner = inner[j:] + inner[:j]
     if math.dist(inner[1], outer[0]) < math.dist(inner[-1], outer[0]): inner.reverse(); inner = inner[-1:] + inner[:-1]
     pts = outer + inner
-    prism(pts[::4], 0.3, -0.15, mat("moon", "#FFC83D"), bevel=0.05, name="moon")
-    bolt(0.045, 0.0, blue, 0.18, cx=0.45, cy=-0.35)
+    # 서리 유리 달 속에 노란 빛 덩어리(조금 작게)
+    prism(pts[::4], 0.34, -0.17, glass("#FFE9A8", 0.4, "moon"), bevel=0.06, name="moon")
+    prism([(x * 0.86 - 0.05, y * 0.86) for x, y in pts[::4]], 0.16, -0.08, st.glow("core", "#FFC83D", 2.2, grad=0.4), bevel=0.04, name="core")
+    bolt(0.045, 0.12, blue, 0.16, cx=0.45, cy=-0.35)
 
 elif kind in ("card", "ticket"):
-    color, label = opts[0], (opts[1] if len(opts) > 1 else "")
-    face = mat("cardface", color, grad=0.32)
-    def rounded_rect(w, h, r, notch=0.0):
-        """둥근 사각형 윤곽(반시계). notch가 있으면 왼쪽·오른쪽 가운데에 반원 홈(쿠폰 모양)."""
-        def arc(cx, cy, a0): return [(cx + r * math.cos(math.radians(a0 + k)), cy + r * math.sin(math.radians(a0 + k))) for k in range(0, 91, 10)]
-        def dent(side, sign): return [(side + sign * notch * math.cos(math.radians(t)), notch * math.sin(math.radians(t * -sign))) for t in range(-90, 91, 10)]
-        pts = arc(w / 2 - r, h / 2 - r, 0) + arc(-w / 2 + r, h / 2 - r, 90)
-        if notch: pts += dent(-w / 2, 1)
-        pts += arc(-w / 2 + r, -h / 2 + r, 180) + arc(w / 2 - r, -h / 2 + r, 270)
-        if notch: pts += dent(w / 2, -1)
-        return pts
+    color = opts[0]
+    label = opts[1] if len(opts) > 1 else ""
     if kind == "card":
-        prism(rounded_rect(1.7, 1.08, 0.12), 0.08, -0.04, face, bevel=0.02, name="card")
-        box(0.34, 0.26, 0.03, loc=(-0.48, 0.05, 0.05), m=gold, bevel=0.01)   # IC 칩
-        for y in (-0.03, 0.05, 0.13):
-            box(0.34, 0.012, 0.035, loc=(-0.48, y, 0.055), m=goldDark)
-        box(1.5, 0.08, 0.02, loc=(0, -0.36, 0.045), m=white)
-        # 카드 윗변(0.54) 안에 들어오게: 글자 높이 0.56, 가운데 y=0.1. 얇은 베벨로 획을 또렷하게
-        text(label, 0.56, 0.05, white, extrude=0.03, y=0.1, bevel=0.012).location.x = 0.4
+        # 두 겹: 뒤에 사업자 색 카드, 앞에 사업자 색이 옅게 도는 서리 유리 카드
+        prism(rounded_rect(1.7, 1.08, 0.13), 0.06, -0.16, st.glow("back", color, 2.4), bevel=0.02, name="back").location = (0.12, 0.1, 0)
+        prism(rounded_rect(1.7, 1.08, 0.13), 0.12, -0.06, glass(color, 0.15, "card"), bevel=0.04, name="card")
+        prism(rounded_rect(0.32, 0.24, 0.05), 0.03, 0.06, gold, bevel=0.01, name="chip").location = (-0.5, 0.1, 0)
+        for i, w in enumerate((0.9, 0.55)):   # 카드 번호 자리(흰 줄)
+            prism(rounded_rect(w, 0.06, 0.03), 0.015, 0.06, white, name="line").location = (-0.78 + w / 2, -0.25 - i * 0.13, 0)
+        # 카드 윗변(0.54) 안에 들어오게: 글자 높이 0.5, 가운데 y=0.12. 얇은 베벨로 획을 또렷하게
+        if label: text(label, 0.5, 0.07, white, extrude=0.03, y=0.12, bevel=0.01).location.x = 0.42
     else:
-        prism(rounded_rect(1.8, 0.9, 0.1, notch=0.16), 0.08, -0.04, face, bevel=0.02, name="ticket")
-        for i in range(7):   # 점선 절취선
-            cyl(0.022, 0.02, loc=(0.56, -0.33 + i * 0.11, 0.045), m=white, verts=24)
-        bolt(0.03, 0.04, white, 0.05, cx=-0.12)   # 금액은 화면 글자로 — 그림에는 충전 번개만
+        # 두 겹 쿠폰: 뒤에 진한 색, 앞에 서리 유리. 금액은 화면 글자로 — 그림에는 번개와 절취선만
+        prism(rounded_rect(1.8, 0.9, 0.12, notch=0.16), 0.08, -0.2, st.glow("back", color, 2.4), bevel=0.03, name="back").location = (0.1, 0.08, 0)
+        prism(rounded_rect(1.8, 0.9, 0.12, notch=0.16), 0.12, -0.06, glass(color, 0.15, "ticket"), bevel=0.04, name="ticket")
+        for i in range(5):   # 점선 절취선
+            cyl(0.035, 0.03, loc=(0.55, -0.3 + i * 0.15, 0.07), m=white, verts=32)
+        bolt(0.03, 0.06, white, 0.05, cx=-0.15)
 
 elif kind == "shelf":
     flat = False
-    # 진열장 선반: 반투명 유리 판 + 흰 받침(토스의 유리 패널 느낌)
-    dark = bool(opts) and opts[0] == "dark"   # 다크 모드: 밝은 유리가 눈부시지 않게 짙은 유리·받침
-    wood = st.glass("shelf", "#4A5672" if dark else "#E3EEFF", rough=0.18)
-    trim = mat("trim", "#39435A" if dark else "#C9D8F2", grad=0.2)
-    box(9.4, 0.9, 0.2, loc=(0, 0, -0.1), m=wood, bevel=0.04)          # 선반 판
-    box(9.4, 0.06, 0.12, loc=(0, -0.47, -0.16), m=trim, bevel=0.02)    # 앞 테두리
+    # 진열장 선반: 서리 유리 판 + 은은한 받침. dark는 다크 모드용(밝은 유리가 눈부시지 않게 짙게)
+    dark = bool(opts) and opts[0] == "dark"
+    board = glass("#4A5672", 0.8, "shelf") if dark else glass("#E3EEFF", 0.35, "shelf")
+    trim = st.glow("trim", "#3B4A6B" if dark else "#9DB4E0", 0.8 if dark else 1.2, grad=0.2)
+    box(9.4, 0.9, 0.22, loc=(0, 0, -0.11), m=board, bevel=0.06)         # 선반 판
+    box(9.2, 0.05, 0.08, loc=(0, -0.3, -0.12), m=trim, bevel=0.02)      # 판 속 빛 띠
     for x in (-4.2, 0, 4.2):                                           # 받침
-        box(0.22, 0.5, 0.5, loc=(x, 0.15, -0.45), m=trim, bevel=0.04)
+        box(0.22, 0.5, 0.5, loc=(x, 0.15, -0.45), m=board, bevel=0.06)
 
 elif kind == "chest":
     flat = False
     opened = bool(opts) and opts[0] == "open"
     chest_t = (float(opts[1]) if len(opts) > 1 else 1.0) if opened else 0.0
-    wood = mat("wood", "#6E55FF", grad=0.32)   # VIA 이벤트 보라
-    box(1.6, 1.0, 0.8, m=wood, bevel=0.06)
+    # 서리 유리 상자 속에 보라 빛 덩어리, 금 띠는 그대로(VIA 이벤트 보라)
+    shell = glass("#B9A8FF", 0.45, "shell")
+    core = st.glow("core", "#6E55FF", 2.0, grad=0.35)
+    box(1.6, 1.0, 0.8, m=shell, bevel=0.08)
+    box(1.36, 0.78, 0.6, m=core, bevel=0.06)
     for x in (-0.55, 0.55):
         box(0.16, 1.04, 0.84, loc=(x, 0, 0), m=gold, bevel=0.02)
     lid = bpy.data.objects.new("lid", None); sc.collection.objects.link(lid); lid.parent = root
     lid.location = (0, 0.5, 0.4)   # 뒤쪽 경첩
     def lidpart(o): o.parent = lid; o.location = o.location - Vector((0, 0.5, 0.4)); return o
-    lidpart(cyl(0.5, 1.6, loc=(0, 0, 0.4), rot=(0, math.pi / 2, 0), m=wood, bevel=0.04))
+    lidpart(cyl(0.5, 1.6, loc=(0, 0, 0.4), rot=(0, math.pi / 2, 0), m=shell, bevel=0.05))
+    lidpart(cyl(0.36, 1.4, loc=(0, 0, 0.4), rot=(0, math.pi / 2, 0), m=core, bevel=0.04))
     for x in (-0.55, 0.55):
         lidpart(cyl(0.52, 0.16, loc=(x, 0, 0.4), rot=(0, math.pi / 2, 0), m=gold, bevel=0.01))
     box(0.3, 0.08, 0.34, loc=(0, -0.53, 0.32), m=gold, bevel=0.03)   # 자물쇠판
     box(0.06, 0.02, 0.12, loc=(0, -0.575, 0.3), m=mat("hole", "#2A2340", grad=0, rough=0.6, coat=0))
     if chest_t > 0:
         # 열리는 정도에 따라 빛이 세지고, 반쯤 열리면 동전이 보인다
-        glow = mat("glow", "#FFE08A", grad=0, rough=0.5, coat=0, emit=1.3 * chest_t)
-        box(1.44, 0.86, 0.02, loc=(0, 0, 0.405), m=glow)
+        glowm = mat("glow", "#FFE08A", grad=0, rough=0.5, coat=0, emit=1.3 * chest_t)
+        box(1.44, 0.86, 0.02, loc=(0, 0, 0.405), m=glowm)
         if chest_t >= 0.45:
             for i, (x, y, z, rx) in enumerate([(-0.3, -0.1, 0.48, 20), (0.15, 0.12, 0.5, -15), (0.4, -0.15, 0.47, 35), (-0.05, -0.2, 0.55, -30)]):
                 cyl(0.17, 0.05, loc=(x, y, z + 0.12 * (1 - chest_t)), rot=(math.radians(rx), math.radians(rx / 2), 0), m=gold, bevel=0.012, verts=64)

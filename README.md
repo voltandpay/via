@@ -49,11 +49,11 @@ Pleos Connect System UI 서체 **Asta Sans**(42dot)를 앱에 포함한다. [SIL
 - **경부하 부스트**(날씨 부스트): 23~9시 충전 시작 시 충전 포인트 2배 (시연용 예시 시간대)
 - **사업자 데이**(커뮤니티 데이): 정해진 날 그 사업자 충전소에서 충전하면 포인트 3배 + 한정 메달 (`mock/operator_days.json`)
 
-3D 이미지는 모두 같은 스타일(채도 높은 반광 플라스틱과 위가 밝은 그라데이션, 포인트로 반투명 유리·푸른빛 은색, 솟은 테두리의 두툼한 동전, 흰 글자, 살짝 비튼 3/4 시점)이다. 재질·조명은 `tools/blender_style.py` 한 곳에서 정한다. 전체를 다시 만들 때는
-`BLENDER=/path/to/Blender bash tools/render_all.sh` (렌더 76장, 앱 리소스·PT 표지 그림까지 갱신).
+3D 이미지는 모두 같은 유리 스타일(서리 유리 몸통 속에서 은은하게 빛나는 사업자 색, 단계 색으로 빛나는 동전 속 고리, 진한 색 판 앞에 유리 판을 비켜 겹친 카드·쿠폰·엠블럼, 글자 대신 흰 문양(사업자마다 다른 모양 · 지역은 남산타워·빌딩숲·산줄기 실루엣), 두께가 보이는 3/4 시점, 뒤쪽 따뜻한·푸른 윤곽광)이다. 재질·조명은 `tools/blender_style.py` 한 곳에서 정한다. 전체를 다시 만들 때는
+`BLENDER=/path/to/Blender bash tools/render_all.sh` (렌더 77장, 앱 리소스·PT 표지 그림까지 갱신).
 
 메달은 Blender(Cycles)로 렌더링한 이미지다(`app/src/main/res/drawable-nodpi/medal_*.webp`, 사업자 9곳 × 동·은·금 + 잠긴 메달).
-`Blender -b -P tools/blender_medal.py -- <asta_sans.ttf> <out.png> "#00A06A" "채" [bronze|silver|gold|locked]`
+`Blender -b -P tools/blender_medal.py -- <asta_sans.ttf> <out.png> "#00A06A" "@bolt" [bronze|silver|gold|locked]` (문양 목록은 `tools/blender_style.py`의 `SHAPES`)
 `python3 tools/medal_to_webp.py <out.png>... app/src/main/res/drawable-nodpi`
 
 그 밖의 3D 소품(포인트 코인, 미션 상자, 지역 엠블럼, VIA 심볼, 경부하 달)도 같은 조명으로 렌더링한다.

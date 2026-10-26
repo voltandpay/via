@@ -9,37 +9,37 @@ F="$ROOT/app/src/main/res/font/asta_sans.ttf"
 RES="$ROOT/app/src/main/res/drawable-nodpi"
 mkdir -p "$WORK"; cd "$WORK"
 
-# 사업자: id 색 글자
-OPS="me #12A5C9 환
-kepco #13408C 한
-skel #E2231A S
-chaevi #00A06A 채
-evsis #6A3FD8 이
-gscv #00857C G
-everon #6DB33F 에
-water #2D7FF9 워
-pluglink #F07B1E 플"
+# 사업자: id 색 문양(tools/blender_style.py SHAPES). 글자 대신 모양으로 가른다(같은 계열 색이 많다)
+OPS="me #12A5C9 @leaf
+kepco #13408C @plug
+skel #E2231A @hexagon
+chaevi #00A06A @bolt
+evsis #6A3FD8 @sparkle
+gscv #00857C @triangle
+everon #6DB33F @plus
+water #2D7FF9 @drop
+pluglink #F07B1E @chevron"
 
 jobs="$WORK/jobs.txt"; : > "$jobs"
 m() { echo "medal|$*" >> "$jobs"; }
 p() { echo "props|$*" >> "$jobs"; }
 while read -r id col g; do
   for t in bronze silver gold; do m "medal_${id}_$t.png|$col|$g|$t"; done
-  p "card_$id.png|card|$col|$g"
+  p "card_$id.png|card|$col"
 done <<< "$OPS"
-p "card_epit.png|card|#1E2A5A|E"
+p "card_epit.png|card|#1E2A5A"
 m "medal_locked.png|#00A06A|?|locked"
-m "medal_chaevi_event.png|#00A06A|채|event"
-m "medal_skel_event.png|#E2231A|S|event"
-m "medal_season.png|#1E2A5A|V|gold"
-for i in 0 1 2 3 4 5 6 7; do m "spin_$i.png|#00A06A|채|bronze|--spin|$((i * 45))"; done
+m "medal_chaevi_event.png|#00A06A|@bolt|event"
+m "medal_skel_event.png|#E2231A|@hexagon|event"
+m "medal_season.png|#1E2A5A|@star|gold"
+for i in 0 1 2 3 4 5 6 7; do m "spin_$i.png|#00A06A|@bolt|bronze|--spin|$((i * 45))"; done
 p "prop_coin.png|coin"; p "prop_chest_closed.png|chest|closed"; p "prop_symbol.png|symbol"; p "prop_moon.png|moon"
 i=0; for t in 0 0.15 0.35 0.6 0.85 1; do p "chest_f$i.png|chest|open|$t"; i=$((i + 1)); done
-for r in "downtown 도" "gangnam 강" "gyeonggi 경"; do set -- $r; p "emblem_$1_gold.png|emblem|$2|gold"; p "emblem_$1_locked.png|emblem|$2|locked"; done
+for r in "downtown @tower" "gangnam @city" "gyeonggi @mountain"; do set -- $r; p "emblem_$1_gold.png|emblem|$2|gold"; p "emblem_$1_locked.png|emblem|$2|locked"; done
 p "ticket_kepco.png|ticket|#13408C|1,000원"; p "ticket_chaevi.png|ticket|#00A06A|2,000원"; p "ticket_water.png|ticket|#2D7FF9|3,000원"
 p "shelf.png|shelf|--size|1600|--aspect|0.3"; p "shelf_dark.png|shelf|dark|--size|1600|--aspect|0.3"
-m "hero_medal_chaevi.png|#00A06A|채|gold|--size|1024"; m "hero_medal_water.png|#2D7FF9|워|silver|--size|1024"; m "hero_medal_skel.png|#E2231A|S|event|--size|1024"
-p "hero_coin.png|coin|--size|1024"; p "hero_chest.png|chest|open|1|--size|1024"; p "hero_emblem.png|emblem|강|gold|--size|1024"
+m "hero_medal_chaevi.png|#00A06A|@bolt|gold|--size|1024"; m "hero_medal_water.png|#2D7FF9|@drop|silver|--size|1024"; m "hero_medal_skel.png|#E2231A|@hexagon|event|--size|1024"
+p "hero_coin.png|coin|--size|1024"; p "hero_chest.png|chest|open|1|--size|1024"; p "hero_emblem.png|emblem|@city|gold|--size|1024"
 p "symbol_4096.png|symbol|--size|4096"
 
 render() {

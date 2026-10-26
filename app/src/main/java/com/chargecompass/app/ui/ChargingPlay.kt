@@ -64,7 +64,7 @@ fun MedalShelfCard(c: AppContainer, currentStationId: String) {
         BoxWithConstraints(Modifier.fillMaxWidth()) {
             val shelfH = maxWidth * (125f / 1400f)
             val side = maxWidth * 0.07f
-            // 좁은 화면에서 한 줄에 9개를 놓으면 메달이 40dp 남짓이라 글자가 안 보인다 → 두 선반으로 나눈다
+            // 좁은 화면에서 한 줄에 9개를 놓으면 메달이 40dp 남짓이라 문양이 안 보인다 → 두 선반으로 나눈다
             val oneRow = maxWidth * 0.86f / dex.size * 0.92f
             val perRow = if (oneRow < 64.dp) (dex.size + 1) / 2 else dex.size
             val medal = min(maxWidth * 0.86f / perRow * 0.92f, 120.dp)

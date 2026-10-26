@@ -198,7 +198,9 @@ private fun HomeTab(c: AppContainer, onCompare: () -> Unit) {
                 c.data.stations.forEach { st ->
                     Box(Modifier.weight(1f).aspectRatio(1f), contentAlignment = Alignment.Center) {
                         val op = c.data.memberships.firstOrNull { it.operatorId == st.operatorId }
-                        StationBadge(op?.name?.take(1) ?: "?", badgeColor(st.operatorId), st.id in stamped, size = 40.dp)
+                        // 모은 곳은 3D 메달(문양), 못 모은 곳은 점선 자물쇠
+                        StationBadge(st.operatorId, op?.name ?: st.name, st.id in stamped, size = 40.dp,
+                            medal = if (st.id in stamped) medalRes(st.operatorId, com.chargecompass.core.dex.MedalTier.BRONZE) else null)
                     }
                 }
             }
