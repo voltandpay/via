@@ -189,7 +189,33 @@ private val operatorMedals = mapOf(
 fun medalRes(operatorId: String, tier: com.chargecompass.core.dex.MedalTier): Int? = operatorMedals[operatorId]?.get(tier.ordinal)
 
 /** 사업자 데이 한정 메달(보라 테두리). 시연 데이터의 사업자 데이가 있는 곳만. */
-fun eventMedalRes(operatorId: String): Int? = if (operatorId == "chaevi") R.drawable.medal_chaevi_event else null
+fun eventMedalRes(operatorId: String): Int? = when (operatorId) {
+    "chaevi" -> R.drawable.medal_chaevi_event
+    "skel" -> R.drawable.medal_skel_event
+    else -> null
+}
+
+/** 지역 엠블럼(방패): 다 모으면 금, 아니면 회색. */
+fun regionEmblemRes(regionId: String, done: Boolean): Int? = when (regionId) {
+    "downtown" -> if (done) R.drawable.emblem_downtown_gold else R.drawable.emblem_downtown_locked
+    "gangnam" -> if (done) R.drawable.emblem_gangnam_gold else R.drawable.emblem_gangnam_locked
+    "gyeonggi" -> if (done) R.drawable.emblem_gyeonggi_gold else R.drawable.emblem_gyeonggi_locked
+    else -> null
+}
+
+/** Blender로 렌더링한 소품 이미지(tools/blender_props.py). */
+@Composable
+fun Prop(res: Int, size: Dp, modifier: Modifier = Modifier, alpha: Float = 1f) =
+    androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(res), null, modifier.size(size), alpha = alpha)
+
+/** 포인트 코인 + 숫자. */
+@Composable
+fun CoinAmount(text: String, style: TextStyle, color: Color, coin: Dp) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(coin * 0.18f)) {
+        Prop(R.drawable.prop_coin, coin)
+        T(text, style, color)
+    }
+}
 
 @Composable
 fun LockIcon(size: Dp = 36.dp, color: Color) {
@@ -409,29 +435,3 @@ fun ConfettiBurst(key: Any, modifier: Modifier = Modifier) {
     }
 }
 
-/** 빈 상태 그림: 출발 → 번개 경유지 → 목적지(로고 모티프를 크게, 옅게). */
-@Composable
-fun RouteIllustration(modifier: Modifier = Modifier) {
-    val c = colors
-    Canvas(modifier) {
-        val w = size.width; val h = size.height; val st = 8.dp.toPx()
-        val road = Path().apply {
-            moveTo(w * 0.1f, h * 0.85f)
-            cubicTo(w * 0.1f, h * 0.45f, w * 0.45f, h * 0.65f, w * 0.5f, h * 0.5f)
-            cubicTo(w * 0.55f, h * 0.35f, w * 0.9f, h * 0.55f, w * 0.9f, h * 0.15f)
-        }
-        drawPath(road, c.posSoft.c(), style = Stroke(st * 2.2f, cap = StrokeCap.Round))
-        drawPath(road, c.pos.c(), style = Stroke(st * 0.5f, cap = StrokeCap.Round, pathEffect = PathEffect.dashPathEffect(floatArrayOf(18f, 14f))))
-        drawCircle(c.pos.c(), st * 1.4f, Offset(w * 0.1f, h * 0.85f))
-        drawRect(c.pos.c(), Offset(w * 0.9f - st * 1.4f, h * 0.15f - st * 1.4f), Size(st * 2.8f, st * 2.8f))
-        drawCircle(c.pos.c(), st * 3.6f, Offset(w * 0.5f, h * 0.5f))
-        val bolt = Path().apply {
-            val s = st * 0.55f; val cx = w * 0.5f; val cy = h * 0.5f
-            listOf(2f to -10f, -7f to 2f, -1f to 2f, -2f to 10f, 7f to -2f, 1f to -2f).forEachIndexed { i, (x, y) ->
-                if (i == 0) moveTo(cx + x * s, cy + y * s) else lineTo(cx + x * s, cy + y * s)
-            }
-            close()
-        }
-        drawPath(bolt, Color.White)
-    }
-}

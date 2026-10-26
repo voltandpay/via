@@ -82,9 +82,9 @@ fun StampBook(c: AppContainer) {
                     val (got, total) = Dex.progress(dex, r.id)
                     val done = got == total
                     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        RingGauge(got / total.toFloat(), if (done) Color(0xFFF2C24A) else col.pos.c(), size = 96.dp, stroke = 10.dp) {
-                            T("$got/$total", ViaType.labelM.copy(fontWeight = FontWeight.Bold))
-                        }
+                        // 지역 엠블럼: 다 모으면 금 방패, 아니면 회색 방패와 진행 수
+                        regionEmblemRes(r.id, done)?.let { Prop(it, 96.dp, alpha = if (done) 1f else 0.75f) }
+                        T("$got/$total", ViaType.labelM.copy(fontWeight = FontWeight.Bold))
                         T(if (done) "${r.label} 완성" else r.label, ViaType.labelS.copy(fontWeight = if (done) FontWeight.Bold else FontWeight.Normal), if (done) col.text.c() else col.text3.c())
                     }
                 }
@@ -196,7 +196,7 @@ fun PointsExchange(c: AppContainer) {
         EmptyState({ TicketIcon(color = col.pos.c()) }, "아직 포인트가 없어요", "충전·새 충전소 스탬프·이벤트 충전소·효율 운전으로 포인트가 저절로 쌓여요")
     } else ViaCard(padding = 40.dp) {
         T("보유 포인트", ViaType.labelM, col.text3.c())
-        T("${balance}P", ViaType.headline, col.activeText.c())
+        CoinAmount("${balance}P", ViaType.headline, col.activeText.c(), coin = 88.dp)
         nextCoupon(balance, partnerCoupons)?.let { next ->
             Bar(balance / next.coupon.cost.toFloat(), col.active.c(), height = 16.dp)
             T("다음 쿠폰(${next.coupon.name})까지 ${next.remaining}P", ViaType.bodyM, col.text2.c())

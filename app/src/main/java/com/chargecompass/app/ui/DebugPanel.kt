@@ -66,6 +66,8 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
                 OutlinedButton(onClick = { c.flatBadges.value = !c.flatBadges.value }) { Text("평면 배지") }
                 // 시연용: 지난 6일 충전 요약 예시(홈의 7일 차트가 비어 보이지 않게). 실제 기록 파일에 남는다
                 OutlinedButton(onClick = { scope.launch { demoWeekSummaries(c.demoClock.now()).forEach { c.summaries.append(it) } } }) { Text("지난 6일 예시 기록") }
+                // 시연용: 지난주들에 미션 6개를 달성한 것처럼 기록 → 이번 주 미션 하나만 더 하면 리서치 돌파
+                OutlinedButton(onClick = { scope.launch { c.ledger.append(demoPastMissions(c.demoClock.now())) } }) { Text("미션 스탬프 6개") }
                 (c.navi as? PleosNaviRepository)?.let { navi ->
                     OutlinedButton(onClick = { navi.requestDemoRoute() }) { Text("서울역 경로 요청") }
                 }
@@ -95,3 +97,10 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
 internal fun demoWeekSummaries(now: LocalDateTime): List<ChargeSummary> = listOf(
     Triple(6, "판교테크노밸리 SK일렉링크", 2860), Triple(4, "양재 채비 충전소", 4120), Triple(3, "반포 한전 충전소", 1980), Triple(1, "서초 이브이시스", 3350),
 ).map { (back, name, saving) -> ChargeSummary(name, 32.0, 9800, saving, 10, now.minusDays(back.toLong()).withHour(19).withMinute(0)) }
+
+/** 지난 6주에 미션을 하나씩 달성한 기록(리서치 돌파 시연용). */
+internal fun demoPastMissions(now: LocalDateTime): List<com.chargecompass.core.rewards.RewardEntry> = (1..6).map { w ->
+    val at = now.minusWeeks(w.toLong())
+    com.chargecompass.core.rewards.RewardEntry(com.chargecompass.core.rewards.RewardKind.MISSION, 15, at,
+        eventId = com.chargecompass.core.missions.Mission.EFFICIENT_TRIP.name, eventDate = com.chargecompass.core.missions.Missions.weekStart(at.toLocalDate()))
+}

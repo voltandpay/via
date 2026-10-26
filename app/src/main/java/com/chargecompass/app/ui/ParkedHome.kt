@@ -116,7 +116,10 @@ private fun HomeTab(c: AppContainer) {
                 ReceiptRow("충전량", "${"%.1f".format(sum.chargedKwh)}kWh")
                 ReceiptRow("결제 예상", won(sum.costWon))
                 ReceiptRow("비회원가 대비", if (sum.savingWon > 0) "-${won(sum.savingWon)}" else won(0), col.activeText.c(), bold = true)
-                if (sum.points > 0) ReceiptRow("받은 포인트", "+${sum.points}P", col.activeText.c(), bold = true)
+                if (sum.points > 0) Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    T("받은 포인트", ViaType.bodyM, col.text2.c(), Modifier.weight(1f))
+                    CoinAmount("+${sum.points}P", ViaType.bodyM.copy(fontWeight = FontWeight.Bold), col.activeText.c(), coin = 36.dp)
+                }
                 DashedDivider()
                 Row(verticalAlignment = Alignment.Bottom) {
                     T("이번 충전으로 아낀 돈", ViaType.bodyM, col.text2.c(), Modifier.weight(1f))
@@ -153,9 +156,9 @@ private fun HomeTab(c: AppContainer) {
     Grid3 {
         it(Modifier) {
             T("이번 주 포인트", ViaType.labelM, col.text3.c())
-            T("+${weekPoints}P", ViaType.headline, col.activeText.c())
+            CoinAmount("+${weekPoints}P", ViaType.headline, col.activeText.c(), coin = 64.dp)
             Bar(balance / 200f, col.active.c(), height = 16.dp)
-            T("보유 ${balance}P · 200P면 충전 2,000원 할인 쿠폰", ViaType.labelM, col.text2.c())
+            T("보유 ${balance}P · 200P면 2,000원 쿠폰", ViaType.labelM, col.text2.c(), maxLines = 1)
         }
         it(Modifier) {
             val event = c.data.events.firstOrNull()
@@ -190,6 +193,7 @@ private fun HomeTab(c: AppContainer) {
         }
     }
 
+    BreakthroughCard(c)
     WeeklyMissionsCard(c)
 
     // 최근 7일 절약(충전 종료 요약 기록) — Pleos Widget처럼 제목·정보 영역
@@ -301,7 +305,7 @@ private fun IdleGuide() {
     val col = colors
     ViaCard(padding = 36.dp) {
         Adaptive(Arrangement.spacedBy(40.dp)) { first ->
-            RouteIllustration(Modifier.size(width = 220.dp, height = 140.dp))
+            Prop(com.chargecompass.app.R.drawable.prop_symbol, 150.dp)
             Column(first, verticalArrangement = Arrangement.spacedBy(14.dp)) {
                 T("목적지를 정하면 경로 위 가장 싼 충전소를 찾아드려요", ViaType.bodyL.copy(fontWeight = FontWeight.Bold))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
