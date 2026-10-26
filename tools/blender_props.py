@@ -6,14 +6,18 @@
 #   moon                       경부하 부스트(달 + 번개)
 #   card <hex색> <글자>          충전 멤버십 카드(사업자 색)
 #   ticket <hex색> <금액 글자>    제휴 할인 쿠폰 티켓
+#   shelf                      메달 진열장 선반(가로로 긴 그림, --aspect로 세로 비율)
 # 메달(tools/blender_medal.py)과 같은 조명·색 처리(Standard)로 맞춘다.
 import bpy, bmesh, sys, math
 from mathutils import Vector
 
 argv = sys.argv[sys.argv.index("--") + 1:]
 size = 512
+aspect = 1.0
 if "--size" in argv:
     i = argv.index("--size"); size = int(argv[i + 1]); argv = argv[:i] + argv[i + 2:]
+if "--aspect" in argv:
+    i = argv.index("--aspect"); aspect = float(argv[i + 1]); argv = argv[:i] + argv[i + 2:]
 font_path, out, kind, *opts = argv
 
 def srgb(h):
@@ -171,6 +175,15 @@ elif kind in ("card", "ticket"):
             cyl(0.022, 0.02, loc=(0.42, -0.33 + i * 0.11, 0.045), m=white, verts=24)
         text(label, 0.36, 0.05, white, extrude=0.035).location.x = -0.18
 
+elif kind == "shelf":
+    flat = False
+    wood = mat("wood", "#D9BC94", 0.0, 0.55)
+    trim = mat("trim", "#C49E70", 0.0, 0.5)
+    box(9.4, 0.9, 0.2, loc=(0, 0, -0.1), m=wood, bevel=0.04)          # 선반 판
+    box(9.4, 0.06, 0.12, loc=(0, -0.47, -0.16), m=trim, bevel=0.02)    # 앞 테두리
+    for x in (-4.2, 0, 4.2):                                           # 받침
+        box(0.22, 0.5, 0.5, loc=(x, 0.15, -0.45), m=trim, bevel=0.04)
+
 elif kind == "chest":
     flat = False
     opened = bool(opts) and opts[0] == "open"
@@ -227,7 +240,7 @@ lo = Vector([min(p[i] for p in pts) for i in range(3)]); hi = Vector([max(p[i] f
 center = (lo + hi) / 2; extent = max(hi - lo)
 cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); sc.collection.objects.link(cam)
 cam.data.type = "ORTHO"; cam.data.ortho_scale = extent * 1.15
-elev = math.radians(18 if kind == "chest" else 8)
+elev = math.radians({"chest": 18, "shelf": 14}.get(kind, 8))
 cam.location = center + Vector((0, -12 * math.cos(elev), 12 * math.sin(elev)))
 cam.rotation_euler = (math.pi / 2 - elev, 0, 0)
 cam.data.clip_end = 100
@@ -245,7 +258,7 @@ try:
 except Exception as e:
     print("GPU 설정 실패, CPU로:", e)
 r.film_transparent = True
-r.resolution_x = r.resolution_y = size
+r.resolution_x = size; r.resolution_y = int(size * aspect)
 r.image_settings.file_format = "PNG"; r.image_settings.color_mode = "RGBA"
 sc.view_settings.view_transform = "Standard"
 r.filepath = out

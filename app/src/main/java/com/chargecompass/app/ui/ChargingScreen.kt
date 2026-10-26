@@ -104,6 +104,7 @@ fun ChargingScreen(c: AppContainer) {
                                 RewardKind.OPERATOR_DAY -> Chip("사업자 데이 +${e.points}P", bg = col.event.c(), fg = androidx.compose.ui.graphics.Color.White, bold = true)
                                 RewardKind.MISSION -> Chip("주간 미션 +${e.points}P", bg = col.activeSoft.c(), fg = col.activeText.c(), bold = true)
                                 RewardKind.BREAKTHROUGH -> Chip("리서치 돌파 +${e.points}P", bg = col.activeSoft.c(), fg = col.activeText.c(), bold = true)
+                                RewardKind.SEASON_STEP -> Chip("시즌 보상 +${e.points}P", bg = col.event.c(), fg = androidx.compose.ui.graphics.Color.White, bold = true)
                                 RewardKind.EFFICIENT_TRIP -> Unit
                             }
                         }
@@ -113,7 +114,9 @@ fun ChargingScreen(c: AppContainer) {
                 StationDexCard(c, station.id, station.operatorId)
             }
         }
-        // 충전 중에는 화면을 볼 수 있으니 이번 주 미션 진행도 함께
+        // 충전 중(차를 세워 둔 20~40분)에만 보여 주는 수집·시즌 화면. 홈·주행 화면에는 넣지 않는다
+        MedalShelfCard(c, station.id)
+        SeasonTrackCard(c)
         WeeklyMissionsCard(c)
     }
 }

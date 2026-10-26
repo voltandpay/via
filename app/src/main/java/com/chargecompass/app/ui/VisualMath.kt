@@ -84,3 +84,14 @@ private fun duration(min: Int): String = when {
     min % 60 == 0 -> "${min / 60}시간"
     else -> "${min / 60}시간 ${min % 60}분"
 }
+
+/** 시즌 트랙에서 [xp]가 차지하는 위치(0~1). 단계 노드를 고르게 놓고 단계 사이는 직선으로 나눈다. */
+fun seasonTrackFraction(xp: Int, thresholds: List<Int>): Float {
+    if (thresholds.isEmpty()) return 0f
+    var prev = 0
+    thresholds.forEachIndexed { i, t ->
+        if (xp < t) return (i + (xp - prev).toFloat() / (t - prev)) / thresholds.size
+        prev = t
+    }
+    return 1f
+}

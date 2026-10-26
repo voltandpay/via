@@ -15,6 +15,7 @@ import com.chargecompass.core.rewards.RewardKind
 import com.chargecompass.core.dex.Dex
 import com.chargecompass.core.missions.Mission
 import com.chargecompass.core.missions.Missions
+import com.chargecompass.core.season.Seasons
 import com.chargecompass.core.session.ChargeSession
 import com.chargecompass.core.session.ChargeSessionDetector
 import com.chargecompass.core.session.SessionEvent
@@ -93,13 +94,15 @@ class RewardCoordinator(
         speakMissions(earned)
     }
 
-    /** 이번 주 새로 달성한 미션과 리서치 돌파를 적립하고 돌려준다. */
+    /** 이번 주 새로 달성한 미션·리서치 돌파와 시즌 단계 보상을 적립하고 돌려준다. */
     private suspend fun checkMissions(at: java.time.LocalDateTime, speak: Boolean = true): List<RewardEntry> {
-        val fresh = Missions.rewards(at, ledger.entries.value, discountCharges(summaryLog?.summaries?.value.orEmpty(), at.toLocalDate()))
-        if (fresh.isEmpty()) return fresh
-        ledger.append(fresh)
-        if (speak) speakMissions(fresh)
-        return fresh
+        val missions = Missions.rewards(at, ledger.entries.value, discountCharges(summaryLog?.summaries?.value.orEmpty(), at.toLocalDate()))
+        if (missions.isNotEmpty()) ledger.append(missions)
+        // 시즌 단계는 미션까지 쌓인 뒤에 판단한다(음성 없이 조용히 — 충전 화면 칩과 시즌 트랙으로 보여 준다)
+        val season = Seasons.rewards(at, ledger.entries.value)
+        if (season.isNotEmpty()) ledger.append(season)
+        if (speak) speakMissions(missions)
+        return missions + season
     }
 
     /** 미션 달성은 짧게 한 번만 말한다(주행 중일 수 있다). */
