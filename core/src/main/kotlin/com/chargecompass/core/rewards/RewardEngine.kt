@@ -9,7 +9,7 @@ import com.chargecompass.core.session.ChargeSession
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-enum class RewardKind { EFFICIENT_TRIP, CHARGE, EVENT_BONUS, NEW_STAMP, REGION_COMPLETE, OFF_PEAK_BOOST, OPERATOR_DAY, MISSION, BREAKTHROUGH }
+enum class RewardKind { EFFICIENT_TRIP, CHARGE, EVENT_BONUS, NEW_STAMP, REGION_COMPLETE, OFF_PEAK_BOOST, OPERATOR_DAY, MISSION, BREAKTHROUGH, SEASON_STEP }
 
 data class RewardEntry(
     val kind: RewardKind,

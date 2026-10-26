@@ -74,4 +74,14 @@ class VisualMathTest {
         assertEquals("지금 진행 중 · 3시간 남음", eventStatus(22, 2, nowMinutes = 23 * 60))
         assertEquals("지금 진행 중 · 2시간 남음", eventStatus(10, 14, nowMinutes = 12 * 60))
     }
+
+    @Test
+    fun `시즌 트랙 채움은 단계 사이를 고르게 나눈 위치`() {
+        val t = listOf(50, 100, 160)   // 단계 위치 1/3, 2/3, 1
+        assertEquals(0f, seasonTrackFraction(0, t))
+        assertEquals(1f / 6, seasonTrackFraction(25, t), 1e-4f)      // 0~50의 가운데 → 0~1/3의 가운데
+        assertEquals(2f / 3, seasonTrackFraction(100, t), 1e-4f)
+        assertEquals(2f / 3 + 1f / 6, seasonTrackFraction(130, t), 1e-4f)
+        assertEquals(1f, seasonTrackFraction(999, t))
+    }
 }

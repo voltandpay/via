@@ -46,7 +46,8 @@ class RewardCoordinatorTest {
         now = now.plusMinutes(30); vehicle.setCharging(false)
         now = now.plusMinutes(2); vehicle.setCharging(false)
         now = now.plusHours(3); vehicle.setCharging(true)
-        assertEquals(55, ledger.balance(now))
+        // 45 + 10 = 55 → 시즌 1단계(50) 보상 +10
+        assertEquals(65, ledger.balance(now))
         assertEquals(2, voice.spoken.size)
     }
 
@@ -221,5 +222,17 @@ class RewardCoordinatorTest {
         RewardCoordinator(vehicle, ledger, data, { car }, voice, backgroundScope, summaryLog = log)
         vehicle.endTrip(TripSummary(3.0, 4.0, now)) // 보상 없는 트립도 미션 확인의 계기
         assertEquals(listOf("DISCOUNT_CHARGE"), ledger.entries.value.filter { it.kind == RewardKind.MISSION }.map { it.eventId })
+    }
+
+    @Test
+    fun `시즌 경험치가 단계를 넘으면 시즌 보상이 쌓이고 충전 화면 적립분에도 보인다`() = runTest(UnconfinedTestDispatcher()) {
+        val (vehicle, ledger, voice) = env()
+        ledger.append(listOf(RewardEntry(RewardKind.EFFICIENT_TRIP, 10, now.minusDays(1))))   // 이번 시즌 10P
+        val c = RewardCoordinator(vehicle, ledger, data, { car }, voice, backgroundScope)
+        vehicle.setLocation(yangjae.lat, yangjae.lng)
+        vehicle.setCharging(true)   // +45P → 시즌 경험치 55 → 1단계(50)
+        val step = ledger.entries.value.single { it.kind == RewardKind.SEASON_STEP }
+        assertEquals(10, step.points)
+        assertTrue(c.sessionEarned.value.any { it.kind == RewardKind.SEASON_STEP })
     }
 }
