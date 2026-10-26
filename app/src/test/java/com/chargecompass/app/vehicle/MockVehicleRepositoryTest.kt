@@ -29,6 +29,20 @@ class MockVehicleRepositoryTest {
     }
 
     @Test
+    fun `충전 중 SoC를 올리고 끝내면 마지막 충전 샘플이 올린 SoC를 담는다`() = runTest(UnconfinedTestDispatcher()) {
+        val repo = MockVehicleRepository()
+        repo.setSoc(15)
+        val received = mutableListOf<Pair<Boolean, Int?>>()
+        val job = launch { repo.charging.collect { received += it.charging to it.socPct } }
+        repo.setCharging(true)
+        repo.setSoc(80)
+        repo.endCharging()
+        job.cancel()
+        // 세션 감지기는 충전 중 마지막 SoC를 끝 SoC로 쓴다
+        assertEquals(true to 80, received.last { it.first })
+    }
+
+    @Test
     fun `트립 종료를 흘려보낸다`() = runTest(UnconfinedTestDispatcher()) {
         val repo = MockVehicleRepository()
         val trip = TripSummary(12.0, 5.5, java.time.LocalDateTime.of(2026, 11, 3, 9, 0))

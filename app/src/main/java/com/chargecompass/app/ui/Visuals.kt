@@ -6,6 +6,13 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -117,11 +124,27 @@ fun CountUpWon(value: Int, style: TextStyle, color: Color, animate: Boolean = tr
     T(won(anim.value.toInt()).removeSuffix("원") + suffix, style, color)
 }
 
-/** 사업자별 배지 색(Pleos 의미 색과 겹치지 않게 채도를 맞춘 10색). */
+/**
+ * 사업자 배지 색: 각 사업자 브랜드의 대표 색에 가깝게 고르되, 흰 글자가 읽히도록 명도를 맞췄다(근사값).
+ * 표에 없는 사업자는 이름으로 10색 중 하나를 고른다.
+ */
+private val operatorColors = mapOf(
+    "me" to 0xFF1C6FD1,       // 환경부: 파랑
+    "kepco" to 0xFF0A5BAA,    // 한전: 남색
+    "chaevi" to 0xFF00A06A,   // 채비: 초록
+    "skel" to 0xFFE2231A,     // SK일렉링크: 빨강
+    "gscv" to 0xFF00857C,     // GS차지비: 청록
+    "everon" to 0xFF2BAE66,   // 에버온: 연두빛 초록
+    "water" to 0xFF2D7FF9,    // 워터: 밝은 파랑
+    "epit" to 0xFF1E2A5A,     // 이피트: 짙은 남색
+    "evsis" to 0xFF6A3FD8,    // 이브이시스: 보라
+    "pluglink" to 0xFFF07B1E, // 플러그링크: 주황
+)
 private val badgePalette = listOf(
     0xFF2F6BFF, 0xFF00A86B, 0xFF6A4CFF, 0xFFF28C28, 0xFF00A3A3, 0xFFE5487D, 0xFF3D5A99, 0xFFA0642D, 0xFFD9480F, 0xFF5C6370,
 )
-fun badgeColor(key: String): Color = Color(badgePalette[Math.floorMod(key.hashCode(), badgePalette.size)])
+fun badgeColor(operatorId: String): Color =
+    Color(operatorColors[operatorId] ?: badgePalette[Math.floorMod(operatorId.hashCode(), badgePalette.size)])
 
 /** 도감 배지: 모으면 사업자 색 원에 첫 글자, 못 모았으면 점선 원에 자물쇠. 방금 모았으면 톡 커지며 나타난다. */
 @Composable
@@ -153,37 +176,26 @@ fun LockIcon(size: Dp = 36.dp, color: Color) {
     }
 }
 
-/** 24시간 띠: 이벤트 시간대를 칠하고 지금 시각에 세로선. 아래에 0·6·12·18·24시. */
+/** 최근 7일 막대 차트(오늘 강조). 막대 위에 금액, 막대 폭은 [maxBarWidth]까지. 기록 없는 날은 점선 바닥. */
 @Composable
-fun DayTimeline(startHour: Int, endHour: Int, nowFraction: Float, color: Color, modifier: Modifier = Modifier) {
-    val c = colors
-    Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Canvas(Modifier.fillMaxWidth().height(28.dp)) {
-            val h = this.size.height
-            drawRoundRect(c.track.c(), size = this.size, cornerRadius = CornerRadius(h / 2))
-            dayWindowSegments(startHour, endHour).forEach { (a, b) ->
-                drawRoundRect(color, Offset(this.size.width * a, 0f), Size(this.size.width * (b - a), h), CornerRadius(h / 2))
-            }
-            val x = this.size.width * nowFraction
-            drawLine(c.text.c(), Offset(x, -6.dp.toPx()), Offset(x, h + 6.dp.toPx()), 4.dp.toPx(), StrokeCap.Round)
-        }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            listOf("0시", "6시", "12시", "18시", "24시").forEach { T(it, ViaType.labelS, c.text3.c()) }
-        }
-    }
-}
-
-/** 최근 7일 막대 차트(오늘 강조). 값이 모두 0이면 바닥선만. */
-@Composable
-fun WeekBars(values: List<Int>, labels: List<String>, modifier: Modifier = Modifier, height: Dp = 160.dp) {
+fun WeekBars(values: List<Int>, labels: List<String>, modifier: Modifier = Modifier, height: Dp = 160.dp, maxBarWidth: Dp = 72.dp) {
     val c = colors
     val max = (values.maxOrNull() ?: 0).coerceAtLeast(1)
-    Row(modifier.fillMaxWidth().height(height + 36.dp), horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.Bottom) {
+    Row(modifier.fillMaxWidth().height(height + 76.dp), horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.Bottom) {
         values.forEachIndexed { i, v ->
             val today = i == values.lastIndex
             Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                val barH = (height.value * v / max).coerceAtLeast(6f).dp
-                Box(Modifier.fillMaxWidth().height(barH).clip(RoundedCornerShape(10.dp)).background(if (today) c.active.c() else if (v > 0) c.active.c().copy(alpha = 0.45f) else c.track.c()))
+                if (v > 0) {
+                    T(compactWon(v), ViaType.labelS.copy(fontWeight = if (today) FontWeight.Bold else FontWeight.Normal), if (today) c.activeText.c() else c.text2.c())
+                    val barH = (height.value * v / max).coerceAtLeast(10f).dp
+                    Box(Modifier.widthIn(max = maxBarWidth).fillMaxWidth().height(barH).clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 4.dp, bottomEnd = 4.dp))
+                        .background(if (today) c.active.c() else c.active.c().copy(alpha = 0.45f)))
+                } else {
+                    Canvas(Modifier.widthIn(max = maxBarWidth).fillMaxWidth().height(6.dp)) {
+                        drawLine(c.line.c(), Offset(0f, size.height / 2), Offset(size.width, size.height / 2), 3.dp.toPx(), StrokeCap.Round,
+                            pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f)))
+                    }
+                }
                 T(labels[i], ViaType.labelS.copy(fontWeight = if (today) FontWeight.Bold else FontWeight.Normal), if (today) c.text.c() else c.text3.c())
             }
         }
@@ -222,5 +234,179 @@ fun TicketCard(modifier: Modifier = Modifier, accent: Color, content: @Composabl
             drawLine(c.line.c(), Offset(x, 16.dp.toPx()), Offset(x, h - 16.dp.toPx()), 3.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(14f, 12f)))
         }
         Box(Modifier.padding(horizontal = 48.dp, vertical = 32.dp)) { content() }
+    }
+}
+
+/**
+ * 앞으로 24시간 띠: 왼쪽 끝이 지금. 자정을 넘는 이벤트도 한 덩어리로 보인다.
+ * 아래 눈금은 지금부터 6시간 간격의 실제 시각.
+ */
+@Composable
+fun UpcomingTimeline(startHour: Int, endHour: Int, nowMinutes: Int, color: Color, modifier: Modifier = Modifier) {
+    val c = colors
+    Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Canvas(Modifier.fillMaxWidth().height(28.dp)) {
+            val h = this.size.height
+            drawRoundRect(c.track.c(), size = this.size, cornerRadius = CornerRadius(h / 2))
+            upcomingWindowSegments(startHour, endHour, nowMinutes).forEach { (a, b) ->
+                drawRoundRect(color, Offset(this.size.width * a, 0f), Size(this.size.width * (b - a), h), CornerRadius(h / 2))
+            }
+            drawCircle(c.text.c(), h * 0.32f, Offset(h / 2, h / 2))
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            (0..4).forEach { i ->
+                val label = if (i == 0) "지금" else "${(nowMinutes / 60 + i * 6) % 24}시"
+                T(label, ViaType.labelS.copy(fontWeight = if (i == 0) FontWeight.Bold else FontWeight.Normal), if (i == 0) c.text.c() else c.text3.c())
+            }
+        }
+    }
+}
+
+/**
+ * 경로 띠: 출발(지금 배터리) → 후보 충전소(순위 번호) → 목적지(도착 예상).
+ * 겹침을 피하려고 이름표는 1위에만 달고, 나머지는 번호 원만 둔다.
+ */
+@Composable
+fun RouteBand(
+    stops: List<RouteStop>, startSoc: Int?, destination: String, arrivalSoc: Int?, totalKm: Int?, bestKm: Int?,
+    modifier: Modifier = Modifier,
+) {
+    val c = colors
+    Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
+            Column(Modifier.weight(1f)) {
+                T("출발", ViaType.labelS, c.text3.c())
+                T(startSoc?.let { "$it%" } ?: "-", ViaType.bodyM.copy(fontWeight = FontWeight.Bold))
+            }
+            Column(horizontalAlignment = Alignment.End) {
+                T("$destination${totalKm?.let { " · ${it}km" } ?: ""}", ViaType.labelS, c.text3.c())
+                T(arrivalSoc?.let { "도착 $it%" } ?: "-", ViaType.bodyM.copy(fontWeight = FontWeight.Bold), if ((arrivalSoc ?: 100) < 10) c.neg.c() else c.text.c())
+            }
+        }
+        BoxWithConstraints(Modifier.fillMaxWidth().height(64.dp)) {
+            val w = maxWidth
+            val marker = 52.dp
+            val lineY = 32.dp
+            Canvas(Modifier.matchParentSize()) {
+                val y = lineY.toPx(); val r = 10.dp.toPx()
+                drawLine(c.track.c(), Offset(r, y), Offset(size.width - r, y), 10.dp.toPx(), StrokeCap.Round)
+                // 1위 충전소까지는 진하게: 지금 가는 구간
+                stops.firstOrNull()?.let { drawLine(c.pos.c(), Offset(r, y), Offset(r + (size.width - 2 * r) * it.fraction, y), 10.dp.toPx(), StrokeCap.Round) }
+                drawCircle(c.text.c(), r, Offset(r, y))
+                drawRect(c.text.c(), Offset(size.width - 2 * r, y - r), Size(2 * r, 2 * r))
+            }
+            // 뒤 순위부터 그려 1위가 위에 오게
+            stops.withIndex().reversed().forEach { (i, st) ->
+                val x = (w - marker) * st.fraction
+                Box(
+                    Modifier.offset(x = x, y = lineY - marker / 2).size(marker).clip(CircleShape)
+                        .background(if (i == 0) c.pos.c() else c.card.c()).border(3.dp, if (i == 0) c.pos.c() else c.line.c(), CircleShape),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (i == 0) BoltIcon(26.dp) else T("${i + 1}", ViaType.labelM.copy(fontWeight = FontWeight.Bold), c.text2.c())
+                }
+            }
+        }
+        stops.firstOrNull()?.let { best ->
+            // 1위 이름표: 마커 아래, 띠 밖으로 나가지 않게 좌우를 맞춘다
+            BoxWithConstraints(Modifier.fillMaxWidth()) {
+                val labelW = 280.dp.coerceAtMost(maxWidth)
+                val x = ((maxWidth - 52.dp) * best.fraction + 26.dp - labelW / 2).coerceIn(0.dp, maxWidth - labelW)
+                Column(Modifier.offset(x = x).widthIn(max = labelW), horizontalAlignment = Alignment.CenterHorizontally) {
+                    T("1위 · ${bestKm ?: "-"}km 앞", ViaType.labelM.copy(fontWeight = FontWeight.Bold), c.pos.c())
+                    T("도착 시 ${best.socPct?.let { "$it%" } ?: "-"}", ViaType.labelS, c.text2.c())
+                }
+            }
+        }
+    }
+}
+
+/** 영수증 카드: 아래 가장자리가 톱니 모양. */
+@Composable
+fun ReceiptCard(modifier: Modifier = Modifier, content: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit) {
+    val c = colors
+    Box(modifier.fillMaxWidth()) {
+        Canvas(Modifier.matchParentSize()) {
+            val tooth = 14.dp.toPx(); val r = 32.dp.toPx(); val w = size.width; val h = size.height - tooth
+            val path = Path().apply {
+                moveTo(r, 0f); lineTo(w - r, 0f); quadraticTo(w, 0f, w, r); lineTo(w, h)
+                val n = (w / (tooth * 2)).toInt().coerceAtLeast(1); val step = w / n
+                for (k in n downTo 1) { lineTo(step * k - step / 2, h + tooth); lineTo(step * (k - 1), h) }
+                lineTo(0f, r); quadraticTo(0f, 0f, r, 0f); close()
+            }
+            if (!c.isDark) drawPath(path, Color(0x14000000), style = Stroke(2.dp.toPx()))
+            drawPath(path, c.card.c())
+            clipPath(path) { drawRect(c.active.c(), Offset(0f, 0f), Size(w, 10.dp.toPx())) }
+        }
+        Column(Modifier.padding(start = 44.dp, end = 44.dp, top = 40.dp, bottom = 52.dp), verticalArrangement = Arrangement.spacedBy(14.dp), content = content)
+    }
+}
+
+/** 영수증 한 줄: 왼쪽 항목, 오른쪽 값. */
+@Composable
+fun ReceiptRow(label: String, value: String, valueColor: Color = colors.text.c(), bold: Boolean = false) {
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        T(label, ViaType.bodyM, colors.text2.c(), Modifier.weight(1f))
+        T(value, ViaType.bodyM.copy(fontWeight = if (bold) FontWeight.Bold else FontWeight.Normal), valueColor)
+    }
+}
+
+/** 점선 구분선. */
+@Composable
+fun DashedDivider() {
+    val c = colors
+    Canvas(Modifier.fillMaxWidth().height(4.dp)) {
+        drawLine(c.line.c(), Offset(0f, size.height / 2), Offset(size.width, size.height / 2), 3.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 10f)))
+    }
+}
+
+/** 짧은 축하 효과: 작은 조각들이 위로 튀었다가 떨어지며 사라진다(정차 중 화면에서 한 번만). */
+@Composable
+fun ConfettiBurst(key: Any, modifier: Modifier = Modifier) {
+    val c = colors
+    val t = remember(key) { Animatable(0f) }
+    LaunchedEffect(key) { t.animateTo(1f, tween(1400, easing = androidx.compose.animation.core.LinearEasing)) }
+    if (t.value >= 1f) return
+    val pieces = remember(key) {
+        val rnd = java.util.Random(key.hashCode().toLong())
+        List(36) { floatArrayOf(rnd.nextFloat(), rnd.nextFloat() * 2 - 1, 0.6f + rnd.nextFloat() * 0.8f, rnd.nextFloat() * 360f, rnd.nextInt(4).toFloat()) }
+    }
+    val palette = listOf(c.active.c(), c.pos.c(), c.event.c(), Color(0xFFFFB020))
+    Canvas(modifier) {
+        val p = t.value
+        pieces.forEach { (x0, vx, vy, rot, ci) ->
+            val x = size.width * (0.2f + 0.6f * x0) + vx * size.width * 0.25f * p
+            val y = size.height * 0.55f - vy * size.height * 0.9f * p + size.height * 1.1f * p * p
+            rotate(rot + 540f * p, Offset(x, y)) {
+                drawRect(palette[ci.toInt()].copy(alpha = 1f - p * p), Offset(x - 6.dp.toPx(), y - 3.dp.toPx()), Size(12.dp.toPx(), 6.dp.toPx()))
+            }
+        }
+    }
+}
+
+/** 빈 상태 그림: 출발 → 번개 경유지 → 목적지(로고 모티프를 크게, 옅게). */
+@Composable
+fun RouteIllustration(modifier: Modifier = Modifier) {
+    val c = colors
+    Canvas(modifier) {
+        val w = size.width; val h = size.height; val st = 8.dp.toPx()
+        val road = Path().apply {
+            moveTo(w * 0.1f, h * 0.85f)
+            cubicTo(w * 0.1f, h * 0.45f, w * 0.45f, h * 0.65f, w * 0.5f, h * 0.5f)
+            cubicTo(w * 0.55f, h * 0.35f, w * 0.9f, h * 0.55f, w * 0.9f, h * 0.15f)
+        }
+        drawPath(road, c.posSoft.c(), style = Stroke(st * 2.2f, cap = StrokeCap.Round))
+        drawPath(road, c.pos.c(), style = Stroke(st * 0.5f, cap = StrokeCap.Round, pathEffect = PathEffect.dashPathEffect(floatArrayOf(18f, 14f))))
+        drawCircle(c.pos.c(), st * 1.4f, Offset(w * 0.1f, h * 0.85f))
+        drawRect(c.pos.c(), Offset(w * 0.9f - st * 1.4f, h * 0.15f - st * 1.4f), Size(st * 2.8f, st * 2.8f))
+        drawCircle(c.pos.c(), st * 3.6f, Offset(w * 0.5f, h * 0.5f))
+        val bolt = Path().apply {
+            val s = st * 0.55f; val cx = w * 0.5f; val cy = h * 0.5f
+            listOf(2f to -10f, -7f to 2f, -1f to 2f, -2f to 10f, 7f to -2f, 1f to -2f).forEachIndexed { i, (x, y) ->
+                if (i == 0) moveTo(cx + x * s, cy + y * s) else lineTo(cx + x * s, cy + y * s)
+            }
+            close()
+        }
+        drawPath(bolt, Color.White)
     }
 }

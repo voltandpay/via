@@ -9,12 +9,6 @@ import kotlin.test.assertNull
 
 class VisualMathTest {
     @Test
-    fun `이벤트 시간대를 24시간 띠의 구간으로 바꾼다 - 자정을 넘으면 두 조각`() {
-        assertEquals(listOf(22f / 24 to 1f, 0f to 2f / 24), dayWindowSegments(22, 2))
-        assertEquals(listOf(10f / 24 to 14f / 24), dayWindowSegments(10, 14))
-    }
-
-    @Test
     fun `목표까지 남은 충전 시간(분)은 필요한 kWh를 출력으로 나눈 값`() {
         // 15→80%, 77.4kWh → 50.31kWh, 200kW → 15.1분 → 16분(올림)
         assertEquals(16, chargeEtaMinutes(socPct = 15, targetPct = 80, batteryKwh = 77.4, powerKw = 200))
@@ -37,5 +31,47 @@ class VisualMathTest {
         assertEquals(NextCoupon(coupons[0], 60), nextCoupon(40, coupons))
         assertEquals(NextCoupon(coupons[2], 50), nextCoupon(250, coupons))
         assertNull(nextCoupon(300, coupons))
+    }
+    @Test
+    fun `주행 가능 거리는 남은 kWh에 전비를 곱한 값(내림)`() {
+        // 60% × 77.4kWh × 5.0km/kWh = 232.2km
+        assertEquals(232, rangeKm(socPct = 60, batteryKwh = 77.4, efficiencyKmPerKwh = 5.0))
+        assertNull(rangeKm(socPct = null, batteryKwh = 77.4, efficiencyKmPerKwh = 5.0))
+    }
+
+    @Test
+    fun `경로 띠의 충전소 위치는 남은 거리 대비 비율, 배터리는 그 지점 예상값`() {
+        // 100km 경로, 시작 40%, 1km당 0.3%p
+        val stops = routeStops(100.0, listOf("a" to 30.0, "b" to 120.0)) { km -> 40 - km * 0.3 }
+        assertEquals(listOf(RouteStop("a", 0.3f, 31), RouteStop("b", 1f, 4)), stops)
+        // 배터리를 모르면 null
+        assertEquals(listOf(RouteStop("a", 0.3f, null)), routeStops(100.0, listOf("a" to 30.0)) { null })
+    }
+
+    @Test
+    fun `막대 위 금액은 만 원 이상이면 만 단위로 줄인다`() {
+        assertEquals("", compactWon(0))
+        assertEquals("8,200", compactWon(8200))
+        assertEquals("1.1만", compactWon(11118))
+        assertEquals("3만", compactWon(30000))
+    }
+
+    @Test
+    fun `앞으로 24시간 띠 - 지금이 왼쪽 끝이라 자정을 넘는 이벤트도 한 덩어리`() {
+        // 10시 기준 22~2시 → 12시간 뒤부터 4시간
+        assertEquals(listOf(12f / 24 to 16f / 24), upcomingWindowSegments(22, 2, nowMinutes = 10 * 60))
+        // 23시(진행 중) → 지금~3시간 뒤, 그리고 다음 날 22시(23시간 뒤)부터 끝까지
+        assertEquals(listOf(0f to 3f / 24, 23f / 24 to 1f), upcomingWindowSegments(22, 2, nowMinutes = 23 * 60))
+    }
+
+    @Test
+    fun `이벤트까지 남은 시간 문구`() {
+        assertEquals("12시간 뒤 시작", eventStatus(22, 2, nowMinutes = 10 * 60))
+        // 3시간 이상 남으면 시간 단위로 반올림(11시간 55분 → 12시간)
+        assertEquals("12시간 뒤 시작", eventStatus(22, 2, nowMinutes = 10 * 60 + 5))
+        assertEquals("30분 뒤 시작", eventStatus(22, 2, nowMinutes = 21 * 60 + 30))
+        assertEquals("1시간 30분 뒤 시작", eventStatus(22, 2, nowMinutes = 20 * 60 + 30))
+        assertEquals("지금 진행 중 · 3시간 남음", eventStatus(22, 2, nowMinutes = 23 * 60))
+        assertEquals("지금 진행 중 · 2시간 남음", eventStatus(10, 14, nowMinutes = 12 * 60))
     }
 }

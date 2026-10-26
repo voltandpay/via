@@ -69,10 +69,10 @@ fun EventsScreen(c: AppContainer) {
         ViaCard(padding = 36.dp, highlight = if (live) col.event.c() else null) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 T(e.title, ViaType.titleS, modifier = Modifier.weight(1f), )
-                Chip(if (live) "지금 진행 중" else "${e.startHour}시 시작", bg = if (live) col.event.c() else col.chip.c(), fg = if (live) androidx.compose.ui.graphics.Color.White else col.text2.c(), bold = live)
+                Chip(eventStatus(e.startHour, e.endHour, now.hour * 60 + now.minute), bg = if (live) col.event.c() else col.chip.c(), fg = if (live) androidx.compose.ui.graphics.Color.White else col.text2.c(), bold = live)
             }
             T(c.data.stations.firstOrNull { it.id == e.stationId }?.name.orEmpty() + " · 포인트 ${e.multiplier}배 · 하루 1회", ViaType.bodyM, col.text2.c())
-            DayTimeline(e.startHour, e.endHour, (now.hour * 60 + now.minute) / 1440f, col.event.c())
+            UpcomingTimeline(e.startHour, e.endHour, now.hour * 60 + now.minute, col.event.c())
         }
     }
 }
