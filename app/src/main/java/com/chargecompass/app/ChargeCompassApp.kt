@@ -23,8 +23,9 @@ class ChargeCompassApp : Application() {
     /** 시연 패널의 모드 전환. 기존 연결을 모두 닫고 새로 만든다. */
     fun switchMode(mode: DataMode) {
         AppContainer.saveMode(this, mode)
-        container.stop()
+        // 먼저 작업을 취소하고(말하던 코루틴이 tts.stop()을 부른다) 그다음 SDK를 해제한다
         scope.cancel()
+        container.stop()
         scope = newScope()
         container = AppContainer(this, mode, scope)
     }

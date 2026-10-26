@@ -58,4 +58,23 @@ class FileStoresTest {
         store.add(listOf("st-b", "st-c"))
         assertEquals(setOf("st-a", "st-b", "st-c"), FileSeenStore(file).seen.value)
     }
+
+    @Test
+    fun `마지막 줄이 쓰다 끊겼어도 다음 항목은 온전히 남고 깨진 줄만 버린다`() = runBlocking {
+        val file = File(dir, "ledger3.txt")
+        file.writeText("NEW_STAMP|20|2026-11-03T23:30|st-1|||\nCHARGE|10|2026-11-0")   // 줄바꿈 없이 끊긴 조각
+        FileRewardLedger(file).append(listOf(RewardEntry(RewardKind.NEW_STAMP, 20, at, "st-2")))
+        val reopened = FileRewardLedger(file)
+        assertEquals(setOf("st-1", "st-2"), reopened.stampedStationIds())
+    }
+
+    @Test
+    fun `충전 요약·발견 기록도 끊긴 마지막 줄 뒤에 붙여 쓰지 않는다`() = runBlocking {
+        val seen = File(dir, "seen2.txt").apply { writeText("st-a\nst-b") }   // 마지막 줄 줄바꿈 없음(정상 값)
+        FileSeenStore(seen).add(listOf("st-c"))
+        assertEquals(setOf("st-a", "st-b", "st-c"), FileSeenStore(seen).seen.value)
+        val sum = File(dir, "sum2.txt").apply { writeText("양재|10.0|3000|2000|10|2026-11-03T12:00\n양재|5.") }
+        FileSummaryLog(sum).append(com.chargecompass.app.rewards.ChargeSummary("반포", 20.0, 6000, 1000, 10, at))
+        assertEquals(listOf("양재", "반포"), FileSummaryLog(sum).summaries.value.map { it.stationName })
+    }
 }

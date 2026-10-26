@@ -67,7 +67,9 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
                 // 시연용: 지난 6일 충전 요약 예시(홈의 7일 차트가 비어 보이지 않게). 실제 기록 파일에 남는다
                 OutlinedButton(onClick = { scope.launch { demoWeekSummaries(c.demoClock.now()).forEach { c.summaries.append(it) } } }) { Text("지난 6일 예시 기록") }
                 // 시연용: 지난주들에 미션 6개를 달성한 것처럼 기록 → 이번 주 미션 하나만 더 하면 리서치 돌파
-                OutlinedButton(onClick = { scope.launch { c.ledger.append(demoPastMissions(c.demoClock.now())) } }) { Text("미션 스탬프 6개") }
+                OutlinedButton(onClick = { scope.launch { c.ledger.append(demoPastMissions(c.demoClock.now(), c.ledger.entries.value)) } }) { Text("미션 스탬프 6개") }
+                // 같은 충전소 보상은 2시간에 한 번이라, 메달 단계(동→은→금)를 보여 줄 때는 하루씩 넘긴다
+                OutlinedButton(onClick = { c.demoClock.jumpTo(c.demoClock.now().plusDays(1)) }) { Text("하루 뒤로") }
                 (c.navi as? PleosNaviRepository)?.let { navi ->
                     OutlinedButton(onClick = { navi.requestDemoRoute() }) { Text("서울역 경로 요청") }
                 }
@@ -99,8 +101,8 @@ internal fun demoWeekSummaries(now: LocalDateTime): List<ChargeSummary> = listOf
 ).map { (back, name, saving) -> ChargeSummary(name, 32.0, 9800, saving, 10, now.minusDays(back.toLong()).withHour(19).withMinute(0)) }
 
 /** 지난 6주에 미션을 하나씩 달성한 기록(리서치 돌파 시연용). */
-internal fun demoPastMissions(now: LocalDateTime): List<com.chargecompass.core.rewards.RewardEntry> = (1..6).map { w ->
+internal fun demoPastMissions(now: LocalDateTime, existing: List<com.chargecompass.core.rewards.RewardEntry>): List<com.chargecompass.core.rewards.RewardEntry> = (1..6).map { w ->
     val at = now.minusWeeks(w.toLong())
     com.chargecompass.core.rewards.RewardEntry(com.chargecompass.core.rewards.RewardKind.MISSION, 15, at,
         eventId = com.chargecompass.core.missions.Mission.EFFICIENT_TRIP.name, eventDate = com.chargecompass.core.missions.Missions.weekStart(at.toLocalDate()))
-}
+}.filter { e -> existing.none { it.kind == e.kind && it.eventId == e.eventId && it.eventDate == e.eventDate } }   // 두 번 눌러도 중복되지 않게

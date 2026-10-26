@@ -66,4 +66,13 @@ class DexTest {
     fun `도감 번호 표기는 세 자리`() {
         assertEquals("No.007", Dex.label(7))
     }
+
+    @Test
+    fun `지역 진행률의 전체 수에서 고장·점검 중인 충전소는 뺀다(이미 등록했으면 센다)`() {
+        val broken = st("b1", "gangnam").copy(status = com.chargecompass.core.model.ChargerStatus.BROKEN)
+        val dex = Dex.build(listOf(st("a1", "gangnam"), broken), seen = emptySet(), visits = mapOf("a1" to 1))
+        assertEquals(1 to 1, Dex.progress(dex, "gangnam"))
+        val dex2 = Dex.build(listOf(st("a1", "gangnam"), broken), seen = emptySet(), visits = mapOf("a1" to 1, "b1" to 1))
+        assertEquals(2 to 2, Dex.progress(dex2, "gangnam"))
+    }
 }

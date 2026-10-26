@@ -10,6 +10,8 @@ interface VoiceGateway {
     suspend fun ask(question: String, timeoutMs: Long = 8_000): Answer
     fun start()
     fun stop()
+    /** 마이크 권한을 앱 시작 뒤에 허용했을 때 음성 인식을 다시 붙인다. */
+    fun retrySpeechToText() = Unit
 }
 
 object YesNoParser {

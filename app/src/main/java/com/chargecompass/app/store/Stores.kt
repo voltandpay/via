@@ -8,6 +8,11 @@ import com.chargecompass.core.rewards.RewardKind
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.io.File
+import java.io.RandomAccessFile
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -31,6 +36,9 @@ interface RewardLedger : RewardHistory {
 
     override fun eventBonusDates(eventId: String): Set<LocalDate> =
         entries.value.filter { it.kind == RewardKind.EVENT_BONUS && it.eventId == eventId }.mapNotNull { it.eventDate }.toSet()
+
+    override fun lastChargeAt(stationId: String, notAfter: LocalDateTime): LocalDateTime? =
+        entries.value.filter { it.kind == RewardKind.CHARGE && it.stationId == stationId && !it.at.isAfter(notAfter) }.maxOfOrNull { it.at }
 }
 
 open class InMemoryRewardLedger(initial: List<RewardEntry> = emptyList()) : RewardLedger {
@@ -43,8 +51,7 @@ open class InMemoryRewardLedger(initial: List<RewardEntry> = emptyList()) : Rewa
 class FileRewardLedger(private val file: File) : InMemoryRewardLedger(read(file)) {
     override suspend fun append(e: List<RewardEntry>) {
         super.append(e)
-        file.parentFile?.mkdirs()
-        file.appendText(e.joinToString("") { encode(it) + "\n" })
+        appendLines(file, e.joinToString("") { encode(it) + "\n" })
     }
 
     private companion object {
@@ -105,8 +112,7 @@ open class InMemorySummaryLog(initial: List<ChargeSummary> = emptyList()) : Summ
 class FileSummaryLog(private val file: File) : InMemorySummaryLog(read(file)) {
     override suspend fun append(s: ChargeSummary) {
         super.append(s)
-        file.parentFile?.mkdirs()
-        file.appendText(listOf(s.stationName.replace("|", " "), s.chargedKwh, s.costWon, s.savingWon, s.points, s.endedAt).joinToString("|") + "\n")
+        appendLines(file, listOf(s.stationName.replace("|", " "), s.chargedKwh, s.costWon, s.savingWon, s.points, s.endedAt).joinToString("|") + "\n")
     }
 
     private companion object {
@@ -137,7 +143,19 @@ class FileSeenStore(private val file: File) : InMemorySeenStore(if (file.exists(
         val fresh = ids.filter { it !in _seen.value }.distinct()
         if (fresh.isEmpty()) return
         super.add(fresh)
-        file.parentFile?.mkdirs()
-        file.appendText(fresh.joinToString("") { it + "\n" })
+        appendLines(file, fresh.joinToString("") { it + "\n" })
     }
 }
+
+private val appendLock = Mutex()   // IO 스레드 여러 개가 같은 파일에 동시에 덧붙여 줄이 섞이지 않게
+
+/**
+ * 기록 파일 끝에 줄을 덧붙인다(IO 스레드에서). 이전 쓰기가 줄 중간에 끊겨 파일이 줄바꿈으로 끝나지 않으면
+ * 먼저 줄을 바꿔, 끊긴 조각과 새 줄이 한 줄로 합쳐져 둘 다 읽히지 않는 일을 막는다(끊긴 조각만 읽을 때 버려진다).
+ * 기록은 스탬프·메달 단계·미션 횟수의 근거라 지우거나 줄이지 않는다(한 줄 100바이트 안팎이라 수년 써도 수백 KB).
+ */
+internal suspend fun appendLines(file: File, text: String) = appendLock.withLock { withContext(Dispatchers.IO) {
+    file.parentFile?.mkdirs()
+    val needsNewline = file.exists() && file.length() > 0 && RandomAccessFile(file, "r").use { f -> f.seek(f.length() - 1); f.read() != '\n'.code }
+    file.appendText((if (needsNewline) "\n" else "") + text)
+} }

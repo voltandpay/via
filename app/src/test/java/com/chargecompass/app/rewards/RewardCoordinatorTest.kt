@@ -235,4 +235,67 @@ class RewardCoordinatorTest {
         assertEquals(10, step.points)
         assertTrue(c.sessionEarned.value.any { it.kind == RewardKind.SEASON_STEP })
     }
+
+    @Test
+    fun `충전 중 앱이 다시 시작돼도 포인트가 다시 쌓이지 않고 이번 충전 적립분은 다시 보인다`() = runTest(UnconfinedTestDispatcher()) {
+        val (vehicle, ledger, voice) = env()
+        RewardCoordinator(vehicle, ledger, data, { car }, voice, backgroundScope)
+        vehicle.setLocation(yangjae.lat, yangjae.lng)
+        vehicle.setCharging(true)
+        val before = ledger.balance(now)
+        // 재시작: 새 차량 저장소·새 코디네이터, 같은 원장
+        val vehicle2 = com.chargecompass.app.vehicle.MockVehicleRepository { now }
+        now = now.plusMinutes(3)
+        val c2 = RewardCoordinator(vehicle2, ledger, data, { car }, voice, backgroundScope)
+        vehicle2.setLocation(yangjae.lat, yangjae.lng)
+        vehicle2.setCharging(true)
+        assertEquals(before, ledger.balance(now))
+        assertTrue(c2.sessionEarned.value.any { it.kind == RewardKind.CHARGE })
+    }
+
+    @Test
+    fun `플러그를 1분 넘게 뺐다가 다시 꽂아도 같은 방문이라 보상은 한 번`() = runTest(UnconfinedTestDispatcher()) {
+        val (vehicle, ledger, voice) = env()
+        RewardCoordinator(vehicle, ledger, data, { car }, voice, backgroundScope)
+        vehicle.setLocation(yangjae.lat, yangjae.lng)
+        vehicle.setCharging(true)
+        val before = ledger.balance(now)
+        repeat(3) {
+            now = now.plusMinutes(1); vehicle.setCharging(false)
+            now = now.plusMinutes(2); vehicle.setCharging(false)   // 세션 종료
+            now = now.plusMinutes(1); vehicle.setCharging(true)    // 다시 꽂음
+        }
+        assertEquals(before, ledger.balance(now))
+    }
+
+    @Test
+    fun `위치가 늦게 잡혀도 처음 Started에서 받은 미션 적립분이 이번 충전 화면에 남는다`() = runTest(UnconfinedTestDispatcher()) {
+        val (vehicle, ledger, voice) = env()
+        // 이번 주 효율 운전 2번 → 다음 확인 때 미션 달성
+        ledger.append(listOf(RewardEntry(RewardKind.EFFICIENT_TRIP, 10, now.minusHours(2)), RewardEntry(RewardKind.EFFICIENT_TRIP, 10, now.minusHours(1))))
+        val c = RewardCoordinator(vehicle, ledger, data, { car }, voice, backgroundScope)
+        vehicle.clearLocation()
+        vehicle.setCharging(true)   // 충전소 없이 시작 → 미션만 적립
+        assertTrue(c.sessionEarned.value.any { it.kind == RewardKind.MISSION })
+        vehicle.setLocation(yangjae.lat, yangjae.lng)
+        now = now.plusSeconds(5); vehicle.setCharging(true)
+        val earned = c.sessionEarned.value
+        // 처음 Started에서 받은 '효율 운전 2번' 미션이 두 번째 Started 뒤에도 남아 있어야 한다
+        assertTrue(earned.any { it.kind == RewardKind.MISSION && it.eventId == "EFFICIENT_TRIP" }, earned.toString())
+        assertTrue(earned.any { it.kind == RewardKind.CHARGE }, earned.toString())
+    }
+
+    @Test
+    fun `시연 시계로 미래에 쌓인 충전 기록이 있어도 최근 충전 기준으로 다시 꽂기를 막는다`() = runTest(UnconfinedTestDispatcher()) {
+        val (vehicle, ledger, voice) = env()
+        ledger.append(listOf(RewardEntry(RewardKind.CHARGE, 10, now.plusDays(30), yangjae.id), RewardEntry(RewardKind.NEW_STAMP, 20, now.plusDays(30), yangjae.id)))
+        RewardCoordinator(vehicle, ledger, data, { car }, voice, backgroundScope)
+        vehicle.setLocation(yangjae.lat, yangjae.lng)
+        vehicle.setCharging(true)
+        val after = ledger.entries.value.count { it.kind == RewardKind.CHARGE }
+        now = now.plusMinutes(1); vehicle.setCharging(false)
+        now = now.plusMinutes(2); vehicle.setCharging(false)
+        now = now.plusMinutes(1); vehicle.setCharging(true)
+        assertEquals(after, ledger.entries.value.count { it.kind == RewardKind.CHARGE })
+    }
 }

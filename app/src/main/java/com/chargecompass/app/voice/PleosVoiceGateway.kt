@@ -56,6 +56,15 @@ class PleosVoiceGateway(context: Context) : VoiceGateway {
     override fun start() {
         tts.initialize()
         tts.addEventListener(ttsListener)
+        initSpeechToText()
+    }
+
+    /** 권한이 없어 처음 초기화에 실패했으면, 허용 뒤 다시 초기화한다(이미 쓸 수 있으면 그대로). */
+    override fun retrySpeechToText() {
+        if (!sttAvailable) initSpeechToText()
+    }
+
+    private fun initSpeechToText() {
         stt.initialize(object : ai.pleos.playground.stt.listener.OnInitializeListener {
             override fun onSuccess() {
                 stt.addListener(sttListener)

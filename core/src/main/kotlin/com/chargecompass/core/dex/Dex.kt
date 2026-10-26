@@ -1,5 +1,6 @@
 package com.chargecompass.core.dex
 
+import com.chargecompass.core.model.ChargerStatus
 import com.chargecompass.core.model.Station
 
 /** 도감 지역. 실서비스에서는 지역 단위로 끊어 "끝낼 수 있는 목표"를 준다. */
@@ -64,11 +65,15 @@ object Dex {
         }
     }
 
-    /** (등록한 곳, 전체) */
+    /** (등록한 곳, 전체). 전체에서 고장·점검 중인 충전소는 빼되, 이미 등록했으면 센다. */
     fun progress(dex: List<DexEntry>, regionId: String): Pair<Int, Int> {
-        val inRegion = dex.filter { it.station.region == regionId }
+        val inRegion = dex.filter { it.station.region == regionId && countsForRegion(it.station, it.state == DexState.REGISTERED) }
         return inRegion.count { it.state == DexState.REGISTERED } to inRegion.size
     }
+
+    /** 지역 완성에 필요한 충전소인가: 충전할 수 없는(고장·점검) 곳은 빼고, 이미 등록한 곳은 상태와 관계없이 센다. */
+    fun countsForRegion(station: Station, registered: Boolean): Boolean =
+        registered || station.status != ChargerStatus.BROKEN && station.status != ChargerStatus.MAINTENANCE
 
     fun label(no: Int): String = "No.%03d".format(no)
 }

@@ -18,9 +18,11 @@ class RewardEngineTest {
     private class History(
         val stamps: Set<String> = emptySet(),
         val bonusDates: Map<String, Set<LocalDate>> = emptyMap(),
+        val lastCharge: Map<String, LocalDateTime> = emptyMap(),
     ) : RewardHistory {
         override fun stampedStationIds() = stamps
         override fun eventBonusDates(eventId: String) = bonusDates[eventId].orEmpty()
+        override fun lastChargeAt(stationId: String, notAfter: LocalDateTime) = lastCharge[stationId]?.takeIf { !it.isAfter(notAfter) }
     }
 
     private fun session(stationId: String?, at: LocalDateTime) = ChargeSession(stationId, at, null, 30, null)
@@ -147,5 +149,26 @@ class RewardEngineTest {
         // 다른 날이나 다른 사업자는 없음
         val other = RewardEngine.onChargeStarted(session("a", LocalDateTime.of(2026, 11, 15, 12, 0)), emptyList(), History(stamps = setOf("a")), listOf(st), listOf(day))
         assertTrue(other.none { it.kind == RewardKind.OPERATOR_DAY })
+    }
+
+    @Test
+    fun `같은 충전소에서 2시간 안에 다시 시작한 충전(재시작·플러그 다시 꽂기)은 보상하지 않는다`() {
+        val day = now.withHour(14)
+        val again = RewardEngine.onChargeStarted(session("st-1", day), emptyList(), History(stamps = setOf("st-1"), lastCharge = mapOf("st-1" to day.minusMinutes(5))))
+        assertTrue(again.isEmpty())
+        // 2시간이 지났으면 새 충전
+        val later = RewardEngine.onChargeStarted(session("st-1", day), emptyList(), History(stamps = setOf("st-1"), lastCharge = mapOf("st-1" to day.minusHours(2))))
+        assertEquals(listOf(RewardKind.CHARGE), later.map { it.kind })
+        // 다른 충전소면 상관없다
+        val other = RewardEngine.onChargeStarted(session("st-2", day), emptyList(), History(stamps = setOf("st-2"), lastCharge = mapOf("st-1" to day.minusMinutes(5))))
+        assertEquals(listOf(RewardKind.CHARGE), other.map { it.kind })
+    }
+
+    @Test
+    fun `고장·점검 중인 충전소는 지역 완성 조건에서 뺀다`() {
+        val broken = station("b", "gangnam").copy(status = com.chargecompass.core.model.ChargerStatus.BROKEN)
+        val stations = listOf(station("a", "gangnam"), broken, station("c", "gangnam"))
+        val r = RewardEngine.onChargeStarted(session("c", now.withHour(12)), emptyList(), History(stamps = setOf("a")), stations)
+        assertTrue(r.any { it.kind == RewardKind.REGION_COMPLETE })
     }
 }

@@ -4,8 +4,10 @@ import com.chargecompass.core.Defaults
 import com.chargecompass.core.model.RewardEvent
 import com.chargecompass.core.model.OperatorDay
 import com.chargecompass.core.model.Station
+import com.chargecompass.core.dex.Dex
 import com.chargecompass.core.model.VehicleModel
 import com.chargecompass.core.session.ChargeSession
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -27,6 +29,8 @@ data class RewardEntry(
 interface RewardHistory {
     fun stampedStationIds(): Set<String>
     fun eventBonusDates(eventId: String): Set<LocalDate>
+    /** 이 충전소에서 [notAfter] 이전(같은 시각 포함)에 충전 보상을 마지막으로 받은 시각. 시연 시계로 미래에 쌓인 기록은 보지 않는다. */
+    fun lastChargeAt(stationId: String, notAfter: LocalDateTime): LocalDateTime? = null
 }
 
 /**
@@ -47,12 +51,18 @@ object RewardEngine {
     ): List<RewardEntry> {
         val stationId = session.stationId ?: return emptyList()
         val at = session.startedAt
+        // 같은 충전소에서 쿨다운 안에 다시 시작한 충전은 같은 방문으로 본다(앱 재시작·플러그 다시 꽂기로 포인트가 늘지 않게)
+        history.lastChargeAt(stationId, at)?.let { last ->
+            if (Duration.between(last, at) < Duration.ofMinutes(Defaults.CHARGE_REWARD_COOLDOWN_MIN)) return emptyList()
+        }
         val entries = mutableListOf(RewardEntry(RewardKind.CHARGE, Defaults.POINTS_CHARGE, at, stationId))
         val stamped = history.stampedStationIds()
         if (stationId !in stamped) {
             entries += RewardEntry(RewardKind.NEW_STAMP, Defaults.POINTS_NEW_STAMP, at, stationId)
             val region = stations.firstOrNull { it.id == stationId }?.region?.takeIf { it.isNotEmpty() }
-            if (region != null && stations.filter { it.region == region }.all { it.id == stationId || it.id in stamped }) {
+            // 고장·점검 중인 충전소는 충전할 수 없으니 지역 완성 조건에서 뺀다
+            val required = stations.filter { it.region == region && Dex.countsForRegion(it, it.id in stamped || it.id == stationId) }
+            if (region != null && required.all { it.id == stationId || it.id in stamped }) {
                 entries += RewardEntry(RewardKind.REGION_COMPLETE, Defaults.POINTS_REGION_COMPLETE, at, stationId, regionId = region)
             }
         }
