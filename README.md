@@ -63,7 +63,7 @@ Pleos Connect System UI 서체 **Asta Sans**(42dot)를 앱에 포함한다. [SIL
 - `core/` — 순수 Kotlin. 도착 잔량(`ArrivalCalculator`), 멤버십 기준 실효 단가·순위(`StationRanker`), 리워드 규칙(`RewardEngine`), 충전 세션 감지(`ChargeSessionDetector`), 도감(`dex/Dex`), 주간 미션(`missions/Missions`), 충전 혜택 시즌(`season/Seasons`), 목업 데이터. JVM 단위 테스트.
 - `app/` — Android(Compose). SDK는 Repository 뒤에 숨기고(`Pleos*`/`Mock*`), 추천 흐름(`RecommendationCoordinator`)과 리워드 적립(`RewardCoordinator`)이 이를 조합한다. 기록은 앱 내부 파일(포인트 원장·발견한 충전소·충전 요약)에 남는다(서버 없음).
 - `tools/` — Blender 3D 렌더 스크립트(`blender_style.py`·`blender_medal.py`·`blender_props.py`, 전체는 `render_all.sh`), Virtual Console 조작(`vc.sh`).
-- 단위 테스트 138개(core 63 · app 75).
+- 단위 테스트 157개(core 66 · app 91).
 
 ## 제출 APK
 `apk/VoltAndPay_VIA_release.apk` (공모전 규칙: `팀명_앱이름_release.apk`)
