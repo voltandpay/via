@@ -45,6 +45,10 @@ Pleos Connect System UI 서체 **Asta Sans**(42dot)를 앱에 포함한다. [SIL
 `Blender -b -P tools/blender_medal.py -- <asta_sans.ttf> <out.png> "#00A06A" "채" [bronze|silver|gold|locked]`
 `python3 tools/medal_to_webp.py <out.png>... app/src/main/res/drawable-nodpi`
 
+그 밖의 3D 소품(포인트 코인, 리서치 돌파 상자, 지역 엠블럼, VIA 심볼, 경부하 달)도 같은 조명으로 렌더링한다.
+`Blender -b -P tools/blender_props.py -- <asta_sans.ttf> <out.png> coin | chest closed|open [t] | emblem 강 gold|locked | symbol | moon [--size N]`
+리서치 돌파 상자는 열린 정도(t) 0~1을 6장면으로 렌더링해 `python3 tools/frames_to_webp.py prop_chest_f <장면들> <res>`로 같은 구도로 자른다. PT 표지용 심볼은 `doc/assets/via_symbol_2048.png`(투명 배경).
+
 ## 구조
 - `core/` — 순수 Kotlin. 도착 잔량(`ArrivalCalculator`), 멤버십 기준 실효 단가·순위(`StationRanker`), 리워드 규칙(`RewardEngine`), 충전 세션 감지(`ChargeSessionDetector`), 목업 데이터. JVM 단위 테스트.
 - `app/` — Android(Compose). SDK는 Repository 뒤에 숨기고(`Pleos*`/`Mock*`), 추천 흐름(`RecommendationCoordinator`)과 리워드 적립(`RewardCoordinator`)이 이를 조합한다.

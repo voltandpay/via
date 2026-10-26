@@ -17,6 +17,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -63,7 +65,8 @@ fun WeeklyMissionsCard(c: AppContainer) {
         DashedDivider()
         // 리서치 돌파: 미션 스탬프 7개를 모으면 큰 보상
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            T("리서치 돌파", ViaType.labelM.copy(fontWeight = FontWeight.Bold), modifier = Modifier.width(140.dp))
+            Prop(com.chargecompass.app.R.drawable.prop_chest_closed, 64.dp)
+            T("리서치 돌파", ViaType.labelM.copy(fontWeight = FontWeight.Bold), modifier = Modifier.width(120.dp))
             repeat(Defaults.MISSIONS_PER_BREAKTHROUGH) { i ->
                 Box(Modifier.size(36.dp).clip(CircleShape).background(if (i < stamps) col.event.c() else col.track.c()), contentAlignment = Alignment.Center) {
                     if (i < stamps) StampIcon(22.dp, Color.White)
@@ -83,7 +86,7 @@ fun OffPeakCard(c: AppContainer) {
     val live = RewardEngine.isOffPeak(now.hour)
     ViaCard(padding = 36.dp, highlight = if (live) col.pos.c() else null) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            BoltIcon(30.dp, col.pos.c())
+            Prop(com.chargecompass.app.R.drawable.prop_moon, 64.dp)
             T("경부하 부스트", ViaType.titleS, modifier = Modifier.weight(1f))
             Chip(eventStatus(Defaults.OFF_PEAK_START_HOUR, Defaults.OFF_PEAK_END_HOUR, nowMin), bg = if (live) col.pos.c() else col.chip.c(), fg = if (live) Color.White else col.text2.c(), bold = live)
         }
@@ -121,4 +124,52 @@ fun OperatorDayCard(c: AppContainer, day: OperatorDay) {
 @Composable
 private fun CheckMark(color: Color) = LineIcon(20.dp, color) { s ->
     listOf(androidx.compose.ui.graphics.Path().apply { moveTo(5 * s, 12.5f * s); lineTo(10 * s, 17 * s); lineTo(19 * s, 7 * s) })
+}
+
+/** 리서치 돌파 직후(10분 안): 열린 상자와 +100P. 정차 중 화면이라 상자가 톡 커지고 짧은 축하 효과. */
+@Composable
+fun BreakthroughCard(c: AppContainer) {
+    val entries by c.ledger.entries.collectAsState()
+    val now = c.demoClock.now()
+    val last = entries.lastOrNull { it.kind == com.chargecompass.core.rewards.RewardKind.BREAKTHROUGH } ?: return
+    var dismissed by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    if (dismissed == last.at.toString() || java.time.Duration.between(last.at, now).abs() > java.time.Duration.ofMinutes(10)) return
+    val col = colors
+    val pop = androidx.compose.runtime.remember(last.at) { androidx.compose.animation.core.Animatable(0.5f) }
+    androidx.compose.runtime.LaunchedEffect(last.at) {
+        pop.animateTo(1f, androidx.compose.animation.core.spring(dampingRatio = androidx.compose.animation.core.Spring.DampingRatioMediumBouncy, stiffness = androidx.compose.animation.core.Spring.StiffnessLow))
+    }
+    Box {
+        ViaCard(padding = 36.dp, highlight = col.event.c()) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(36.dp)) {
+                ChestOpening(last.at, 200.dp, Modifier.scale(pop.value))
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    T("리서치 돌파!", ViaType.titleL, col.event.c())
+                    T("주간 미션 스탬프 ${Defaults.MISSIONS_PER_BREAKTHROUGH}개를 모았어요", ViaType.bodyM, col.text2.c())
+                    CoinAmount("+${last.points}P", ViaType.headline, col.activeText.c(), coin = 64.dp)
+                }
+                Box(Modifier.size(64.dp).clip(CircleShape).pressable { dismissed = last.at.toString() }, contentAlignment = Alignment.Center) {
+                    CloseIcon(color = col.text3.c())
+                }
+            }
+        }
+        ConfettiBurst(last.at, Modifier.matchParentSize())
+    }
+}
+
+/** 리서치 돌파 상자가 열리는 6장면(Blender 렌더, 같은 구도). */
+private val chestFrames = listOf(
+    com.chargecompass.app.R.drawable.prop_chest_f0, com.chargecompass.app.R.drawable.prop_chest_f1, com.chargecompass.app.R.drawable.prop_chest_f2,
+    com.chargecompass.app.R.drawable.prop_chest_f3, com.chargecompass.app.R.drawable.prop_chest_f4, com.chargecompass.app.R.drawable.prop_chest_f5,
+)
+
+/** 닫힌 상자에서 잠깐 멈췄다가 뚜껑이 열린다(약 0.75초, 정차 중 화면에서 한 번만). */
+@Composable
+private fun ChestOpening(key: Any, size: androidx.compose.ui.unit.Dp, modifier: Modifier = Modifier) {
+    var frame by androidx.compose.runtime.remember(key) { androidx.compose.runtime.mutableIntStateOf(0) }
+    androidx.compose.runtime.LaunchedEffect(key) {
+        kotlinx.coroutines.delay(350)
+        for (i in 1..chestFrames.lastIndex) { kotlinx.coroutines.delay(80); frame = i }
+    }
+    Prop(chestFrames[frame], size, modifier)
 }

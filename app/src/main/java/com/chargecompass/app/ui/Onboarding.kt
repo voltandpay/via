@@ -32,7 +32,7 @@ fun Onboarding(c: AppContainer) {
     var owned by remember { mutableStateOf(c.membership.owned.value) }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(48.dp), verticalArrangement = Arrangement.spacedBy(28.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            ViaMark(72.dp)
+            Prop(com.chargecompass.app.R.drawable.prop_symbol, 140.dp)
             Column {
                 T("VIA 시작하기", ViaType.titleL)
                 T("가는 길에, 가장 싸게, 차가 확인한 보상", ViaType.bodyM, col.text2.c())
