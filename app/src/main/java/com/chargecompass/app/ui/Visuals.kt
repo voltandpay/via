@@ -148,10 +148,17 @@ fun badgeColor(operatorId: String): Color =
 
 /** 도감 배지: 모으면 사업자 색 원에 첫 글자, 못 모았으면 점선 원에 자물쇠. 방금 모았으면 톡 커지며 나타난다. */
 @Composable
-fun StationBadge(initial: String, color: Color, collected: Boolean, fresh: Boolean = false, size: Dp = 112.dp) {
+fun StationBadge(initial: String, color: Color, collected: Boolean, fresh: Boolean = false, size: Dp = 112.dp, medal: Int? = null) {
     val c = colors
     val pop = remember { Animatable(if (fresh) 0.4f else 1f) }
     LaunchedEffect(fresh) { if (fresh) pop.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow)) }
+    if (medal != null) {
+        // 3D 메달 시안: 메달 테두리까지 꽉 찬 이미지라 평면 배지와 거의 같은 크기
+        // 못 모은 메달은 반투명으로 물러나 보이게(모은 메달이 돋보이도록)
+        androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(medal), initial, Modifier.size(size * 1.05f).scale(pop.value),
+            alpha = if (collected) 1f else 0.45f)
+        return
+    }
     Box(Modifier.size(size).scale(pop.value), contentAlignment = Alignment.Center) {
         Canvas(Modifier.size(size)) {
             val r = this.size.width / 2
@@ -164,6 +171,13 @@ fun StationBadge(initial: String, color: Color, collected: Boolean, fresh: Boole
         }
         if (collected) T(initial, ViaType.titleM, Color.White) else LockIcon(color = c.text3.c())
     }
+}
+
+/** 3D 메달 시안 이미지(Blender 렌더). 모은 메달은 채비만 시안이 있어 나머지는 평면 배지로 둔다. */
+fun medalRes(operatorId: String, collected: Boolean): Int? = when {
+    !collected -> com.chargecompass.app.R.drawable.medal_locked
+    operatorId == "chaevi" -> com.chargecompass.app.R.drawable.medal_chaevi
+    else -> null
 }
 
 @Composable

@@ -62,6 +62,7 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
                 OutlinedButton(onClick = { c.demoClock.jumpTo(LocalDate.now().atTime(23, 30)) }) { Text("밤 11:30으로") }
                 OutlinedButton(onClick = { c.demoClock.reset() }) { Text("실제 시각") }
                 OutlinedButton(onClick = { c.narrowPreview.value = !c.narrowPreview.value }) { Text("좁은 화면") }
+                OutlinedButton(onClick = { c.medalPreview.value = !c.medalPreview.value }) { Text("3D 메달 시안") }
                 // 시연용: 지난 6일 충전 요약 예시(홈의 7일 차트가 비어 보이지 않게). 실제 기록 파일에 남는다
                 OutlinedButton(onClick = { scope.launch { demoWeekSummaries(c.demoClock.now()).forEach { c.summaries.append(it) } } }) { Text("지난 6일 예시 기록") }
                 (c.navi as? PleosNaviRepository)?.let { navi ->
