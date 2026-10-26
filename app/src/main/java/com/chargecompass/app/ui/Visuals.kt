@@ -188,6 +188,9 @@ private val operatorMedals = mapOf(
 )
 fun medalRes(operatorId: String, tier: com.chargecompass.core.dex.MedalTier): Int? = operatorMedals[operatorId]?.get(tier.ordinal)
 
+/** 사업자 데이 한정 메달(보라 테두리). 시연 데이터의 사업자 데이가 있는 곳만. */
+fun eventMedalRes(operatorId: String): Int? = if (operatorId == "chaevi") R.drawable.medal_chaevi_event else null
+
 @Composable
 fun LockIcon(size: Dp = 36.dp, color: Color) {
     Canvas(Modifier.size(size)) {

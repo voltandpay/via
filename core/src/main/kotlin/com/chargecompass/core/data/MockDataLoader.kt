@@ -1,6 +1,9 @@
 package com.chargecompass.core.data
 
 import com.chargecompass.core.model.Membership
+import com.chargecompass.core.model.OperatorDay
+import kotlinx.serialization.Serializable
+import java.time.LocalDate
 import com.chargecompass.core.model.RewardEvent
 import com.chargecompass.core.model.Station
 import com.chargecompass.core.model.Tariff
@@ -18,7 +21,11 @@ data class MockData(
     val stations: List<Station>,
     val events: List<RewardEvent>,
     val memberships: List<Membership>,
+    val operatorDays: List<OperatorDay> = emptyList(),
 )
+
+@Serializable
+private data class OperatorDayJson(val id: String, val operatorId: String, val date: String, val multiplier: Int, val title: String)
 
 /** 리소스 읽는 방법은 호출 쪽이 정한다 (JVM 테스트는 클래스로더, 앱은 같은 클래스로더나 assets). */
 object MockDataLoader {
@@ -30,6 +37,8 @@ object MockDataLoader {
         stations = json.decodeFromString(read("mock/stations_demo_route.json")),
         events = json.decodeFromString(read("mock/events.json")),
         memberships = json.decodeFromString(read("mock/memberships.json")),
+        operatorDays = json.decodeFromString<List<OperatorDayJson>>(read("mock/operator_days.json"))
+            .map { OperatorDay(it.id, it.operatorId, LocalDate.parse(it.date), it.multiplier, it.title) },
     )
 }
 

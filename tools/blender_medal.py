@@ -1,4 +1,4 @@
-# 도감 메달: blender -b -P blender_medal.py -- <font.ttf> <out.png> <hex색> <글자> [locked|bronze|silver|gold]
+# 도감 메달: blender -b -P blender_medal.py -- <font.ttf> <out.png> <hex색> <글자> [locked|bronze|silver|gold|event]
 import bpy, sys, math
 argv = sys.argv[sys.argv.index("--") + 1:]
 font_path, out, hexcol, glyph = argv[:4]
@@ -23,7 +23,7 @@ sc = bpy.context.scene
 
 base = srgb("#8E959E") if locked else srgb(hexcol)
 # 테두리: 잠긴 메달은 은회색, 단계별로 동·은·금(기본은 연금빛)
-rimc = srgb({"locked": "#C9CED4", "bronze": "#C07A4A", "silver": "#DDE2E8", "gold": "#F2C24A"}.get(variant, "#E9D9A6"))
+rimc = srgb({"locked": "#C9CED4", "bronze": "#C07A4A", "silver": "#DDE2E8", "gold": "#F2C24A", "event": "#7A66FF"}.get(variant, "#E9D9A6"))  # event: 사업자 데이 한정
 face = mat("face", base, 0.05, 0.42, clearcoat=0.25)
 rim = mat("rim", rimc, 0.9, 0.22)
 ink = mat("ink", srgb("#F7F8FA") if not locked else srgb("#E6E8EB"), 0.0, 0.4)

@@ -35,6 +35,12 @@ Pleos Connect System UI 서체 **Asta Sans**(42dot)를 앱에 포함한다. [SIL
 - 같은 곳을 다시 충전하면 메달 테두리가 동(1회) → 은(3회) → 금(5회)
 - 지역을 다 모으면 +50P와 음성 안내
 
+## 주간 미션 · 경부하 부스트 · 사업자 데이
+포켓몬 고에서 빌린 장치. 모두 절약 행동에만 보상하고, 주행 거리에는 보상하지 않는다.
+- **주간 미션**(필드 리서치): 회원가·로밍가로 2번 충전, 효율 운전 2번, 새 충전소 1곳 등록. 미션마다 +15P, 7개 모으면 리서치 돌파 +100P
+- **경부하 부스트**(날씨 부스트): 23~9시 충전 시작 시 충전 포인트 2배 (시연용 예시 시간대)
+- **사업자 데이**(커뮤니티 데이): 정해진 날 그 사업자 충전소에서 충전하면 포인트 3배 + 한정 메달 (`mock/operator_days.json`)
+
 메달은 Blender(Cycles)로 렌더링한 이미지다(`app/src/main/res/drawable-nodpi/medal_*.webp`, 사업자 9곳 × 동·은·금 + 잠긴 메달).
 `Blender -b -P tools/blender_medal.py -- <asta_sans.ttf> <out.png> "#00A06A" "채" [bronze|silver|gold|locked]`
 `python3 tools/medal_to_webp.py <out.png>... app/src/main/res/drawable-nodpi`

@@ -57,4 +57,11 @@ class MockDataLoaderTest {
         val known = com.chargecompass.core.dex.Dex.regions.map { it.id }.toSet()
         data.stations.forEach { assertTrue(it.region in known, "${it.id}: ${it.region}") }
     }
+
+    @Test
+    fun `사업자 데이는 시연 충전소가 있는 사업자다`() {
+        assertTrue(data.operatorDays.isNotEmpty())
+        val ops = data.stations.map { it.operatorId }.toSet()
+        data.operatorDays.forEach { assertTrue(it.operatorId in ops, it.id) }
+    }
 }

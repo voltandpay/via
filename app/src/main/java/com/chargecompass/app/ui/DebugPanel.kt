@@ -61,6 +61,7 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
                 OutlinedButton(onClick = { open = false }) { Text("닫기") }
                 OutlinedButton(onClick = { c.demoClock.jumpTo(LocalDate.now().atTime(23, 30)) }) { Text("밤 11:30으로") }
                 OutlinedButton(onClick = { c.demoClock.reset() }) { Text("실제 시각") }
+                c.data.operatorDays.firstOrNull()?.let { d -> OutlinedButton(onClick = { c.demoClock.jumpTo(d.date.atTime(12, 0)) }) { Text("${d.title}로") } }
                 OutlinedButton(onClick = { c.narrowPreview.value = !c.narrowPreview.value }) { Text("좁은 화면") }
                 OutlinedButton(onClick = { c.flatBadges.value = !c.flatBadges.value }) { Text("평면 배지") }
                 // 시연용: 지난 6일 충전 요약 예시(홈의 7일 차트가 비어 보이지 않게). 실제 기록 파일에 남는다
