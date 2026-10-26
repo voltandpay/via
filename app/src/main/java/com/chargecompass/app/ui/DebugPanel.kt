@@ -32,12 +32,15 @@ import com.chargecompass.app.navi.RouteSnapshot
 import com.chargecompass.app.vehicle.TripSummary
 import java.time.LocalDate
 import java.time.LocalDateTime
+import kotlinx.coroutines.launch
+import com.chargecompass.app.rewards.ChargeSummary
 
 /** 디버그 빌드 전용 시연 패널. Mock 모드에서 차량·경로 상태를 직접 바꾼다. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
     var open by remember { mutableStateOf(false) }
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
     val energy by c.vehicle.energy.collectAsState()
     val drive by c.drive.state.collectAsState()
     val route by c.navi.route.collectAsState()
@@ -59,6 +62,9 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
                 OutlinedButton(onClick = { c.demoClock.jumpTo(LocalDate.now().atTime(23, 30)) }) { Text("밤 11:30으로") }
                 OutlinedButton(onClick = { c.demoClock.reset() }) { Text("실제 시각") }
                 OutlinedButton(onClick = { c.narrowPreview.value = !c.narrowPreview.value }) { Text("좁은 화면") }
+                OutlinedButton(onClick = { c.flatBadges.value = !c.flatBadges.value }) { Text("평면 배지") }
+                // 시연용: 지난 6일 충전 요약 예시(홈의 7일 차트가 비어 보이지 않게). 실제 기록 파일에 남는다
+                OutlinedButton(onClick = { scope.launch { demoWeekSummaries(c.demoClock.now()).forEach { c.summaries.append(it) } } }) { Text("지난 6일 예시 기록") }
                 (c.navi as? PleosNaviRepository)?.let { navi ->
                     OutlinedButton(onClick = { navi.requestDemoRoute() }) { Text("서울역 경로 요청") }
                 }
@@ -83,3 +89,8 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
         }
     }
 }
+
+/** 지난 6일(오늘 제외) 중 4일에 충전한 예시 요약. */
+internal fun demoWeekSummaries(now: LocalDateTime): List<ChargeSummary> = listOf(
+    Triple(6, "판교테크노밸리 SK일렉링크", 2860), Triple(4, "양재 채비 충전소", 4120), Triple(3, "반포 한전 충전소", 1980), Triple(1, "서초 이브이시스", 3350),
+).map { (back, name, saving) -> ChargeSummary(name, 32.0, 9800, saving, 10, now.minusDays(back.toLong()).withHour(19).withMinute(0)) }

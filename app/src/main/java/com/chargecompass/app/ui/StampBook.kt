@@ -25,6 +25,7 @@ import java.time.LocalDateTime
 @Composable
 fun StampBook(c: AppContainer) {
     val entries by c.ledger.entries.collectAsState()
+    val flatBadges by c.flatBadges.collectAsState()
     val col = colors
     val stamps = entries.filter { it.kind == RewardKind.NEW_STAMP }.associateBy { it.stationId }
     val total = c.data.stations.size
@@ -48,7 +49,8 @@ fun StampBook(c: AppContainer) {
             // 방금(2분 안에) 받은 스탬프는 톡 커지며 나타난다
             val fresh = stamp != null && Duration.between(stamp.at, now).abs() < Duration.ofMinutes(2)
             Column(Modifier.width(if (isWide) 180.dp else 150.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                StationBadge(op?.name?.take(1) ?: "?", badgeColor(st.operatorId), stamp != null, fresh, size = if (isWide) 112.dp else 96.dp)
+                StationBadge(op?.name?.take(1) ?: "?", badgeColor(st.operatorId), stamp != null, fresh, size = if (isWide) 112.dp else 96.dp,
+                    medal = if (flatBadges) null else medalRes(st.operatorId, stamp != null))
                 T(st.name, ViaType.labelM.copy(fontWeight = if (stamp != null) FontWeight.Bold else FontWeight.Normal, textAlign = TextAlign.Center),
                     if (stamp != null) col.text.c() else col.text3.c())
                 T(stamp?.let { "${it.at.toLocalDate().monthValue}/${it.at.toLocalDate().dayOfMonth} 첫 충전" } ?: "아직 안 가봤어요", ViaType.labelS, col.text3.c())
@@ -69,10 +71,10 @@ fun EventsScreen(c: AppContainer) {
         ViaCard(padding = 36.dp, highlight = if (live) col.event.c() else null) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 T(e.title, ViaType.titleS, modifier = Modifier.weight(1f), )
-                Chip(if (live) "지금 진행 중" else "${e.startHour}시 시작", bg = if (live) col.event.c() else col.chip.c(), fg = if (live) androidx.compose.ui.graphics.Color.White else col.text2.c(), bold = live)
+                Chip(eventStatus(e.startHour, e.endHour, now.hour * 60 + now.minute), bg = if (live) col.event.c() else col.chip.c(), fg = if (live) androidx.compose.ui.graphics.Color.White else col.text2.c(), bold = live)
             }
             T(c.data.stations.firstOrNull { it.id == e.stationId }?.name.orEmpty() + " · 포인트 ${e.multiplier}배 · 하루 1회", ViaType.bodyM, col.text2.c())
-            DayTimeline(e.startHour, e.endHour, (now.hour * 60 + now.minute) / 1440f, col.event.c())
+            UpcomingTimeline(e.startHour, e.endHour, now.hour * 60 + now.minute, col.event.c())
         }
     }
 }

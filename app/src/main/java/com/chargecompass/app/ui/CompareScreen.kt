@@ -54,17 +54,23 @@ fun CompareScreen(c: AppContainer) {
         val names = c.data.memberships.filter { it.id in owned }.joinToString { it.name }.ifEmpty { "없음(비회원가)" }
         T("내 멤버십: $names · 80%까지 충전 기준 총비용", ViaType.labelM, col.text3.c())
     }
+    if (top.isNotEmpty()) ViaCard(padding = 36.dp) { RouteBandFor(c, top) }
     top.forEachIndexed { i, r ->
         val first = i == 0
         val nonMember = c.data.tariffs[r.station.operatorId]?.nonMemberWonPerKwh ?: r.price.wonPerKwh
-        ViaCard(padding = 32.dp, highlight = if (first) col.pos.c() else null) {
+        ViaCard(padding = if (first) 40.dp else 28.dp, highlight = if (first) col.pos.c() else null) {
+            if (first) Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                T("추천", ViaType.labelM.copy(fontWeight = FontWeight.Bold), Color.White,
+                    Modifier.clip(RoundedCornerShape(999.dp)).background(col.pos.c()).padding(horizontal = 18.dp, vertical = 6.dp))
+                if (top.size > 1 && r.totalCostWon < top[1].totalCostWon) T("2위보다 ${won(top[1].totalCostWon - r.totalCostWon)} 저렴", ViaType.labelM.copy(fontWeight = FontWeight.Bold), col.pos.c())
+            }
             Adaptive(Arrangement.spacedBy(28.dp)) { grow ->
                 Row(grow, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
                     Box(Modifier.size(56.dp).clip(CircleShape).background(if (first) col.pos.c() else col.track.c()), contentAlignment = Alignment.Center) {
                         T("${i + 1}", ViaType.bodyM.copy(fontWeight = FontWeight.ExtraBold), if (first) Color.White else col.text.c())
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        T(r.station.name, ViaType.titleS)
+                        T(r.station.name, if (first) ViaType.titleM else ViaType.titleS)
                         T("${r.station.alongRouteKm.roundToInt()}km 앞 · 우회 ${r.station.detourKm}km · ${r.station.maxKw}kW · 사용 가능", ViaType.labelM, col.text3.c())
                     }
                 }

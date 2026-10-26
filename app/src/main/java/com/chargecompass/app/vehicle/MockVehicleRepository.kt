@@ -32,10 +32,12 @@ class MockVehicleRepository(
     fun setCharging(on: Boolean) {
         _charging.tryEmit(ChargingSample(clock(), on, _energy.value.socPct, location?.first, location?.second))
     }
-    /** 시연용: 끊김 허용 시간(60초)이 지난 것처럼 두 샘플을 보내 세션을 바로 끝낸다. */
+    /** 시연용: 끊김 허용 시간(60초)이 지난 것처럼 샘플을 보내 세션을 바로 끝낸다. */
     fun endCharging() {
         val soc = _energy.value.socPct
         val at = clock()
+        // 충전 중에 바꾼 SoC를 끝 SoC로 잡도록, 끄기 전에 지금 SoC로 충전 샘플을 한 번 보낸다(실차는 5초마다 샘플)
+        _charging.tryEmit(ChargingSample(at, true, soc, location?.first, location?.second))
         _charging.tryEmit(ChargingSample(at, false, soc, location?.first, location?.second))
         _charging.tryEmit(ChargingSample(at.plusSeconds(61), false, soc, location?.first, location?.second))
     }

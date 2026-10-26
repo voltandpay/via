@@ -11,6 +11,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,7 +40,9 @@ import com.chargecompass.app.navi.StopResult
 import com.chargecompass.app.recommend.RecoState
 import com.chargecompass.core.pricing.RankedStation
 import com.chargecompass.core.rewards.RewardKind
+import com.chargecompass.core.energy.ArrivalCalculator
 import java.time.LocalDateTime
+import kotlin.math.roundToInt
 
 private val tabs = listOf("홈", "충전소 비교", "도감", "이벤트", "포인트")
 
@@ -90,23 +93,34 @@ private fun HomeTab(c: AppContainer) {
     val weekPoints = entries.filter { it.at.isAfter(now.minusDays(7)) }.sumOf { it.points }
     val balance = c.ledger.balance(now)
 
-    // 방금 끝난 충전: 실제 충전량 기준 절약액과 받은 포인트(보상 고리의 마무리)
+    BatteryHero(c)
+
+    // 방금 끝난 충전: 영수증 카드(보상 고리의 마무리). 정차 중 화면이라 처음 나타날 때 한 번 축하 효과
     val summary by c.rewards.lastSummary.collectAsState()
     summary?.let { sum ->
-        ViaCard(padding = 40.dp, highlight = col.active.c()) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                T("방금 충전 · ${sum.stationName}", ViaType.labelM, col.text3.c(), Modifier.weight(1f))
-                Box(Modifier.size(64.dp).clip(CircleShape).pressable(onClick = c.rewards::dismissSummary), contentAlignment = Alignment.Center) {
-                    CloseIcon(color = col.text3.c())
+        Box {
+            ReceiptCard {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        T("충전 영수증", ViaType.labelM, col.text3.c())
+                        T(sum.stationName, ViaType.titleS)
+                    }
+                    Box(Modifier.size(64.dp).clip(CircleShape).pressable(onClick = c.rewards::dismissSummary), contentAlignment = Alignment.Center) {
+                        CloseIcon(color = col.text3.c())
+                    }
+                }
+                DashedDivider()
+                ReceiptRow("충전량", "${"%.1f".format(sum.chargedKwh)}kWh")
+                ReceiptRow("결제 예상", won(sum.costWon))
+                ReceiptRow("비회원가 대비", if (sum.savingWon > 0) "-${won(sum.savingWon)}" else won(0), col.activeText.c(), bold = true)
+                if (sum.points > 0) ReceiptRow("받은 포인트", "+${sum.points}P", col.activeText.c(), bold = true)
+                DashedDivider()
+                Row(verticalAlignment = Alignment.Bottom) {
+                    T("이번 충전으로 아낀 돈", ViaType.bodyM, col.text2.c(), Modifier.weight(1f))
+                    CountUpWon(sum.savingWon, ViaType.headline, col.activeText.c())
                 }
             }
-            Adaptive(Arrangement.spacedBy(40.dp)) { first ->
-                Column(first) {
-                    T("${won(sum.savingWon)} 절약", ViaType.headline, col.activeText.c())
-                    T("${"%.1f".format(sum.chargedKwh)}kWh 충전 · ${won(sum.costWon)} 결제 예상", ViaType.bodyM, col.text2.c())
-                }
-                if (sum.points > 0) T("+${sum.points}P", ViaType.headline, col.activeText.c())
-            }
+            ConfettiBurst(sum.endedAt, Modifier.matchParentSize())
         }
     }
 
@@ -118,7 +132,9 @@ private fun HomeTab(c: AppContainer) {
         else -> null
     }
     pending?.let { (station, loading, failed) ->
+        val top = (reco as? RecoState.AwaitingTouch)?.top ?: listOf(station)
         ViaCard(padding = 44.dp, highlight = if (failed) col.neg.c() else null) {
+            RouteBandFor(c, top)
             Adaptive(Arrangement.spacedBy(32.dp)) { firstWeight ->
                 Column(firstWeight, verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     if (failed) T("경유지를 넣지 못했어요 · 내비가 준비되면 다시 시도해 주세요", ViaType.labelM.copy(fontWeight = FontWeight.Bold), col.neg.c())
@@ -147,9 +163,12 @@ private fun HomeTab(c: AppContainer) {
             }
             if (event == null) T("진행 중인 이벤트가 없어요", ViaType.bodyM, col.text2.c()) else {
                 T(c.data.stations.firstOrNull { it.id == event.stationId }?.name.orEmpty(), ViaType.titleS)
-                T("${event.startHour}시 ~ ${event.endHour}시 충전 시작 시 포인트 ${event.multiplier}배", ViaType.bodyM, col.text2.c())
                 val now = c.demoClock.now()
-                DayTimeline(event.startHour, event.endHour, (now.hour * 60 + now.minute) / 1440f, col.event.c())
+                val nowMin = now.hour * 60 + now.minute
+                val status = eventStatus(event.startHour, event.endHour, nowMin)
+                T("${event.startHour}시 ~ ${event.endHour}시 · $status", ViaType.bodyM.copy(fontWeight = if (status.startsWith("지금")) FontWeight.Bold else FontWeight.Normal),
+                    if (status.startsWith("지금")) col.event.c() else col.text2.c())
+                UpcomingTimeline(event.startHour, event.endHour, nowMin, col.event.c())
             }
         }
         it(Modifier) {
@@ -178,7 +197,7 @@ private fun HomeTab(c: AppContainer) {
                 T("최근 7일 절약", ViaType.labelM, col.text3.c())
                 T(won(week.sum()), ViaType.titleM, col.activeText.c())
             }
-            T("충전이 끝나면 자동으로 쌓여요", ViaType.labelM, col.text3.c())
+            T(if (week.count { it > 0 } <= 1) "충전이 끝나면 자동으로 쌓여요" else "하루 평균 ${won(week.sum() / week.count { it > 0 })}", ViaType.labelM, col.text3.c())
         }
         WeekBars(week, (6 downTo 0).map { back -> if (back == 0) "오늘" else today.minusDays(back.toLong()).dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.KOREAN) }, height = if (isWide) 140.dp else 110.dp)
     }
@@ -187,7 +206,7 @@ private fun HomeTab(c: AppContainer) {
         is RecoState.Added -> if (s.result != StopResult.FAILED) ViaCard { T("경유지로 추가한 충전소", ViaType.labelM, col.text3.c()); T(s.station.station.name, ViaType.titleM, col.activeText.c()) }
         is RecoState.Enough -> ViaCard { T("지금 경로는 충전 없이 도착할 수 있어요", ViaType.bodyL) }
         RecoState.NoneAvailable -> ViaCard { T("경로 위에 쓸 수 있는 충전소가 없어요", ViaType.bodyL, col.neg.c()) }
-        RecoState.Idle -> ViaCard { T("목적지를 정하면 내 멤버십 기준으로 가장 싼 충전소를 찾아드려요", ViaType.bodyL, col.text2.c()) }
+        RecoState.Idle -> IdleGuide()
         else -> Unit
     }
 }
@@ -208,5 +227,84 @@ private fun Grid3(content: (card: (Modifier, @Composable androidx.compose.founda
         Row(horizontalArrangement = Arrangement.spacedBy(28.dp)) { cards.forEach { body -> ViaCard(Modifier.weight(1f), padding = 36.dp, content = body) } }
     } else {
         Column(verticalArrangement = Arrangement.spacedBy(28.dp)) { cards.forEach { body -> ViaCard(padding = 36.dp, content = body) } }
+    }
+}
+
+/** 홈 맨 위: 배터리 링(현재 %, 목적지가 있으면 도착 예상 눈금)과 주행 가능 거리. */
+@Composable
+private fun BatteryHero(c: AppContainer) {
+    val energy by c.vehicle.energy.collectAsState()
+    val route by c.navi.route.collectAsState()
+    val col = colors
+    val car = c.vehicleModel()
+    val soc = energy.socPct
+    val eff = energy.efficiencyKmPerKwh?.takeIf { it > 0 } ?: car?.baseEfficiencyKmPerKwh
+    val range = if (car != null && eff != null) rangeKm(soc, car.batteryKwh, eff) else null
+    val arrival = route?.let { r -> car?.let { ArrivalCalculator.socAfter(energy, it, r.remainingKm) } }?.roundToInt()
+    val low = (soc ?: 100) < 20
+    ViaCard(padding = 36.dp) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(if (isWide) 48.dp else 28.dp)) {
+            RingGauge((soc ?: 0) / 100f, if (low) col.neg.c() else col.active.c(), size = if (isWide) 220.dp else 180.dp, stroke = 22.dp,
+                marker = arrival?.let { (it.coerceIn(0, 100)) / 100f }) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    T(soc?.let { "$it%" } ?: "-", ViaType.titleL.copy(fontWeight = FontWeight.ExtraBold))
+                    T("배터리", ViaType.labelS, col.text3.c())
+                }
+            }
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                T(car?.name ?: "차종을 골라 주세요", ViaType.labelM, col.text3.c())
+                T(range?.let { "약 ${it}km 갈 수 있어요" } ?: "배터리 정보를 기다리는 중", ViaType.titleM)
+                val r = route
+                if (r != null && arrival != null) {
+                    val need = ArrivalCalculator.needsCharge(arrival.toDouble())
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        T("${r.destinationName}까지 ${r.remainingKm.roundToInt()}km · 도착 예상 ${arrival.coerceAtLeast(0)}%", ViaType.bodyM, col.text2.c())
+                        Chip(if (need) "충전 필요" else "충분해요", if (need) col.neg.c() else col.activeSoft.c(), if (need) Color.White else col.activeText.c(), bold = true)
+                    }
+                } else {
+                    T("목적지를 정하면 도착할 때 남는 배터리를 계산해요", ViaType.bodyM, col.text2.c())
+                }
+            }
+        }
+    }
+}
+
+/** 추천 후보를 경로 띠로: 출발 배터리, 후보 위치·그 지점 배터리, 목적지 도착 예상. */
+@Composable
+fun RouteBandFor(c: AppContainer, top: List<RankedStation>) {
+    val route by c.navi.route.collectAsState()
+    val energy by c.vehicle.energy.collectAsState()
+    val r = route ?: return
+    val car = c.vehicleModel()
+    val stops = routeStops(r.remainingKm, top.map { it.station.id to it.station.alongRouteKm }) { km -> car?.let { ArrivalCalculator.socAfter(energy, it, km) } }
+    RouteBand(
+        stops, energy.socPct, r.destinationName,
+        car?.let { ArrivalCalculator.socAfter(energy, it, r.remainingKm) }?.roundToInt()?.coerceAtLeast(0),
+        r.remainingKm.roundToInt(), top.firstOrNull()?.station?.alongRouteKm?.roundToInt(),
+    )
+}
+
+/** 경로가 없을 때: 그림과 세 단계 안내. */
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@Composable
+private fun IdleGuide() {
+    val col = colors
+    ViaCard(padding = 36.dp) {
+        Adaptive(Arrangement.spacedBy(40.dp)) { first ->
+            RouteIllustration(Modifier.size(width = 220.dp, height = 140.dp))
+            Column(first, verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                T("목적지를 정하면 경로 위 가장 싼 충전소를 찾아드려요", ViaType.bodyL.copy(fontWeight = FontWeight.Bold))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    listOf("내비에서 목적지 설정", "내 멤버십 기준 최저가 추천", "경유지로 한 번에 추가").forEachIndexed { i, step ->
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Box(Modifier.size(36.dp).clip(CircleShape).background(col.posSoft.c()), contentAlignment = Alignment.Center) {
+                                T("${i + 1}", ViaType.labelS.copy(fontWeight = FontWeight.Bold), col.pos.c())
+                            }
+                            T(step, ViaType.labelM, col.text2.c())
+                        }
+                    }
+                }
+            }
+        }
     }
 }
