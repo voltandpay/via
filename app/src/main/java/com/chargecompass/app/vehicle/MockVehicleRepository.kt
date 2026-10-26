@@ -22,6 +22,9 @@ class MockVehicleRepository(
     override val parked: StateFlow<Boolean?> = _parked
     override val charging: SharedFlow<ChargingSample> = _charging
     override val tripEnded: SharedFlow<TripSummary> = _trips
+    private val _driverSeated = MutableStateFlow<Boolean?>(null)
+    override val driverSeated: StateFlow<Boolean?> = _driverSeated
+    override fun currentLocation(): Pair<Double, Double>? = location
 
     var vinValue: String? = null
 
@@ -42,6 +45,7 @@ class MockVehicleRepository(
         _charging.tryEmit(ChargingSample(at.plusSeconds(61), false, soc, location?.first, location?.second))
     }
     fun clearLocation() { location = null }
+    fun setDriverSeated(value: Boolean?) { _driverSeated.value = value }
     fun endTrip(trip: TripSummary) { _trips.tryEmit(trip) }
 
     override suspend fun vin(): String? = vinValue

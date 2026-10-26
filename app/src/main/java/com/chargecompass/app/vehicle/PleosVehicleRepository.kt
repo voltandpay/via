@@ -4,12 +4,15 @@ import ai.pleos.playground.location.fused.FusedLocation
 import ai.pleos.playground.location.fused.listener.FusedLocationListener
 import ai.pleos.playground.location.fused.model.LocationData
 import ai.pleos.playground.vehicle.Vehicle
+import ai.pleos.playground.vehicle.api.model.area.SeatArea
+import ai.pleos.playground.vehicle.constant.area.SeatValue
 import ai.pleos.playground.vehicle.constant.control.VehicleGear
 import ai.pleos.playground.vehicle.listener.DistanceDrivenListener
 import ai.pleos.playground.vehicle.listener.EvBatteryEfficiencyListener
 import ai.pleos.playground.vehicle.listener.EvBatteryLevelListener
 import ai.pleos.playground.vehicle.listener.EvBatteryStateOfChargeListener
 import ai.pleos.playground.vehicle.listener.GearSelectionListener
+import ai.pleos.playground.vehicle.listener.SeatOccupancyListener
 import android.content.Context
 import android.util.Log
 import com.chargecompass.core.energy.EnergyState
@@ -51,11 +54,16 @@ class PleosVehicleRepository(
     override val parked: StateFlow<Boolean?> = _parked
     override val charging: SharedFlow<ChargingSample> = _charging
     override val tripEnded: SharedFlow<TripSummary> = _trips
+    private val _driverSeated = MutableStateFlow<Boolean?>(null)
+    override val driverSeated: StateFlow<Boolean?> = _driverSeated
+    override fun currentLocation(): Pair<Double, Double>? = lastLocation
 
     @Volatile private var odometerKm: Float? = null
     @Volatile private var energyWh: Float? = null
     @Volatile private var lastLocation: Pair<Double, Double>? = null
     private var tripStart: Pair<Float, Float?>? = null   // (주행거리 km, 배터리 Wh)
+    private var tripStartPlace: Pair<Double, Double>? = null
+    private var tripStartedAt: LocalDateTime? = null
     private var pollJob: Job? = null
 
     private val socListener = object : EvBatteryStateOfChargeListener {
@@ -76,6 +84,10 @@ class PleosVehicleRepository(
         override fun onDistanceDrivenUpdated(value: Float?) { odometerKm = value }
         override fun onFailed(e: Exception) = warn("주행거리", e)
     }
+    private val seatListener = object : SeatOccupancyListener {
+        override fun onSeatOccupancyUpdated(value: Boolean?) { _driverSeated.value = value }
+        override fun onFailed(e: Exception) = warn("운전석 착석(미지원이면 늘 차 안에 있다고 봄)", e)
+    }
     private val gearListener = object : GearSelectionListener {
         override fun onSelected(gear: VehicleGear?) = onGear(gear)
         override fun onFailed(e: Exception) = warn("기어", e)
@@ -89,6 +101,8 @@ class PleosVehicleRepository(
         ev.registerEvBatteryLevel(levelListener)
         vehicle.getOdometer().registerDistanceDriven(odometerListener)
         vehicle.getGear().registerGearSelection(gearListener)
+        // 좌석 신호는 차종·권한에 따라 없을 수 있다 → 실패해도 나머지는 동작(운전석 = 알 수 없음)
+        runCatching { vehicle.getSeat().registerSeatOccupancy(DRIVER_SEAT, seatListener) }.onFailure { warn("운전석 착석 구독", it as? Exception ?: Exception(it)) }
         startLocation()
         pollJob = scope.launch {
             var failures = 0
@@ -114,6 +128,7 @@ class PleosVehicleRepository(
         ev.unregisterEvBatteryLevel(levelListener)
         vehicle.getOdometer().unregisterDistanceDriven(odometerListener)
         vehicle.getGear().unregisterGearSelection(gearListener)
+        runCatching { vehicle.getSeat().unregisterSeatOccupancy(DRIVER_SEAT, seatListener) }
         stopLocation()
         vehicle.release()
     }
@@ -146,7 +161,11 @@ class PleosVehicleRepository(
         val wasParked = _parked.value
         _parked.value = parkedNow
         when {
-            parkedNow == false && wasParked != false -> tripStart = odometerKm?.let { it to energyWh }
+            parkedNow == false && wasParked != false -> {
+                tripStart = odometerKm?.let { it to energyWh }
+                tripStartPlace = lastLocation
+                tripStartedAt = clock()
+            }
             parkedNow == true && wasParked == false -> endTrip()
         }
     }
@@ -160,7 +179,7 @@ class PleosVehicleRepository(
         val usedKwh = if (startWh != null && endWh != null) (startWh - endWh) / 1000f else null
         val efficiency = _energy.value.efficiencyKmPerKwh
             ?: usedKwh?.takeIf { it > 0f }?.let { (km / it).toDouble() }
-        _trips.tryEmit(TripSummary(km.toDouble(), efficiency, clock()))
+        _trips.tryEmit(TripSummary(km.toDouble(), efficiency, clock(), tripStartPlace, lastLocation, tripStartedAt))
     }
 
     /** 첫 실행에서 위치 권한을 앱 시작 뒤에 허용한 경우 다시 붙는다. */
@@ -201,5 +220,7 @@ class PleosVehicleRepository(
         private const val TAG = "PleosVehicle"
         const val CHARGE_POLL_MS = 5_000L
         private const val SDK_CALL_TIMEOUT_MS = 3_000L
+        /** 운전석(좌핸들 기준 1열 왼쪽). */
+        private val DRIVER_SEAT = SeatArea(SeatValue.ROW_1_LEFT)
     }
 }

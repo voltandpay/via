@@ -98,6 +98,8 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
                     OutlinedButton(onClick = { v.setCharging(true) }) { Text("충전 시작") }
                     OutlinedButton(onClick = { v.endCharging() }) { Text("충전 끝") }
                     OutlinedButton(onClick = { v.endTrip(TripSummary(12.0, 5.6, c.demoClock.now())) }) { Text("효율 트립 종료") }
+                    OutlinedButton(onClick = { scope.launch { c.tripLog.append(demoUsualTrips(c.demoClock.now())) } }) { Text("평소 경로 4회 기록") }
+                    OutlinedButton(onClick = { v.setDriverSeated(if (v.driverSeated.value == false) true else false) }) { Text("운전석 비움/앉음") }
                 }
             }
         }
@@ -120,3 +122,8 @@ internal fun demoPastMissions(now: LocalDateTime, existing: List<com.chargecompa
     com.chargecompass.core.rewards.RewardEntry(com.chargecompass.core.rewards.RewardKind.MISSION, 15, at,
         eventId = com.chargecompass.core.missions.Mission.EFFICIENT_TRIP.name, eventDate = com.chargecompass.core.missions.Missions.weekStart(at.toLocalDate()))
 }.filter { e -> existing.none { it.kind == e.kind && it.eventId == e.eventId && it.eventDate == e.eventDate } }   // 두 번 눌러도 중복되지 않게
+
+/** 시연용: 지난 4주 같은 요일·시각에 판교 → 서울역(23km)을 내비 목적지로 간 주행. */
+internal fun demoUsualTrips(now: LocalDateTime): List<com.chargecompass.core.usual.TripRecord> = (1..4).map { w ->
+    com.chargecompass.core.usual.TripRecord(37.4128, 127.0974, 37.5547, 126.9707, 23.0, now.minusWeeks(w.toLong()), "서울역")
+}

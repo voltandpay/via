@@ -5,6 +5,7 @@ import com.chargecompass.core.Defaults
 import com.chargecompass.core.rewards.RewardEntry
 import com.chargecompass.core.rewards.RewardHistory
 import com.chargecompass.core.rewards.RewardKind
+import com.chargecompass.core.usual.TripRecord
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.io.File
@@ -144,6 +145,39 @@ class FileSeenStore(private val file: File) : InMemorySeenStore(if (file.exists(
         if (fresh.isEmpty()) return
         super.add(fresh)
         appendLines(file, fresh.joinToString("") { it + "\n" })
+    }
+}
+
+/** 끝난 주행 기록(평소 경로 학습). 차 안에만 남고 서버로 보내지 않는다. */
+interface TripLog {
+    val trips: StateFlow<List<TripRecord>>
+    suspend fun append(t: List<TripRecord>)
+}
+
+open class InMemoryTripLog(initial: List<TripRecord> = emptyList()) : TripLog {
+    protected val _trips = MutableStateFlow(initial)
+    override val trips: StateFlow<List<TripRecord>> = _trips
+    override suspend fun append(t: List<TripRecord>) { _trips.value = _trips.value + t }
+}
+
+/** 한 줄에 하나: startLat|startLng|endLat|endLng|distanceKm|startedAt|destination */
+class FileTripLog(private val file: File) : InMemoryTripLog(read(file)) {
+    override suspend fun append(t: List<TripRecord>) {
+        super.append(t)
+        appendLines(file, t.joinToString("") {
+            listOf(it.startLat, it.startLng, it.endLat, it.endLng, it.distanceKm, it.startedAt, it.destination?.replace("|", " ") ?: "").joinToString("|") + "\n"
+        })
+    }
+
+    private companion object {
+        fun read(file: File): List<TripRecord> = if (!file.exists()) emptyList() else file.readLines()
+            .filter { it.isNotBlank() }
+            .mapNotNull { line ->
+                val p = line.split("|")
+                runCatching {
+                    TripRecord(p[0].toDouble(), p[1].toDouble(), p[2].toDouble(), p[3].toDouble(), p[4].toDouble(), LocalDateTime.parse(p[5]), p.getOrNull(6)?.ifEmpty { null })
+                }.getOrNull()
+            }
     }
 }
 
