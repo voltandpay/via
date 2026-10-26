@@ -86,7 +86,7 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
                     }) { Text("양재 채비 도착") }
                     OutlinedButton(onClick = { v.setCharging(true) }) { Text("충전 시작") }
                     OutlinedButton(onClick = { v.endCharging() }) { Text("충전 끝") }
-                    OutlinedButton(onClick = { v.endTrip(TripSummary(12.0, 5.6, LocalDateTime.now())) }) { Text("효율 트립 종료") }
+                    OutlinedButton(onClick = { v.endTrip(TripSummary(12.0, 5.6, c.demoClock.now())) }) { Text("효율 트립 종료") }
                 }
             }
         }

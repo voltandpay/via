@@ -1,6 +1,6 @@
 # VIA 3D 소품: blender -b -P blender_props.py -- <font.ttf> <out.png> <종류> [옵션...] [--size N]
 #   coin                       포인트 코인(P)
-#   chest closed|open          리서치 돌파 상자
+#   chest closed|open [t]      리서치 돌파 상자. t(0~1)는 열린 정도(애니메이션 장면용, 기본 1)
 #   emblem <글자> locked|gold   지역 엠블럼(방패)
 #   symbol                     VIA 심볼(경로 + 번개 경유지)
 #   moon                       경부하 부스트(달 + 번개)
@@ -144,7 +144,8 @@ elif kind == "moon":
 
 elif kind == "chest":
     flat = False
-    opened = opts and opts[0] == "open"
+    opened = bool(opts) and opts[0] == "open"
+    chest_t = (float(opts[1]) if len(opts) > 1 else 1.0) if opened else 0.0
     wood = mat("wood", "#6A57FF", 0.1, 0.35, coat=0.5)   # VIA 이벤트 보라
     box(1.6, 1.0, 0.8, m=wood, bevel=0.06)
     for x in (-0.55, 0.55):
@@ -157,14 +158,17 @@ elif kind == "chest":
         lidpart(cyl(0.52, 0.16, loc=(x, 0, 0.4), rot=(0, math.pi / 2, 0), m=gold, bevel=0.01))
     box(0.3, 0.08, 0.34, loc=(0, -0.53, 0.32), m=gold, bevel=0.03)   # 자물쇠판
     box(0.06, 0.02, 0.12, loc=(0, -0.575, 0.3), m=mat("hole", "#2A2340", 0, 0.6))
-    if opened:
-        lid.rotation_euler = (math.radians(-108), 0, 0)
-        glow = mat("glow", "#FFE08A", 0, 0.5, emit=2.2)
+    if chest_t > 0:
+        # 열리는 정도에 따라 빛이 세지고, 반쯤 열리면 동전이 보인다
+        glow = mat("glow", "#FFE08A", 0, 0.5, emit=2.2 * chest_t)
         box(1.44, 0.86, 0.02, loc=(0, 0, 0.405), m=glow)
-        for i, (x, y, z, rx) in enumerate([(-0.3, -0.1, 0.48, 20), (0.15, 0.12, 0.5, -15), (0.4, -0.15, 0.47, 35), (-0.05, -0.2, 0.55, -30)]):
-            cyl(0.17, 0.05, loc=(x, y, z), rot=(math.radians(rx), math.radians(rx / 2), 0), m=gold, bevel=0.012, verts=64)
-        pl = bpy.data.lights.new("spark", "POINT"); pl.energy = 35; pl.color = (1, 0.85, 0.5)
+        if chest_t >= 0.45:
+            for i, (x, y, z, rx) in enumerate([(-0.3, -0.1, 0.48, 20), (0.15, 0.12, 0.5, -15), (0.4, -0.15, 0.47, 35), (-0.05, -0.2, 0.55, -30)]):
+                cyl(0.17, 0.05, loc=(x, y, z + 0.12 * (1 - chest_t)), rot=(math.radians(rx), math.radians(rx / 2), 0), m=gold, bevel=0.012, verts=64)
+        pl = bpy.data.lights.new("spark", "POINT"); pl.energy = 35 * chest_t; pl.color = (1, 0.85, 0.5)
         po = bpy.data.objects.new("spark", pl); po.location = (0, -0.1, 1.1); sc.collection.objects.link(po)
+    # 카메라는 다 열린 모양에 맞춘다(장면마다 같은 구도라야 애니메이션이 흔들리지 않는다)
+    lid.rotation_euler = (math.radians(-108), 0, 0)
     root.rotation_euler = (0, 0, math.radians(-24))
 
 if flat:
@@ -198,6 +202,8 @@ elev = math.radians(18 if kind == "chest" else 8)
 cam.location = center + Vector((0, -12 * math.cos(elev), 12 * math.sin(elev)))
 cam.rotation_euler = (math.pi / 2 - elev, 0, 0)
 cam.data.clip_end = 100
+if kind == "chest":
+    lid.rotation_euler = (math.radians(-108 * chest_t), 0, 0)
 sc.camera = cam
 
 r = sc.render

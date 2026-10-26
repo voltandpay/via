@@ -142,7 +142,7 @@ fun BreakthroughCard(c: AppContainer) {
     Box {
         ViaCard(padding = 36.dp, highlight = col.event.c()) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(36.dp)) {
-                Prop(com.chargecompass.app.R.drawable.prop_chest_open, 200.dp, Modifier.scale(pop.value))
+                ChestOpening(last.at, 200.dp, Modifier.scale(pop.value))
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     T("리서치 돌파!", ViaType.titleL, col.event.c())
                     T("주간 미션 스탬프 ${Defaults.MISSIONS_PER_BREAKTHROUGH}개를 모았어요", ViaType.bodyM, col.text2.c())
@@ -155,4 +155,21 @@ fun BreakthroughCard(c: AppContainer) {
         }
         ConfettiBurst(last.at, Modifier.matchParentSize())
     }
+}
+
+/** 리서치 돌파 상자가 열리는 6장면(Blender 렌더, 같은 구도). */
+private val chestFrames = listOf(
+    com.chargecompass.app.R.drawable.prop_chest_f0, com.chargecompass.app.R.drawable.prop_chest_f1, com.chargecompass.app.R.drawable.prop_chest_f2,
+    com.chargecompass.app.R.drawable.prop_chest_f3, com.chargecompass.app.R.drawable.prop_chest_f4, com.chargecompass.app.R.drawable.prop_chest_f5,
+)
+
+/** 닫힌 상자에서 잠깐 멈췄다가 뚜껑이 열린다(약 0.75초, 정차 중 화면에서 한 번만). */
+@Composable
+private fun ChestOpening(key: Any, size: androidx.compose.ui.unit.Dp, modifier: Modifier = Modifier) {
+    var frame by androidx.compose.runtime.remember(key) { androidx.compose.runtime.mutableIntStateOf(0) }
+    androidx.compose.runtime.LaunchedEffect(key) {
+        kotlinx.coroutines.delay(350)
+        for (i in 1..chestFrames.lastIndex) { kotlinx.coroutines.delay(80); frame = i }
+    }
+    Prop(chestFrames[frame], size, modifier)
 }
