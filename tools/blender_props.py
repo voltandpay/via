@@ -24,10 +24,13 @@ def srgb(h):
     h = h.lstrip("#"); c = [int(h[i:i+2], 16) / 255 for i in (0, 2, 4)]
     return tuple(((x + 0.055) / 1.055) ** 2.4 if x > 0.04045 else x / 12.92 for x in c) + (1,)
 
-def mat(name, color, metal=0.0, rough=0.4, coat=0.0, emit=0.0):
+PASTEL = 0.08   # 토스풍: 색을 흰색 쪽으로 살짝(8%) 밝힌다 — 더 밝히면 바래 보인다
+def mat(name, color, metal=0.0, rough=0.4, coat=0.0, emit=0.0, pastel=True):
     m = bpy.data.materials.new(name); m.use_nodes = True
     p = m.node_tree.nodes["Principled BSDF"]
-    p.inputs["Base Color"].default_value = srgb(color)
+    c = srgb(color)
+    if pastel: c = tuple(x + (1 - x) * PASTEL for x in c[:3]) + (1,)
+    p.inputs["Base Color"].default_value = c
     p.inputs["Metallic"].default_value = metal
     p.inputs["Roughness"].default_value = rough
     if "Coat Weight" in p.inputs: p.inputs["Coat Weight"].default_value = coat
@@ -64,9 +67,8 @@ def prism(points, depth, z=0.0, m=None, bevel=0.0, name="prism"):
     me = bpy.data.meshes.new(name); bm = bmesh.new()
     vs = [bm.verts.new((x, y, z)) for x, y in points]
     f = bm.faces.new(vs)
-    # 오목한 윤곽(쿠폰 홈·초승달)도 바르게 나뉘도록 귀 자르기로 삼각형 분할
-    tri = bmesh.ops.triangulate(bm, faces=[f], quad_method="BEAUTY", ngon_method="EAR_CLIP")
-    ext = bmesh.ops.extrude_face_region(bm, geom=tri["faces"])
+    # 한 면 그대로 밀어 올린다(삼각형으로 나누면 오목한 모양에서 베벨이 깨진다). 윤곽은 반시계·자기 교차 없이 넘길 것
+    ext = bmesh.ops.extrude_face_region(bm, geom=[f])
     for v in [g for g in ext["geom"] if isinstance(g, bmesh.types.BMVert)]: v.co.z += depth
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     bm.to_mesh(me); bm.free()
@@ -76,7 +78,7 @@ def prism(points, depth, z=0.0, m=None, bevel=0.0, name="prism"):
 def text(body, size_, z, m, extrude=0.05, y=0.0):
     font = bpy.data.fonts.load(font_path)
     cu = bpy.data.curves.new("t", "FONT"); cu.body = body; cu.font = font
-    cu.size = size_; cu.extrude = extrude; cu.offset = 0.006; cu.bevel_depth = 0.012
+    cu.size = size_; cu.extrude = extrude; cu.offset = 0.0; cu.bevel_depth = 0.025; cu.bevel_resolution = 4
     cu.align_x = "CENTER"; cu.align_y = "CENTER"
     o = bpy.data.objects.new("t", cu); sc.collection.objects.link(o)
     o.location = (0, y, z); o.data.materials.append(m); o.parent = root
@@ -86,18 +88,17 @@ BOLT = [(2, -10), (-7, 2), (-1, 2), (-2, 10), (7, -2), (1, -2)]  # 위가 +y가 
 def bolt(scale, z, m, depth, cx=0.0, cy=0.0):
     return prism([(cx + x * scale, cy - y * scale) for x, y in BOLT], depth, z, m, bevel=depth * 0.25, name="bolt")
 
-gold = mat("gold", "#F2C24A", 0.95, 0.22)
-goldDark = mat("goldDark", "#D9A520", 0.95, 0.3)
-white = mat("white", "#F7F8FA", 0.0, 0.35)
-blue = mat("blue", "#0064FF", 0.05, 0.35, coat=0.4)
+# 토스풍 3D: 금속 광택 대신 무광 점토 질감
+gold = mat("gold", "#FFC21A", 0.15, 0.35)
+goldDark = mat("goldDark", "#F59E0B", 0.1, 0.42)
+white = mat("white", "#FFFFFF", 0.0, 0.5, pastel=False)
+blue = mat("blue", "#2F7BFF", 0.0, 0.45)
 
 flat = True   # 원판·방패처럼 XY 평면에 만들어 앞(+Z)을 카메라 쪽으로 세우는 것
 if kind == "coin":
-    cyl(1.0, 0.2, m=gold, bevel=0.06)
-    cyl(0.78, 0.04, loc=(0, 0, 0.1), m=goldDark, bevel=0.015)
-    bpy.ops.mesh.primitive_torus_add(major_radius=0.86, minor_radius=0.035, major_segments=128, minor_segments=24, location=(0, 0, 0.1))
-    own(bpy.context.object, gold)
-    text("P", 1.05, 0.13, gold, extrude=0.06, y=0.03)
+    cyl(1.0, 0.3, m=gold, bevel=0.13)
+    cyl(0.76, 0.06, loc=(0, 0, 0.15), m=goldDark, bevel=0.03)
+    text("P", 1.0, 0.19, white, extrude=0.07, y=0.03)   # 흰 글자로 또렷하게
 
 elif kind == "emblem":
     glyph, state = opts[0], opts[1]
@@ -109,11 +110,11 @@ elif kind == "emblem":
             right.append(((1 - t) ** 2 * 0.85 + 2 * (1 - t) * t * 0.85, (1 - t) ** 2 * -0.2 + 2 * (1 - t) * t * -0.85 + t * t * -1.15))
         left = [(-x, y) for x, y in reversed(right[:-1])]
         return [(x * sx, y * sy) for x, y in right + left]
-    body = mat("body", "#F2C24A" if done else "#B9BFC7", 0.9 if done else 0.6, 0.25)
-    face = mat("face", "#0064FF" if done else "#9AA1AA", 0.05, 0.4, coat=0.3)
+    body = mat("body", "#FFCF3F" if done else "#C9CFD7", 0.15, 0.38)
+    face = mat("face", "#2F7BFF" if done else "#A9B0BA", 0.0, 0.5)
     prism(shield(1, 1), 0.22, -0.11, body, bevel=0.05, name="shield")
     prism(shield(0.8, 0.8), 0.06, 0.11, face, bevel=0.02, name="face")
-    text(glyph, 0.95, 0.19, white if done else mat("ink", "#E6E8EB"), y=0.05)
+    text(glyph, 0.95, 0.19, white if done else mat("ink", "#F1F3F5", pastel=False), y=0.05)
 
 elif kind == "symbol":
     tile = box(2.0, 2.0, 0.34, m=blue, bevel=0.32)
@@ -147,12 +148,12 @@ elif kind == "moon":
     inner = inner[j:] + inner[:j]
     if math.dist(inner[1], outer[0]) < math.dist(inner[-1], outer[0]): inner.reverse(); inner = inner[-1:] + inner[:-1]
     pts = outer + inner
-    prism(pts[::4], 0.26, -0.13, mat("moon", "#FFD45A", 0.3, 0.35), bevel=0.05, name="moon")
+    prism(pts[::4], 0.3, -0.15, mat("moon", "#FFD45A", 0.05, 0.45), bevel=0.05, name="moon")
     bolt(0.045, 0.0, blue, 0.18, cx=0.45, cy=-0.35)
 
 elif kind in ("card", "ticket"):
     color, label = opts[0], opts[1]
-    face = mat("cardface", color, 0.1, 0.32, coat=0.6)
+    face = mat("cardface", color, 0.0, 0.45)
     def rounded_rect(w, h, r, notch=0.0):
         """둥근 사각형 윤곽(반시계). notch가 있으면 왼쪽·오른쪽 가운데에 반원 홈(쿠폰 모양)."""
         def arc(cx, cy, a0): return [(cx + r * math.cos(math.radians(a0 + k)), cy + r * math.sin(math.radians(a0 + k))) for k in range(0, 91, 10)]
@@ -172,13 +173,13 @@ elif kind in ("card", "ticket"):
     else:
         prism(rounded_rect(1.8, 0.9, 0.1, notch=0.16), 0.08, -0.04, face, bevel=0.02, name="ticket")
         for i in range(7):   # 점선 절취선
-            cyl(0.022, 0.02, loc=(0.42, -0.33 + i * 0.11, 0.045), m=white, verts=24)
-        text(label, 0.36, 0.05, white, extrude=0.035).location.x = -0.18
+            cyl(0.022, 0.02, loc=(0.56, -0.33 + i * 0.11, 0.045), m=white, verts=24)
+        text(label, 0.32, 0.05, white, extrude=0.035).location.x = -0.1   # 왼쪽 홈과 겹치지 않게
 
 elif kind == "shelf":
     flat = False
-    wood = mat("wood", "#D9BC94", 0.0, 0.55)
-    trim = mat("trim", "#C49E70", 0.0, 0.5)
+    wood = mat("wood", "#EBD3B0", 0.0, 0.55)
+    trim = mat("trim", "#DDBE94", 0.0, 0.55)
     box(9.4, 0.9, 0.2, loc=(0, 0, -0.1), m=wood, bevel=0.04)          # 선반 판
     box(9.4, 0.06, 0.12, loc=(0, -0.47, -0.16), m=trim, bevel=0.02)    # 앞 테두리
     for x in (-4.2, 0, 4.2):                                           # 받침
@@ -188,7 +189,7 @@ elif kind == "chest":
     flat = False
     opened = bool(opts) and opts[0] == "open"
     chest_t = (float(opts[1]) if len(opts) > 1 else 1.0) if opened else 0.0
-    wood = mat("wood", "#6A57FF", 0.1, 0.35, coat=0.5)   # VIA 이벤트 보라
+    wood = mat("wood", "#7B68FF", 0.0, 0.45)   # VIA 이벤트 보라(파스텔)
     box(1.6, 1.0, 0.8, m=wood, bevel=0.06)
     for x in (-0.55, 0.55):
         box(0.16, 1.04, 0.84, loc=(x, 0, 0), m=gold, bevel=0.02)
@@ -202,31 +203,32 @@ elif kind == "chest":
     box(0.06, 0.02, 0.12, loc=(0, -0.575, 0.3), m=mat("hole", "#2A2340", 0, 0.6))
     if chest_t > 0:
         # 열리는 정도에 따라 빛이 세지고, 반쯤 열리면 동전이 보인다
-        glow = mat("glow", "#FFE08A", 0, 0.5, emit=2.2 * chest_t)
+        glow = mat("glow", "#FFE08A", 0, 0.5, emit=1.3 * chest_t)
         box(1.44, 0.86, 0.02, loc=(0, 0, 0.405), m=glow)
         if chest_t >= 0.45:
             for i, (x, y, z, rx) in enumerate([(-0.3, -0.1, 0.48, 20), (0.15, 0.12, 0.5, -15), (0.4, -0.15, 0.47, 35), (-0.05, -0.2, 0.55, -30)]):
                 cyl(0.17, 0.05, loc=(x, y, z + 0.12 * (1 - chest_t)), rot=(math.radians(rx), math.radians(rx / 2), 0), m=gold, bevel=0.012, verts=64)
-        pl = bpy.data.lights.new("spark", "POINT"); pl.energy = 35 * chest_t; pl.color = (1, 0.85, 0.5)
+        pl = bpy.data.lights.new("spark", "POINT"); pl.energy = 20 * chest_t; pl.color = (1, 0.85, 0.5)
         po = bpy.data.objects.new("spark", pl); po.location = (0, -0.1, 1.1); sc.collection.objects.link(po)
     # 카메라는 다 열린 모양에 맞춘다(장면마다 같은 구도라야 애니메이션이 흔들리지 않는다)
     lid.rotation_euler = (math.radians(-108), 0, 0)
     root.rotation_euler = (0, 0, math.radians(-24))
 
 if flat:
-    root.rotation_euler = (math.radians(72), 0, math.radians(-16))
+    root.rotation_euler = (math.radians(78), 0, math.radians(-10))
 
 # 조명: 메달과 같은 배치
 def area(name, loc, rot, energy, size_, color=(1, 1, 1)):
     l = bpy.data.lights.new(name, "AREA"); l.energy = energy; l.size = size_; l.color = color
     o = bpy.data.objects.new(name, l); o.location = loc; o.rotation_euler = [math.radians(a) for a in rot]
     sc.collection.objects.link(o)
-area("key", (-4, -5, 5), (50, 0, -38), 700, 9)
-area("rim", (3, 3, 3), (-50, 0, 140), 600, 3, (0.9, 0.95, 1))
-area("fill", (5, -5, 0.5), (85, 0, 45), 150, 8)
+# 토스풍: 크고 부드러운 빛, 그림자를 밝게(점토 느낌)
+area("key", (-4, -5, 5), (50, 0, -38), 550, 12)
+area("rim", (3, 3, 3), (-50, 0, 140), 300, 6, (0.95, 0.97, 1))
+area("fill", (5, -5, 0.5), (85, 0, 45), 280, 10)
 sc.world = bpy.data.worlds.new("w"); sc.world.use_nodes = True
-sc.world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.8, 0.82, 0.85, 1)
-sc.world.node_tree.nodes["Background"].inputs["Strength"].default_value = 0.35
+sc.world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.95, 0.96, 1.0, 1)
+sc.world.node_tree.nodes["Background"].inputs["Strength"].default_value = 0.5
 
 # 카메라: 보이는 물체의 경계 상자에 맞춘 정사영(살짝 위에서)
 bpy.context.view_layer.update()
@@ -249,7 +251,7 @@ if kind == "chest":
 sc.camera = cam
 
 r = sc.render
-r.engine = "CYCLES"; sc.cycles.samples = 96; sc.cycles.use_denoising = True
+r.engine = "CYCLES"; sc.cycles.samples = 64; sc.cycles.use_denoising = True
 try:
     prefs = bpy.context.preferences.addons["cycles"].preferences
     prefs.compute_device_type = "METAL"; prefs.get_devices()

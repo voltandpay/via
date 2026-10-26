@@ -46,6 +46,9 @@ Pleos Connect System UI 서체 **Asta Sans**(42dot)를 앱에 포함한다. [SIL
 - **경부하 부스트**(날씨 부스트): 23~9시 충전 시작 시 충전 포인트 2배 (시연용 예시 시간대)
 - **사업자 데이**(커뮤니티 데이): 정해진 날 그 사업자 충전소에서 충전하면 포인트 3배 + 한정 메달 (`mock/operator_days.json`)
 
+3D 이미지는 모두 같은 스타일(무광 점토 질감, 밝은 색, 두툼하고 둥근 형태, 정면에 가까운 시점)이다. 전체를 다시 만들 때는
+`BLENDER=/path/to/Blender bash tools/render_all.sh` (렌더 76장, 앱 리소스·PT 표지 그림까지 갱신).
+
 메달은 Blender(Cycles)로 렌더링한 이미지다(`app/src/main/res/drawable-nodpi/medal_*.webp`, 사업자 9곳 × 동·은·금 + 잠긴 메달).
 `Blender -b -P tools/blender_medal.py -- <asta_sans.ttf> <out.png> "#00A06A" "채" [bronze|silver|gold|locked]`
 `python3 tools/medal_to_webp.py <out.png>... app/src/main/res/drawable-nodpi`
