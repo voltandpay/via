@@ -206,7 +206,8 @@ fun PointsExchange(c: AppContainer) {
     partnerCoupons.forEach { coupon ->
         val ready = balance >= coupon.cost
         TicketCard(accent = if (ready) col.active.c() else col.line.c()) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                couponTicketRes(coupon.operatorId)?.let { Prop(it, 120.dp, alpha = if (ready) 1f else 0.5f) }
                 Column(Modifier.weight(0.72f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     T(coupon.name, ViaType.titleS, maxLines = 1)
                     T(if (ready) "포인트로 받을 수 있어요 · 제휴 준비 중" else "${coupon.cost - balance}P 더 모으면 받을 수 있어요", ViaType.labelM, col.text3.c())

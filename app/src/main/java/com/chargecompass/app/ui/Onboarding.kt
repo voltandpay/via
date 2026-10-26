@@ -46,7 +46,7 @@ fun Onboarding(c: AppContainer) {
         T("가지고 있는 충전 멤버십", ViaType.titleS)
         T("없으면 비회원가로 계산해요", ViaType.labelM, col.text3.c())
         FlowRow(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            c.data.memberships.forEach { m -> ChoiceChip(m.name, m.id in owned) { owned = if (m.id in owned) owned - m.id else owned + m.id } }
+            c.data.memberships.forEach { m -> MembershipCard(m.name, m.operatorId, m.id in owned) { owned = if (m.id in owned) owned - m.id else owned + m.id } }
         }
         ViaButton(
             "시작하기", enabled = vehicle != null, modifier = Modifier.fillMaxWidth(),

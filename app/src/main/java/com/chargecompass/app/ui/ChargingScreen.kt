@@ -13,6 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -48,6 +49,10 @@ fun ChargingScreen(c: AppContainer) {
             }
             station?.let { Chip("● ${it.maxKw}kW 충전 중", bg = col.activeSoft.c(), fg = col.activeText.c(), bold = true) }
         }
+
+        // 처음 온 충전소: 메달이 돌며 나타나는 "새 스탬프 획득" 카드(충전 중 = 정차 중이라 연출 허용)
+        val stamp = earned.firstOrNull { it.kind == RewardKind.NEW_STAMP }
+        if (station != null && stamp != null) NewStampCard(c, station.operatorId, station.name, stamp.at)
 
         if (station == null || ranked == null) {
             ViaCard(padding = 48.dp) {
@@ -105,6 +110,33 @@ fun ChargingScreen(c: AppContainer) {
                     }
                     T("차가 충전 위치와 상태를 확인해 자동으로 쌓였어요", ViaType.labelM, col.text3.c())
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun NewStampCard(c: AppContainer, operatorId: String, stationName: String, key: java.time.LocalDateTime) {
+    val col = colors
+    val frames = stampSpinFrames(operatorId)
+    ViaCard(padding = 32.dp, highlight = col.active.c()) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(32.dp)) {
+            if (frames != null) {
+                // 두 바퀴 돌고 정면에서 멈춘다(약 1초)
+                var i by androidx.compose.runtime.remember(key) { androidx.compose.runtime.mutableIntStateOf(1) }
+                androidx.compose.runtime.LaunchedEffect(key) {
+                    repeat(frames.size * 2) { step -> kotlinx.coroutines.delay(60); i = (step + 2) % frames.size }
+                    i = 0
+                }
+                Prop(frames[i], 150.dp)
+            } else {
+                val dex = c.data.memberships.firstOrNull { it.operatorId == operatorId }
+                StationBadge(dex?.name?.take(1) ?: "?", badgeColor(operatorId), true, fresh = true, size = 120.dp,
+                    medal = medalRes(operatorId, com.chargecompass.core.dex.MedalTier.BRONZE))
+            }
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                T("새 스탬프 획득!", ViaType.titleL, col.activeText.c())
+                T("$stationName · 도감에 동 메달로 등록됐어요", ViaType.bodyM, col.text2.c())
             }
         }
     }

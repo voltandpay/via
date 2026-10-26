@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -53,7 +54,7 @@ fun SettingsScreen(c: AppContainer, onClose: () -> Unit) {
         T("가지고 있는 충전 멤버십", ViaType.titleS)
         T("새로 만든 카드를 추가하면 다음 추천부터 회원가로 계산해요", ViaType.labelM, col.text3.c())
         FlowRow(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            c.data.memberships.forEach { m -> ChoiceChip(m.name, m.id in owned) { owned = if (m.id in owned) owned - m.id else owned + m.id } }
+            c.data.memberships.forEach { m -> MembershipCard(m.name, m.operatorId, m.id in owned) { owned = if (m.id in owned) owned - m.id else owned + m.id } }
         }
         ViaButton(
             "저장", modifier = Modifier.fillMaxWidth(), enabled = vehicle != null,
@@ -63,6 +64,30 @@ fun SettingsScreen(c: AppContainer, onClose: () -> Unit) {
 }
 
 /** 선택 칩(Pleos Toggle button 형태): 선택되면 파란 테두리·옅은 파란 바탕. */
+/** 충전 멤버십 카드(3D 렌더): 가진 카드는 또렷하게 + 파란 테두리·체크, 없는 카드는 흐리게. */
+@Composable
+fun MembershipCard(name: String, operatorId: String, selected: Boolean, onClick: () -> Unit) {
+    val col = colors
+    val shape = RoundedCornerShape(24.dp)
+    Column(
+        Modifier.width(200.dp).clip(shape)
+            .background(if (selected) col.posSoft.c() else col.card.c())
+            .border(if (selected) 3.dp else 2.dp, if (selected) col.pos.c() else col.line.c(), shape)
+            .pressable(role = Role.Checkbox, onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Box(contentAlignment = Alignment.TopEnd) {
+            membershipCardRes(operatorId)?.let { Prop(it, 150.dp, alpha = if (selected) 1f else 0.45f) }
+                ?: StationBadge(name.take(1), badgeColor(operatorId), selected, size = 96.dp)
+            if (selected) Box(Modifier.size(36.dp).clip(CircleShape).background(col.pos.c()), contentAlignment = Alignment.Center) {
+                T("✓", ViaType.labelM.copy(fontWeight = FontWeight.Bold), androidx.compose.ui.graphics.Color.White)
+            }
+        }
+        T(name, ViaType.labelM.copy(fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal), if (selected) col.pos.c() else col.text2.c(), maxLines = 1)
+    }
+}
+
 @Composable
 fun ChoiceChip(label: String, selected: Boolean, onClick: () -> Unit) {
     val col = colors
