@@ -305,4 +305,15 @@ class RecommendationCoordinatorTest {
         assertEquals(StopResult.WAYPOINT_ADDED, retried.result)
         assertEquals(2, env.navi.addedStops.size)
     }
+
+    private fun ranked(id: String) = com.chargecompass.core.pricing.RankedStation(
+        data.stations.first { it.id == id }, com.chargecompass.core.pricing.EffectivePrice(300, com.chargecompass.core.pricing.PriceBasis.MEMBER, null), 30.0, 9000, 15000, 6000, 20.0)
+
+    @Test
+    fun `추천으로 보여 준 충전소는 도감 발견 대상`() {
+        val top = listOf(ranked("st-yangjae-chaevi"), ranked("st-banpo-kepco"))
+        assertEquals(listOf("st-yangjae-chaevi", "st-banpo-kepco"), shownStationIds(RecoState.Suggested(1, 10.0, top)))
+        assertEquals(listOf("st-yangjae-chaevi", "st-banpo-kepco"), shownStationIds(RecoState.AwaitingTouch(1, top[0], top, 10.0)))
+        assertEquals(null, shownStationIds(RecoState.Idle))
+    }
 }

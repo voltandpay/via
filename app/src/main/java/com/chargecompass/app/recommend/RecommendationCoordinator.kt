@@ -181,3 +181,10 @@ fun withObjectParticle(word: String): String {
     val hasFinal = last in '가'..'힣' && (last - '가') % 28 != 0
     return word + if (hasFinal) "을" else "를"
 }
+
+/** 화면이나 음성으로 보여 준 추천 충전소(도감 "발견"). 추천 중이 아니면 null. */
+fun shownStationIds(state: RecoState): List<String>? = when (state) {
+    is RecoState.Suggested -> state.top.map { it.station.id }
+    is RecoState.AwaitingTouch -> state.top.map { it.station.id }
+    else -> null
+}

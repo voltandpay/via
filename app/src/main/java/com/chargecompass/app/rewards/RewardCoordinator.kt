@@ -12,6 +12,7 @@ import com.chargecompass.core.pricing.StationRanker
 import com.chargecompass.core.rewards.RewardEngine
 import com.chargecompass.core.rewards.RewardEntry
 import com.chargecompass.core.rewards.RewardKind
+import com.chargecompass.core.dex.Dex
 import com.chargecompass.core.session.ChargeSession
 import com.chargecompass.core.session.ChargeSessionDetector
 import com.chargecompass.core.session.SessionEvent
@@ -76,11 +77,15 @@ class RewardCoordinator(
 
     private suspend fun onStarted(session: ChargeSession) {
         _active.value = session
-        val earned = RewardEngine.onChargeStarted(session, data.events, ledger)
+        val earned = RewardEngine.onChargeStarted(session, data.events, ledger, data.stations)
         ledger.append(earned)
         // 충전소를 늦게 찾아 Started가 다시 오면, 처음 Started(충전소 없음)의 빈 적립분을 이것으로 바꾼다
         _sessionEarned.value = earned
-        if (earned.any { it.kind == RewardKind.NEW_STAMP }) voice.speak(NEW_STAMP)
+        val region = earned.firstOrNull { it.kind == RewardKind.REGION_COMPLETE }
+        when {
+            region != null -> voice.speak("${Dex.regions.firstOrNull { it.id == region.regionId }?.label ?: "지역"} 도감 완성! 보너스 ${region.points}포인트")
+            earned.any { it.kind == RewardKind.NEW_STAMP } -> voice.speak(NEW_STAMP)
+        }
     }
 
     /** 실제 충전량(시작·종료 SoC × 배터리 용량)으로 낸 돈과 비회원가 대비 절약액을 계산한다. */

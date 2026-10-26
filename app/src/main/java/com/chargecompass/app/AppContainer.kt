@@ -18,6 +18,8 @@ import com.chargecompass.app.store.MembershipStore
 import com.chargecompass.app.store.RewardLedger
 import com.chargecompass.app.store.FileSummaryLog
 import com.chargecompass.app.store.SummaryLog
+import com.chargecompass.app.store.FileSeenStore
+import com.chargecompass.app.store.SeenStore
 import com.chargecompass.app.vehicle.MockVehicleRepository
 import com.chargecompass.app.vehicle.PleosVehicleRepository
 import com.chargecompass.app.vehicle.VehicleRepository
@@ -63,6 +65,7 @@ class AppContainer(context: Context, val mode: DataMode, scope: CoroutineScope) 
     fun vehicleModel(): VehicleModel? = membership.vehicleModelId.value?.let(catalog::byId)
 
     val summaries: SummaryLog = FileSummaryLog(File(context.filesDir, "summaries.txt"))
+    val seen: SeenStore = FileSeenStore(File(context.filesDir, "seen.txt"))
     val rewards = RewardCoordinator(vehicle, ledger, data, ::vehicleModel, voice, scope, { membership.owned.value }, summaries)
     private val chargingActive: StateFlow<Boolean> =
         rewards.activeSession.map { it != null }.stateIn(scope, SharingStarted.Eagerly, false)
@@ -78,6 +81,8 @@ class AppContainer(context: Context, val mode: DataMode, scope: CoroutineScope) 
     private val announcer = EventAnnouncer(data.events, data.stations)
 
     init {
+        // 추천에 나온 충전소는 도감에 "발견"으로 남긴다
+        scope.launch { reco.state.collect { s -> com.chargecompass.app.recommend.shownStationIds(s)?.let { seen.add(it) } } }
         vehicle.start()
         navi.start()
         voice.start()

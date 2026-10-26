@@ -184,4 +184,16 @@ class RewardCoordinatorTest {
         assertEquals(4276, log.summaries.value.single().savingWon)
         assertEquals(now, log.summaries.value.single().endedAt)
     }
+
+    @Test
+    fun `지역의 마지막 충전소를 처음 충전하면 지역 완성 보너스와 음성`() = runTest(UnconfinedTestDispatcher()) {
+        val (vehicle, ledger, voice) = env()
+        // 강남·서초의 나머지 세 곳은 이미 스탬프
+        ledger.append(data.stations.filter { it.region == "gangnam" && it.id != yangjae.id }.map { RewardEntry(RewardKind.NEW_STAMP, 20, now.minusDays(1), it.id) })
+        RewardCoordinator(vehicle, ledger, data, { car }, voice, backgroundScope)
+        vehicle.setLocation(yangjae.lat, yangjae.lng)
+        vehicle.setCharging(true)
+        assertTrue(ledger.entries.value.any { it.kind == RewardKind.REGION_COMPLETE && it.regionId == "gangnam" })
+        assertEquals(listOf("강남·서초 도감 완성! 보너스 50포인트"), voice.spoken)
+    }
 }

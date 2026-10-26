@@ -39,4 +39,23 @@ class FileStoresTest {
         assertEquals(setOf("m-chaevi", "m-me"), reopened.owned.value)
         assertEquals("ioniq5", reopened.vehicleModelId.value)
     }
+
+    @Test
+    fun `지역 완성 항목의 지역도 다시 열면 남고, 지역 칸이 없는 예전 줄도 읽힌다`() = runBlocking {
+        val file = File(dir, "ledger2.txt")
+        file.writeText("NEW_STAMP|20|2026-11-03T23:30|st-1|||\n")
+        FileRewardLedger(file).append(listOf(RewardEntry(RewardKind.REGION_COMPLETE, 50, at, "st-2", regionId = "gangnam")))
+        val reopened = FileRewardLedger(file).entries.value
+        assertEquals(listOf(RewardKind.NEW_STAMP, RewardKind.REGION_COMPLETE), reopened.map { it.kind })
+        assertEquals("gangnam", reopened.last().regionId)
+    }
+
+    @Test
+    fun `발견한 충전소는 다시 열어도 남는다`() = runBlocking {
+        val file = File(dir, "seen.txt")
+        val store = FileSeenStore(file)
+        store.add(listOf("st-a", "st-b"))
+        store.add(listOf("st-b", "st-c"))
+        assertEquals(setOf("st-a", "st-b", "st-c"), FileSeenStore(file).seen.value)
+    }
 }

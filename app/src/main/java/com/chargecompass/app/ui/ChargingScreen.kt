@@ -94,6 +94,7 @@ fun ChargingScreen(c: AppContainer) {
                                 RewardKind.CHARGE -> Chip("충전 +${e.points}P")
                                 RewardKind.NEW_STAMP -> Chip("새 스탬프 +${e.points}P", bg = col.activeSoft.c(), fg = col.activeText.c(), bold = true)
                                 RewardKind.EVENT_BONUS -> Chip("이벤트 보너스 +${e.points}P", bg = col.activeSoft.c(), fg = col.activeText.c(), bold = true)
+                                RewardKind.REGION_COMPLETE -> Chip("지역 도감 완성 +${e.points}P", bg = col.activeSoft.c(), fg = col.activeText.c(), bold = true)
                                 RewardKind.EFFICIENT_TRIP -> Unit
                             }
                         }

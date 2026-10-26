@@ -2,12 +2,13 @@ package com.chargecompass.core.rewards
 
 import com.chargecompass.core.Defaults
 import com.chargecompass.core.model.RewardEvent
+import com.chargecompass.core.model.Station
 import com.chargecompass.core.model.VehicleModel
 import com.chargecompass.core.session.ChargeSession
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-enum class RewardKind { EFFICIENT_TRIP, CHARGE, EVENT_BONUS, NEW_STAMP }
+enum class RewardKind { EFFICIENT_TRIP, CHARGE, EVENT_BONUS, NEW_STAMP, REGION_COMPLETE }
 
 data class RewardEntry(
     val kind: RewardKind,
@@ -17,6 +18,8 @@ data class RewardEntry(
     val eventId: String? = null,
     /** EVENT_BONUS의 이벤트 회차 시작일. 자정을 넘긴 충전은 전날 회차다. */
     val eventDate: LocalDate? = null,
+    /** REGION_COMPLETE의 도감 지역. */
+    val regionId: String? = null,
 )
 
 /** 이미 받은 보상. 영속 구현은 앱의 포인트 원장이 맡는다. */
@@ -36,12 +39,18 @@ object RewardEngine {
         return listOf(RewardEntry(RewardKind.EFFICIENT_TRIP, Defaults.POINTS_EFFICIENT_TRIP, at))
     }
 
-    fun onChargeStarted(session: ChargeSession, events: List<RewardEvent>, history: RewardHistory): List<RewardEntry> {
+    /** [stations]를 주면 지역의 마지막 충전소를 처음 충전할 때 지역 완성 보너스를 더한다. */
+    fun onChargeStarted(session: ChargeSession, events: List<RewardEvent>, history: RewardHistory, stations: List<Station> = emptyList()): List<RewardEntry> {
         val stationId = session.stationId ?: return emptyList()
         val at = session.startedAt
         val entries = mutableListOf(RewardEntry(RewardKind.CHARGE, Defaults.POINTS_CHARGE, at, stationId))
-        if (stationId !in history.stampedStationIds()) {
+        val stamped = history.stampedStationIds()
+        if (stationId !in stamped) {
             entries += RewardEntry(RewardKind.NEW_STAMP, Defaults.POINTS_NEW_STAMP, at, stationId)
+            val region = stations.firstOrNull { it.id == stationId }?.region?.takeIf { it.isNotEmpty() }
+            if (region != null && stations.filter { it.region == region }.all { it.id == stationId || it.id in stamped }) {
+                entries += RewardEntry(RewardKind.REGION_COMPLETE, Defaults.POINTS_REGION_COMPLETE, at, stationId, regionId = region)
+            }
         }
         for (event in events.filter { it.stationId == stationId }) {
             val occurrence = eventOccurrenceDate(event, at) ?: continue

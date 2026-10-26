@@ -39,7 +39,7 @@ open class InMemoryRewardLedger(initial: List<RewardEntry> = emptyList()) : Rewa
     override suspend fun append(e: List<RewardEntry>) { _entries.value = _entries.value + e }
 }
 
-/** 한 줄에 항목 하나: kind|points|at|stationId|eventId|eventDate (빈 값은 빈 칸). */
+/** 한 줄에 항목 하나: kind|points|at|stationId|eventId|eventDate|regionId (빈 값은 빈 칸, 예전 줄은 regionId 없음). */
 class FileRewardLedger(private val file: File) : InMemoryRewardLedger(read(file)) {
     override suspend fun append(e: List<RewardEntry>) {
         super.append(e)
@@ -49,7 +49,7 @@ class FileRewardLedger(private val file: File) : InMemoryRewardLedger(read(file)
 
     private companion object {
         fun encode(e: RewardEntry) =
-            listOf(e.kind.name, e.points, e.at, e.stationId ?: "", e.eventId ?: "", e.eventDate ?: "").joinToString("|")
+            listOf(e.kind.name, e.points, e.at, e.stationId ?: "", e.eventId ?: "", e.eventDate ?: "", e.regionId ?: "").joinToString("|")
 
         fun read(file: File): List<RewardEntry> = if (!file.exists()) emptyList() else file.readLines()
             .filter { it.isNotBlank() }
@@ -59,6 +59,7 @@ class FileRewardLedger(private val file: File) : InMemoryRewardLedger(read(file)
                     RewardEntry(
                         RewardKind.valueOf(p[0]), p[1].toInt(), LocalDateTime.parse(p[2]),
                         p[3].ifEmpty { null }, p[4].ifEmpty { null }, p[5].ifEmpty { null }?.let(LocalDate::parse),
+                        p.getOrNull(6)?.ifEmpty { null },
                     )
                 }.getOrNull()
             }
@@ -115,5 +116,28 @@ class FileSummaryLog(private val file: File) : InMemorySummaryLog(read(file)) {
                 val p = line.split("|")
                 runCatching { ChargeSummary(p[0], p[1].toDouble(), p[2].toInt(), p[3].toInt(), p[4].toInt(), LocalDateTime.parse(p[5])) }.getOrNull()
             }
+    }
+}
+
+/** 추천으로 보여 준(도감에서 "발견"한) 충전소. */
+interface SeenStore {
+    val seen: StateFlow<Set<String>>
+    suspend fun add(ids: Collection<String>)
+}
+
+open class InMemorySeenStore(initial: Set<String> = emptySet()) : SeenStore {
+    protected val _seen = MutableStateFlow(initial)
+    override val seen: StateFlow<Set<String>> = _seen
+    override suspend fun add(ids: Collection<String>) { _seen.value = _seen.value + ids }
+}
+
+/** 한 줄에 충전소 id 하나. 새로 발견한 것만 덧붙인다. */
+class FileSeenStore(private val file: File) : InMemorySeenStore(if (file.exists()) file.readLines().filter { it.isNotBlank() }.toSet() else emptySet()) {
+    override suspend fun add(ids: Collection<String>) {
+        val fresh = ids.filter { it !in _seen.value }.distinct()
+        if (fresh.isEmpty()) return
+        super.add(fresh)
+        file.parentFile?.mkdirs()
+        file.appendText(fresh.joinToString("") { it + "\n" })
     }
 }
