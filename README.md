@@ -15,7 +15,7 @@
 4. **차량 데이터로 자동 검증되는 리워드**: 충전·스탬프·이벤트·효율 운전 포인트는 사용자가 아무것도 누르지 않아도 차량 신호로 쌓인다. 포인트는 현금성이 아니라 제휴 충전 할인 쿠폰 교환용이다.
 5. **아낀 돈을 체감하게**: 멤버십 코치(최근 30일 충전을 다시 계산해 "이 카드가 있었다면 얼마 덜 냈을지"), 음성으로 묻기(말하기 버튼 → "제일 싼 충전소 어디야?", "이번 달 얼마 아꼈어?", "도착하면 몇 퍼센트야?"), 월간 절약 리포트(매월 처음 정차할 때 한 줄 + 1~7일 홈 카드).
 6. **내비 없이도 평소 경로로**: 출퇴근처럼 내비를 켜지 않는 길은 차 안에 쌓인 주행 기록(출발·도착 위치, 차가 잰 거리)으로 "평소 이 시간 가는 곳"을 알아채, 배터리가 모자라면 "평소처럼 서울역에 가시면 도착 배터리가 9%예요"라고 먼저 알린다. 기록은 기기 안에만 남는다.
-7. **수집과 꾸준함**: 포켓몬 도감식 충전소 도감(지역·발견/등록·동·은·금 3D 메달), 주간 미션·리서치 돌파, 경부하 부스트, 사업자 데이(한정 메달), 4주 단위 충전 혜택 시즌. 수집·시즌 화면은 **차를 세워 둔 충전 중에만** 보여 주고, 홈·주행 화면은 충전 유틸리티로 둔다.
+7. **수집과 꾸준함**: 포켓몬 도감식 충전소 도감(지역·발견/등록·동·은·금 3D 메달), 주간 미션·미션 상자, 경부하 부스트, 사업자 데이(한정 메달), 4주 단위 충전 혜택 시즌. 수집·시즌 화면은 **차를 세워 둔 충전 중에만** 보여 주고, 홈·주행 화면은 충전 유틸리티로 둔다.
 
 ## 사용 SDK와 권한
 
@@ -45,7 +45,7 @@ Pleos Connect System UI 서체 **Asta Sans**(42dot)를 앱에 포함한다. [SIL
 
 ## 주간 미션 · 경부하 부스트 · 사업자 데이
 포켓몬 고에서 빌린 장치. 모두 절약 행동에만 보상하고, 주행 거리에는 보상하지 않는다.
-- **주간 미션**(필드 리서치): 회원가·로밍가로 2번 충전, 효율 운전 2번, 새 충전소 1곳 등록. 미션마다 +15P, 7개 모으면 리서치 돌파 +100P
+- **주간 미션**(필드 리서치): 회원가·로밍가로 2번 충전, 효율 운전 2번, 새 충전소 1곳 등록. 미션마다 +15P, 7개 모으면 미션 상자 +100P
 - **경부하 부스트**(날씨 부스트): 23~9시 충전 시작 시 충전 포인트 2배 (시연용 예시 시간대)
 - **사업자 데이**(커뮤니티 데이): 정해진 날 그 사업자 충전소에서 충전하면 포인트 3배 + 한정 메달 (`mock/operator_days.json`)
 
@@ -56,16 +56,16 @@ Pleos Connect System UI 서체 **Asta Sans**(42dot)를 앱에 포함한다. [SIL
 `Blender -b -P tools/blender_medal.py -- <asta_sans.ttf> <out.png> "#00A06A" "채" [bronze|silver|gold|locked]`
 `python3 tools/medal_to_webp.py <out.png>... app/src/main/res/drawable-nodpi`
 
-그 밖의 3D 소품(포인트 코인, 리서치 돌파 상자, 지역 엠블럼, VIA 심볼, 경부하 달)도 같은 조명으로 렌더링한다.
+그 밖의 3D 소품(포인트 코인, 미션 상자, 지역 엠블럼, VIA 심볼, 경부하 달)도 같은 조명으로 렌더링한다.
 `Blender -b -P tools/blender_props.py -- <asta_sans.ttf> <out.png> coin | chest closed|open [t] | emblem 강 gold|locked | symbol | moon | card "#00A06A" 채 | ticket "#00A06A" "2,000원" [--size N]`
-리서치 돌파 상자는 열린 정도(t) 0~1을 6장면으로 렌더링해 `python3 tools/frames_to_webp.py prop_chest_f <장면들> <res>`로 같은 구도로 자른다. PT 표지용 심볼은 `doc/assets/via_symbol_2048.png`(투명 배경).
+미션 상자는 열린 정도(t) 0~1을 6장면으로 렌더링해 `python3 tools/frames_to_webp.py prop_chest_f <장면들> <res>`로 같은 구도로 자른다. PT 표지용 심볼은 `doc/assets/via_symbol_2048.png`(투명 배경).
 새 스탬프 획득 연출은 메달을 `--spin 0~315`(45° 간격)로 8장면 렌더링한다. PT 표지·영상 썸네일용 히어로 컷 `doc/assets/via_hero_1920x1080.png`은 `python3 tools/compose_hero.py <렌더 폴더> <symbol.png> <asta_sans.ttf> <out.png>`로 만든다.
 
 ## 구조
 - `core/` — 순수 Kotlin. 도착 잔량(`ArrivalCalculator`), 멤버십 기준 실효 단가·순위(`StationRanker`), 리워드 규칙(`RewardEngine`), 충전 세션 감지(`ChargeSessionDetector`), 도감(`dex/Dex`), 주간 미션(`missions/Missions`), 충전 혜택 시즌(`season/Seasons`), 멤버십 코치(`coach/MembershipCoach`), 평소 경로 추정(`usual/UsualRoutes`), 장거리 다중 충전 계획(`trip/TripPlanner`), 충전 종료 시점·충전 시간 근사(`charge/ChargeStop`), 목업 데이터. JVM 단위 테스트.
 - `app/` — Android(Compose). SDK는 Repository 뒤에 숨기고(`Pleos*`/`Mock*`), 추천 흐름(`RecommendationCoordinator`)과 리워드 적립(`RewardCoordinator`)이 이를 조합한다. 기록은 앱 내부 파일(포인트 원장·발견한 충전소·충전 요약)에 남는다(서버 없음).
 - `tools/` — Blender 3D 렌더 스크립트(`blender_style.py`·`blender_medal.py`·`blender_props.py`, 전체는 `render_all.sh`), Virtual Console 조작(`vc.sh`).
-- 단위 테스트 199개(core 84 · app 115).
+- 단위 테스트 201개(core 84 · app 117).
 
 ## 제출 APK
 `apk/VoltAndPay_VIA_release.apk` (공모전 규칙: `팀명_앱이름_release.apk`)

@@ -21,7 +21,9 @@ bpy.ops.wm.read_factory_settings(use_empty=True)
 sc = bpy.context.scene
 
 if locked:
-    face = rim = st.glass("glass")
+    # 유리 동전은 흰 카드 위에서 거의 안 보였다 → 은 테두리 + 회청색 면으로 '빈 칸'이 또렷하게
+    rim = st.metal("rim", st.TIER["silver"], rough=0.22)
+    face = st.plastic("face", "#9AA7BE", grad=0.25)
     ink = st.plastic("ink", "#FFFFFF", grad=0, rough=0.4, coat=0)
 elif variant == "silver":
     rim = st.metal("rim", st.TIER["silver"], rough=0.18)

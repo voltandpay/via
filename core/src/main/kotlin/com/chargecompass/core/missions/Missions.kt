@@ -35,7 +35,7 @@ object Missions {
         }
     }
 
-    /** 이번 주 새로 달성한 미션 보상과, 미션 스탬프가 [Defaults.MISSIONS_PER_BREAKTHROUGH]개 찰 때마다 리서치 돌파 보너스. */
+    /** 이번 주 새로 달성한 미션 보상과, 미션 스탬프가 [Defaults.MISSIONS_PER_BREAKTHROUGH]개 찰 때마다 미션 상자 보너스. */
     fun rewards(at: LocalDateTime, entries: List<RewardEntry>, discountCharges: Int): List<RewardEntry> {
         val start = weekStart(at.toLocalDate())
         val rewarded = entries.filter { it.kind == RewardKind.MISSION && it.eventDate == start }.mapNotNull { it.eventId }.toSet()
@@ -49,6 +49,6 @@ object Missions {
         return fresh + List(breakthroughs) { RewardEntry(RewardKind.BREAKTHROUGH, Defaults.POINTS_BREAKTHROUGH, at) }
     }
 
-    /** 다음 리서치 돌파까지 모은 미션 스탬프 수(0~6). */
+    /** 다음 미션 상자까지 모은 미션 스탬프 수(0~6). */
     fun breakthroughStamps(entries: List<RewardEntry>): Int = entries.count { it.kind == RewardKind.MISSION } % Defaults.MISSIONS_PER_BREAKTHROUGH
 }

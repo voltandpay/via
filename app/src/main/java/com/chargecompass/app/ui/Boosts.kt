@@ -30,7 +30,7 @@ import com.chargecompass.core.model.OperatorDay
 import com.chargecompass.core.rewards.RewardEngine
 import java.time.temporal.ChronoUnit
 
-/** 이번 주 미션 3개(필드 리서치)와 리서치 돌파 스탬프 7칸. */
+/** 이번 주 미션 3개(필드 리서치)와 미션 상자 스탬프 7칸. */
 @Composable
 fun WeeklyMissionsCard(c: AppContainer) {
     val entries by c.ledger.entries.collectAsState()
@@ -63,24 +63,25 @@ fun WeeklyMissionsCard(c: AppContainer) {
             }
         }
         DashedDivider()
-        // 리서치 돌파: 미션 스탬프 7개를 모으면 큰 보상. 방금(10분 안) 돌파했으면 이 줄에서 작게 상자가 열린다
+        // 미션 상자: 미션 스탬프 7개를 모으면 큰 보상. 방금(10분 안) 다 모았으면 이 줄에서 작게 상자가 열린다
         // (게임처럼 보이지 않도록 따로 큰 카드나 축하 효과는 쓰지 않는다)
         val now = c.demoClock.now()
         val recent = entries.lastOrNull { it.kind == com.chargecompass.core.rewards.RewardKind.BREAKTHROUGH }
             ?.takeIf { java.time.Duration.between(it.at, now).abs() <= java.time.Duration.ofMinutes(10) }
         if (recent != null) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             ChestOpening(recent.at, 96.dp)
-            T("리서치 돌파!", ViaType.titleS, col.event.c())
+            T("미션 상자 열림!", ViaType.titleS, col.event.c())
             CoinAmount("+${recent.points}P", ViaType.titleS, col.activeText.c(), coin = 36.dp)
         } else Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             Prop(com.chargecompass.app.R.drawable.prop_chest_closed, 64.dp)
-            T("리서치 돌파", ViaType.labelM.copy(fontWeight = FontWeight.Bold), modifier = Modifier.width(120.dp))
+            T("미션 상자", ViaType.labelM.copy(fontWeight = FontWeight.Bold), modifier = Modifier.width(110.dp))
             repeat(Defaults.MISSIONS_PER_BREAKTHROUGH) { i ->
                 Box(Modifier.size(36.dp).clip(CircleShape).background(if (i < stamps) col.event.c() else col.track.c()), contentAlignment = Alignment.Center) {
                     if (i < stamps) StampIcon(22.dp, Color.White)
                 }
             }
-            T("${Defaults.MISSIONS_PER_BREAKTHROUGH - stamps}개 더 모으면 +${Defaults.POINTS_BREAKTHROUGH}P", ViaType.labelM, col.text2.c(), Modifier.padding(start = 8.dp))
+            // 도장이 어디서 오는지 함께 적는다(이번 주 미션을 다 했는데 칸이 비어 보이면 오류처럼 느껴졌다)
+            T("미션 1개 = 도장 1개 · ${Defaults.MISSIONS_PER_BREAKTHROUGH - stamps}개 더 모으면 +${Defaults.POINTS_BREAKTHROUGH}P", ViaType.labelM, col.text2.c(), Modifier.padding(start = 8.dp).weight(1f), maxLines = 2)
         }
     }
 }
@@ -134,7 +135,7 @@ private fun CheckMark(color: Color) = LineIcon(20.dp, color) { s ->
     listOf(androidx.compose.ui.graphics.Path().apply { moveTo(5 * s, 12.5f * s); lineTo(10 * s, 17 * s); lineTo(19 * s, 7 * s) })
 }
 
-/** 리서치 돌파 상자가 열리는 6장면(Blender 렌더, 같은 구도). */
+/** 미션 상자가 열리는 6장면(Blender 렌더, 같은 구도). */
 private val chestFrames = listOf(
     com.chargecompass.app.R.drawable.prop_chest_f0, com.chargecompass.app.R.drawable.prop_chest_f1, com.chargecompass.app.R.drawable.prop_chest_f2,
     com.chargecompass.app.R.drawable.prop_chest_f3, com.chargecompass.app.R.drawable.prop_chest_f4, com.chargecompass.app.R.drawable.prop_chest_f5,

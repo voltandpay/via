@@ -72,11 +72,13 @@ def glass(name, tint="#DCEBFF", rough=0.12):
 
 
 WHITE = "#FFFFFF"
-# 메달 단계 테두리(채도 있는 금·주황 동·푸른 은·보라 한정)
-TIER = {"gold": "#FFBE0B", "bronze": "#F2843B", "silver": "#B9C6D8", "event": "#7C5CFF"}
+# 메달 단계 테두리(채도 있는 금·갈색 동·푸른 은·보라 한정). 동은 작게 봐도 금과 갈리게 짙은 구릿빛
+TIER = {"gold": "#FFBE0B", "bronze": "#A8572A", "silver": "#B9C6D8", "event": "#7C5CFF"}
 
 # 보는 각도: 원판·방패 같은 납작한 물체를 살짝 뒤로 눕히고 오른쪽으로 비튼다(3/4 시점)
 FLAT_TILT = (math.radians(66), math.radians(-6), math.radians(-24))
+# 글자가 큰 카드·쿠폰은 덜 비튼다(많이 비틀면 한글 획이 뭉개져 '채'가 '체'처럼 읽힌다)
+CARD_TILT = (math.radians(78), 0, math.radians(-10))
 
 
 def lights_and_world(sc):

@@ -44,7 +44,7 @@ class MissionsTest {
     }
 
     @Test
-    fun `미션 스탬프 7개마다 리서치 돌파 보너스`() {
+    fun `미션 스탬프 7개마다 미션 상자 보너스`() {
         // 지난 주들에 미션 6개 달성
         val past = (1..6).map { i -> e(RewardKind.MISSION, wed.minusWeeks(i.toLong()), "M$i", LocalDate.of(2026, 1, i)) }
         val r = Missions.rewards(wed, past, discountCharges = 2)

@@ -86,13 +86,14 @@ fun ViaWordmark(size: Dp = 56.dp, showText: Boolean = true) {
 }
 
 /**
- * 원형 게이지: [fraction] 만큼 채우고 [marker] 위치(0~1)에 목표 눈금. 270도 호(아래가 비는 계기판 모양).
+ * 원형 게이지: [fraction] 만큼 채우고 [marker] 위치(0~1)에 눈금. 270도 호(아래가 비는 계기판 모양).
+ * [targetColor]를 주면 눈금 대신 [marker]까지를 옅은 호로 칠한다("여기까지 찬다" — 라벨 없는 눈금은 깨진 선처럼 보였다).
  * [animate]이면 0에서 차오른다(정차·충전 중에만 — 주행 중 애니메이션 금지).
  */
 @Composable
 fun RingGauge(
     fraction: Float, color: Color, modifier: Modifier = Modifier, size: Dp = 280.dp, stroke: Dp = 28.dp,
-    marker: Float? = null, animate: Boolean = true, content: @Composable BoxScope.() -> Unit = {},
+    marker: Float? = null, targetColor: Color? = null, animate: Boolean = true, content: @Composable BoxScope.() -> Unit = {},
 ) {
     val c = colors
     val anim = remember { Animatable(if (animate) 0f else fraction) }
@@ -103,8 +104,10 @@ fun RingGauge(
             val inset = w / 2
             val arcSize = Size(this.size.width - w, this.size.height - w)
             drawArc(c.track.c(), 135f, 270f, false, Offset(inset, inset), arcSize, style = Stroke(w, cap = StrokeCap.Round))
+            if (marker != null && targetColor != null)
+                drawArc(targetColor, 135f, 270f * marker.coerceIn(0f, 1f), false, Offset(inset, inset), arcSize, style = Stroke(w, cap = StrokeCap.Round))
             if (anim.value > 0f) drawArc(color, 135f, 270f * anim.value, false, Offset(inset, inset), arcSize, style = Stroke(w, cap = StrokeCap.Round))
-            if (marker != null) {
+            if (marker != null && targetColor == null) {
                 val ang = Math.toRadians(135.0 + 270.0 * marker)
                 val r = (this.size.width - w) / 2
                 val cx = this.size.width / 2; val cy = this.size.height / 2
@@ -130,12 +133,12 @@ fun CountUpWon(value: Int, style: TextStyle, color: Color, animate: Boolean = tr
  * 표에 없는 사업자는 이름으로 10색 중 하나를 고른다.
  */
 private val operatorColors = mapOf(
-    "me" to 0xFF1C6FD1,       // 환경부: 파랑
-    "kepco" to 0xFF0A5BAA,    // 한전: 남색
+    "me" to 0xFF12A5C9,       // 환경부: 하늘색(한전·워터 파랑과 구분)
+    "kepco" to 0xFF13408C,    // 한전: 남색
     "chaevi" to 0xFF00A06A,   // 채비: 초록
     "skel" to 0xFFE2231A,     // SK일렉링크: 빨강
     "gscv" to 0xFF00857C,     // GS차지비: 청록
-    "everon" to 0xFF2BAE66,   // 에버온: 연두빛 초록
+    "everon" to 0xFF6DB33F,   // 에버온: 연두(채비 초록과 구분)
     "water" to 0xFF2D7FF9,    // 워터: 밝은 파랑
     "epit" to 0xFF1E2A5A,     // 이피트: 짙은 남색
     "evsis" to 0xFF6A3FD8,    // 이브이시스: 보라
@@ -259,7 +262,7 @@ fun WeekBars(values: List<Int>, labels: List<String>, modifier: Modifier = Modif
             Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (v > 0) {
                     T(compactWon(v), ViaType.labelS.copy(fontWeight = if (today) FontWeight.Bold else FontWeight.Normal), if (today) c.activeText.c() else c.text2.c())
-                    val barH = (height.value * v / max).coerceAtLeast(10f).dp
+                    val barH = (height.value * barFraction(v, max)).coerceAtLeast(10f).dp
                     Box(Modifier.widthIn(max = maxBarWidth).fillMaxWidth().height(barH).clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 4.dp, bottomEnd = 4.dp))
                         .background(if (today) c.active.c() else c.active.c().copy(alpha = if (c.isDark) 0.7f else 0.45f)))
                 } else {

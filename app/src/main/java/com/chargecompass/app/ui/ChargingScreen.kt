@@ -65,22 +65,24 @@ fun ChargingScreen(c: AppContainer) {
         }
         val nonMemberTotal = ranked.nonMemberCostWon
         val eta = car?.let { m -> energy.socPct?.let { ChargeCurve.minutes(it, Defaults.TARGET_SOC.toInt(), m.batteryKwh, station.maxKw, c.demoClock.now().month) } }
-        Adaptive(Arrangement.spacedBy(28.dp)) { first ->
+        Adaptive(Arrangement.spacedBy(28.dp), Alignment.Top) { first ->
             ViaCard(first, padding = 48.dp) {
                 Adaptive(Arrangement.spacedBy(48.dp)) { textSide ->
                     // 배터리: 현재 → 목표 80% 원형 게이지(충전 중이라 차오르는 애니메이션 허용)
                     RingGauge(
                         (energy.socPct ?: 0) / 100f, col.pos.c(), size = if (isWide) 300.dp else 260.dp,
-                        marker = (Defaults.TARGET_SOC / 100).toFloat(),
+                        marker = (Defaults.TARGET_SOC / 100).toFloat(), targetColor = col.pos.c().copy(alpha = 0.3f),
                         modifier = if (isWide) Modifier else Modifier.align(Alignment.CenterHorizontally),
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             T("${energy.socPct ?: "-"}%", ViaType.headline)
-                            T("목표 ${Defaults.TARGET_SOC.toInt()}%" + (eta?.let { " · 약 ${it}분" } ?: ""), ViaType.labelM, col.text3.c())
+                            // 좁은 링 안에서도 넘치지 않게 두 줄로
+                            T("목표 ${Defaults.TARGET_SOC.toInt()}%", ViaType.labelM, col.text3.c())
+                            eta?.let { T("약 ${it}분", ViaType.labelM, col.text3.c()) }
                         }
                     }
                     Column(textSide, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        T("비회원가보다 절약 예상", ViaType.bodyM, col.text2.c())
+                        T("이 충전소 비회원가보다 절약 예상", ViaType.bodyM, col.text2.c())
                         CountUpWon(ranked.savingWon, if (isWide) ViaType.display else ViaType.display.copy(fontSize = ViaType.headline.fontSize * 1.4f), col.activeText.c())
                         T("${Defaults.TARGET_SOC.toInt()}%까지 · ${ranked.price.wonPerKwh}원/kWh ${ranked.price.basis.label()}", ViaType.labelM, col.text3.c())
                         SavingBar(ranked.totalCostWon, nonMemberTotal, col.active.c(), height = 24.dp)
@@ -105,7 +107,7 @@ fun ChargingScreen(c: AppContainer) {
                                 RewardKind.OFF_PEAK_BOOST -> Chip("경부하 부스트 +${e.points}P", bg = col.posSoft.c(), fg = col.pos.c(), bold = true)
                                 RewardKind.OPERATOR_DAY -> Chip("사업자 데이 +${e.points}P", bg = col.event.c(), fg = androidx.compose.ui.graphics.Color.White, bold = true)
                                 RewardKind.MISSION -> Chip("주간 미션 +${e.points}P", bg = col.activeSoft.c(), fg = col.activeText.c(), bold = true)
-                                RewardKind.BREAKTHROUGH -> Chip("리서치 돌파 +${e.points}P", bg = col.activeSoft.c(), fg = col.activeText.c(), bold = true)
+                                RewardKind.BREAKTHROUGH -> Chip("미션 상자 +${e.points}P", bg = col.activeSoft.c(), fg = col.activeText.c(), bold = true)
                                 RewardKind.SEASON_STEP -> Chip("시즌 보상 +${e.points}P", bg = col.event.c(), fg = androidx.compose.ui.graphics.Color.White, bold = true)
                                 RewardKind.EFFICIENT_TRIP -> Unit
                             }

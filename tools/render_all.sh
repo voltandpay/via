@@ -10,13 +10,13 @@ RES="$ROOT/app/src/main/res/drawable-nodpi"
 mkdir -p "$WORK"; cd "$WORK"
 
 # 사업자: id 색 글자
-OPS="me #1C6FD1 환
-kepco #0A5BAA 한
+OPS="me #12A5C9 환
+kepco #13408C 한
 skel #E2231A S
 chaevi #00A06A 채
 evsis #6A3FD8 이
 gscv #00857C G
-everon #2BAE66 에
+everon #6DB33F 에
 water #2D7FF9 워
 pluglink #F07B1E 플"
 
@@ -36,8 +36,8 @@ for i in 0 1 2 3 4 5 6 7; do m "spin_$i.png|#00A06A|채|bronze|--spin|$((i * 45)
 p "prop_coin.png|coin"; p "prop_chest_closed.png|chest|closed"; p "prop_symbol.png|symbol"; p "prop_moon.png|moon"
 i=0; for t in 0 0.15 0.35 0.6 0.85 1; do p "chest_f$i.png|chest|open|$t"; i=$((i + 1)); done
 for r in "downtown 도" "gangnam 강" "gyeonggi 경"; do set -- $r; p "emblem_$1_gold.png|emblem|$2|gold"; p "emblem_$1_locked.png|emblem|$2|locked"; done
-p "ticket_kepco.png|ticket|#0A5BAA|1,000원"; p "ticket_chaevi.png|ticket|#00A06A|2,000원"; p "ticket_water.png|ticket|#2D7FF9|3,000원"
-p "shelf.png|shelf|--size|1600|--aspect|0.3"
+p "ticket_kepco.png|ticket|#13408C|1,000원"; p "ticket_chaevi.png|ticket|#00A06A|2,000원"; p "ticket_water.png|ticket|#2D7FF9|3,000원"
+p "shelf.png|shelf|--size|1600|--aspect|0.3"; p "shelf_dark.png|shelf|dark|--size|1600|--aspect|0.3"
 m "hero_medal_chaevi.png|#00A06A|채|gold|--size|1024"; m "hero_medal_water.png|#2D7FF9|워|silver|--size|1024"; m "hero_medal_skel.png|#E2231A|S|event|--size|1024"
 p "hero_coin.png|coin|--size|1024"; p "hero_chest.png|chest|open|1|--size|1024"; p "hero_emblem.png|emblem|강|gold|--size|1024"
 p "symbol_4096.png|symbol|--size|4096"
@@ -66,9 +66,10 @@ def tight(path, pad=0):
 for n in ["kepco", "chaevi", "water"]:   # 티켓: 가로로 긴 비율 그대로
     im = tight(f"{work}/ticket_{n}.png", 6); im = im.resize((360, round(im.height * 360 / im.width)), Image.LANCZOS)
     im.save(f"{res}/ticket_{n}.webp", "WEBP", quality=90, method=6)
-im = Image.open(f"{work}/shelf.png"); b = im.split()[3].point(lambda v: 255 if v > 2 else 0).getbbox()   # 선반: 판 윗면이 그림 맨 위
-im = im.crop((b[0], b[1], b[2], b[3] + 4)); im = im.resize((1400, round(im.height * 1400 / im.width)), Image.LANCZOS)
-im.save(f"{res}/prop_shelf.webp", "WEBP", quality=90, method=6)
+for src, dst in [("shelf", "prop_shelf"), ("shelf_dark", "prop_shelf_dark")]:   # 선반: 판 윗면이 그림 맨 위
+    im = Image.open(f"{work}/{src}.png"); b = im.split()[3].point(lambda v: 255 if v > 2 else 0).getbbox()
+    im = im.crop((b[0], b[1], b[2], b[3] + 4)); im = im.resize((1400, round(im.height * 1400 / im.width)), Image.LANCZOS)
+    im.save(f"{res}/{dst}.webp", "WEBP", quality=90, method=6)
 im = tight(f"{work}/symbol_4096.png"); s = int(max(im.size) * 1.08)   # PT 표지용 심볼
 c = Image.new("RGBA", (s, s), (0, 0, 0, 0)); c.paste(im, ((s - im.width) // 2, (s - im.height) // 2))
 c.resize((2048, 2048), Image.LANCZOS).save(f"{root}/doc/assets/via_symbol_2048.png", optimize=True)

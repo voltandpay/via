@@ -63,34 +63,44 @@ fun MedalShelfCard(c: AppContainer, currentStationId: String) {
         }
         BoxWithConstraints(Modifier.fillMaxWidth()) {
             val shelfH = maxWidth * (125f / 1400f)
-            val slot = maxWidth * 0.86f / dex.size
-            val medal = min(slot * 0.92f, 120.dp)
             val side = maxWidth * 0.07f
-            Box(Modifier.fillMaxWidth().height(medal * 1.15f + shelfH)) {
-                Image(painterResource(R.drawable.prop_shelf), null, Modifier.fillMaxWidth().align(Alignment.BottomCenter))
-                // 선반 판 윗면(그림 맨 위에서 약 5%)에 메달 아래쪽이 닿게
-                Row(
-                    Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding(bottom = shelfH * 0.95f, start = side, end = side),
-                    horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom,
-                ) {
-                    dex.forEach { e ->
-                        val here = e.station.id == currentStationId
-                        val size = if (here) medal * 1.15f else medal
-                        val res = when (e.state) {
-                            DexState.REGISTERED -> (if (e.station.id in limited) eventMedalRes(e.station.operatorId) else null) ?: medalRes(e.station.operatorId, e.tier ?: MedalTier.BRONZE)
-                            DexState.SEEN -> medalRes(e.station.operatorId, MedalTier.BRONZE)
-                            DexState.UNSEEN -> R.drawable.medal_locked
-                        } ?: R.drawable.medal_locked
-                        Image(
-                            painterResource(res), e.station.name, Modifier.size(size),
-                            alpha = when (e.state) { DexState.REGISTERED -> 1f; DexState.SEEN -> if (col.isDark) 0.85f else 0.6f; DexState.UNSEEN -> if (col.isDark) 0.5f else 0.35f },
-                            colorFilter = if (e.state == DexState.SEEN) grayscale else null,
-                        )
+            // 좁은 화면에서 한 줄에 9개를 놓으면 메달이 40dp 남짓이라 글자가 안 보인다 → 두 선반으로 나눈다
+            val oneRow = maxWidth * 0.86f / dex.size * 0.92f
+            val perRow = if (oneRow < 64.dp) (dex.size + 1) / 2 else dex.size
+            val medal = min(maxWidth * 0.86f / perRow * 0.92f, 120.dp)
+            Column {
+                dex.chunked(perRow).forEach { row ->
+                    Box(Modifier.fillMaxWidth().height(medal * 1.15f + shelfH)) {
+                        Image(painterResource(if (col.isDark) R.drawable.prop_shelf_dark else R.drawable.prop_shelf), null, Modifier.fillMaxWidth().align(Alignment.BottomCenter))
+                        // 메달 아래쪽이 선반 판 윗면 안쪽에 닿게(판 앞 테두리보다 살짝 위 — 떠 보이지 않게)
+                        Row(
+                            Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding(bottom = shelfH * 0.62f, start = side, end = side),
+                            horizontalArrangement = if (row.size == perRow) Arrangement.SpaceBetween else Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.Bottom,
+                        ) {
+                            row.forEach { e -> ShelfMedal(e, e.station.id == currentStationId, e.station.id in limited, medal) }
+                        }
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun ShelfMedal(e: com.chargecompass.core.dex.DexEntry, here: Boolean, limited: Boolean, medal: androidx.compose.ui.unit.Dp) {
+    val col = colors
+    val size = if (here) medal * 1.15f else medal
+    val res = when (e.state) {
+        DexState.REGISTERED -> (if (limited) eventMedalRes(e.station.operatorId) else null) ?: medalRes(e.station.operatorId, e.tier ?: MedalTier.BRONZE)
+        DexState.SEEN -> medalRes(e.station.operatorId, MedalTier.BRONZE)
+        DexState.UNSEEN -> R.drawable.medal_locked
+    } ?: R.drawable.medal_locked
+    Image(
+        painterResource(res), e.station.name, Modifier.size(size),
+        alpha = when (e.state) { DexState.REGISTERED -> 1f; DexState.SEEN -> if (col.isDark) 0.85f else 0.7f; DexState.UNSEEN -> if (col.isDark) 0.6f else 0.55f },
+        colorFilter = if (e.state == DexState.SEEN) grayscale else null,
+    )
 }
 
 /** 충전 혜택 시즌 트랙: 시즌 경험치(이번 시즌에 받은 포인트)로 단계를 넘으면 코인·상자·시즌 메달 보상. */

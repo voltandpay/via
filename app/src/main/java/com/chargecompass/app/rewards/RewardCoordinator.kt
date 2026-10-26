@@ -103,7 +103,7 @@ class RewardCoordinator(
     private fun visitEntries(stationId: String, since: java.time.LocalDateTime): List<RewardEntry> =
         ledger.entries.value.filter { e -> !e.at.isBefore(since) && (e.stationId == stationId || e.stationId == null && e.at == since) }
 
-    /** 이번 주 새로 달성한 미션·리서치 돌파와 시즌 단계 보상을 적립하고 돌려준다. */
+    /** 이번 주 새로 달성한 미션·미션 상자와 시즌 단계 보상을 적립하고 돌려준다. */
     private suspend fun checkMissions(at: java.time.LocalDateTime, speak: Boolean = true): List<RewardEntry> {
         val missions = Missions.rewards(at, ledger.entries.value, discountCharges(summaryLog?.summaries?.value.orEmpty(), at.toLocalDate()))
         if (missions.isNotEmpty()) ledger.append(missions)
@@ -118,7 +118,7 @@ class RewardCoordinator(
     private suspend fun speakMissions(earned: List<RewardEntry>) {
         val missions = earned.filter { it.kind == RewardKind.MISSION }
         when {
-            earned.any { it.kind == RewardKind.BREAKTHROUGH } -> voice.speak("리서치 돌파! 보너스 ${Defaults.POINTS_BREAKTHROUGH}포인트")
+            earned.any { it.kind == RewardKind.BREAKTHROUGH } -> voice.speak("미션 상자! 보너스 ${Defaults.POINTS_BREAKTHROUGH}포인트")
             missions.isNotEmpty() -> voice.speak("주간 미션 달성! " + missions.joinToString(", ") { m -> Mission.valueOf(m.eventId!!).title })
         }
     }

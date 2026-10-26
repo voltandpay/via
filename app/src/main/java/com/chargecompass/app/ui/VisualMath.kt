@@ -3,7 +3,6 @@ package com.chargecompass.app.ui
 import com.chargecompass.app.rewards.ChargeSummary
 import java.time.LocalDate
 import kotlin.math.floor
-import kotlin.math.round
 import kotlin.math.roundToInt
 
 /** 오늘을 마지막으로 하는 최근 7일의 날짜별 절약액. */
@@ -38,12 +37,14 @@ fun routeStops(remainingKm: Double, stops: List<Pair<String, Double>>, socAt: (k
         RouteStop(id, f, socAt(km)?.roundToInt())
     }
 
-/** 막대 위 짧은 금액: 0은 빈칸, 만 원 미만은 쉼표, 이상은 "1.1만". */
-fun compactWon(v: Int): String = when {
-    v == 0 -> ""
-    v < 10_000 -> won(v).removeSuffix("원")
-    else -> (round(v / 1000.0) / 10).let { if (it % 1.0 == 0.0) "${it.toInt()}만" else "${it}만" }
-}
+/** 막대 위 금액: 0은 빈칸, 나머지는 쉼표(한 그래프 안에 "5.6만"과 "5,720"이 섞이지 않게). */
+fun compactWon(v: Int): String = if (v == 0) "" else won(v).removeSuffix("원")
+
+/**
+ * 막대 높이 비율(0~1). 하루만 크게 아껴도 나머지 날이 납작해지지 않게 제곱근 눈금을 쓴다
+ * (값은 막대 위 숫자로 정확히 보여 주므로 높이는 크고 작음만 전하면 된다).
+ */
+fun barFraction(v: Int, max: Int): Float = if (v <= 0 || max <= 0) 0f else kotlin.math.sqrt(v.toFloat() / max).coerceIn(0f, 1f)
 
 private const val DAY_MIN = 24 * 60
 

@@ -65,8 +65,8 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
                 OutlinedButton(onClick = { c.narrowPreview.value = !c.narrowPreview.value }) { Text("좁은 화면") }
                 OutlinedButton(onClick = { c.flatBadges.value = !c.flatBadges.value }) { Text("평면 배지") }
                 // 시연용: 지난 6일 충전 요약 예시(홈의 7일 차트가 비어 보이지 않게). 실제 기록 파일에 남는다
-                OutlinedButton(onClick = { scope.launch { demoWeekSummaries(c.demoClock.now()).forEach { c.summaries.append(it) } } }) { Text("지난 6일 예시 기록") }
-                // 시연용: 지난주들에 미션 6개를 달성한 것처럼 기록 → 이번 주 미션 하나만 더 하면 리서치 돌파
+                OutlinedButton(onClick = { scope.launch { val have = c.summaries.summaries.value; demoWeekSummaries(c.demoClock.now()).filter { d -> have.none { it.endedAt == d.endedAt } }.forEach { c.summaries.append(it) } } }) { Text("지난 6일 예시 기록") }
+                // 시연용: 지난주들에 미션 6개를 달성한 것처럼 기록 → 이번 주 미션 하나만 더 하면 미션 상자
                 OutlinedButton(onClick = { scope.launch { c.ledger.append(demoPastMissions(c.demoClock.now(), c.ledger.entries.value)) } }) { Text("미션 스탬프 6개") }
                 // 같은 충전소 보상은 2시간에 한 번이라, 메달 단계(동→은→금)를 보여 줄 때는 하루씩 넘긴다
                 OutlinedButton(onClick = { c.demoClock.jumpTo(c.demoClock.now().plusDays(1)) }) { Text("하루 뒤로") }
@@ -116,7 +116,7 @@ private val stationNames = mapOf(
     "st-banpo-kepco" to "반포 한전 충전소", "st-seocho-evsis" to "서초 이브이시스",
 )
 
-/** 지난 6주에 미션을 하나씩 달성한 기록(리서치 돌파 시연용). */
+/** 지난 6주에 미션을 하나씩 달성한 기록(미션 상자 시연용). */
 internal fun demoPastMissions(now: LocalDateTime, existing: List<com.chargecompass.core.rewards.RewardEntry>): List<com.chargecompass.core.rewards.RewardEntry> = (1..6).map { w ->
     val at = now.minusWeeks(w.toLong())
     com.chargecompass.core.rewards.RewardEntry(com.chargecompass.core.rewards.RewardKind.MISSION, 15, at,

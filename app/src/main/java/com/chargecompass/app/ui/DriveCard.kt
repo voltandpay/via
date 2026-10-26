@@ -44,7 +44,7 @@ fun DriveCard(c: AppContainer) {
     Column(Modifier.fillMaxSize().padding(48.dp), verticalArrangement = Arrangement.spacedBy(32.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             ViaMark()
-            T("주행 중 · 안내는 음성으로 드려요 · \"제일 싼 충전소 어디야?\"", ViaType.labelM, col.text2.c(), Modifier.weight(1f))
+            T("주행 중 · 안내는 음성으로 드려요 · “제일 싼 충전소 어디야?”", ViaType.labelM, col.text2.c(), Modifier.weight(1f))
             route?.let { Chip("${it.destinationName}까지 ${it.remainingKm.roundToInt()}km · ${it.remainingSec / 60}분", fg = col.text2.c()) }
             // 주행 중 화면의 유일한 터치 요소: 큰 말하기 버튼(누른 뒤에는 음성으로만 주고받는다)
             VoiceAskButton(c)
@@ -96,7 +96,12 @@ private fun ColumnScope.BatteryPanel(arrival: Double?, socNow: Int?, route: Rout
     // 한눈에: 넓은 창에서는 숫자를 더 크게, 막대·설명은 패널 아래로
     T("${arrival.roundToInt().coerceAtLeast(0)}%", if (isWide) ViaType.display.copy(fontSize = ViaType.display.fontSize * 1.5f, lineHeight = ViaType.display.lineHeight * 1.5f) else ViaType.display, tint)
     T(if (low) "충전이 필요해요" else "충전 없이 도착해요", ViaType.titleM, tint)
-    if (isWide) Spacer(Modifier.weight(1f))
+    if (isWide) {
+        // 넓은 창의 빈 가운데: 지금 → 도착 사이에 배터리를 얼마나 쓰는지
+        Spacer(Modifier.weight(1f))
+        if (socNow != null) T("가는 동안 ${(socNow - arrival).roundToInt().coerceAtLeast(0)}%p 써요", ViaType.titleS, col.text2.c())
+        Spacer(Modifier.weight(1f))
+    }
     Bar((arrival / 100).toFloat(), if (low) col.neg.c() else col.active.c(), height = 36.dp, marker = 0.15f)
     Row(Modifier.fillMaxWidth()) {
         T("0%", ViaType.labelM, col.text3.c(), Modifier.weight(0.15f))
@@ -126,7 +131,19 @@ private fun ColumnScope.RecommendPanel(reco: RecoState, best: RankedStation?, ro
         T(best.station.name, ViaType.headline, maxLines = 1)
     }
     if (best.savingWon > 0) T("${won(best.savingWon)} 절약", ViaType.titleL, col.activeText.c())
-    if (isWide) Spacer(Modifier.weight(1f))
+    if (isWide) {
+        // 넓은 창의 빈 가운데: 절약액이 어디서 나왔는지(내 요금 vs 비회원가)를 막대 하나로
+        Spacer(Modifier.weight(1f))
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
+                T("80%까지 예상 요금", ViaType.bodyM, col.text2.c(), Modifier.weight(1f))
+                T(won(best.totalCostWon), ViaType.titleM)
+            }
+            SavingBar(best.totalCostWon, best.nonMemberCostWon, col.active.c(), height = 24.dp)
+            T("비회원가 ${won(best.nonMemberCostWon)} · 우회 ${"%.1f".format(best.station.detourKm)}km", ViaType.bodyM, col.text3.c())
+        }
+        Spacer(Modifier.weight(1f))
+    }
     RouteStrip(best.station.alongRouteKm, route?.remainingKm, route?.destinationName ?: "목적지")
     FlowRow(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Chip("${best.price.wonPerKwh}원/kWh · ${best.price.basis.label()}", bold = true)
@@ -173,9 +190,9 @@ private fun RowScope.Leg(label: String, color: Color, weight: Float) {
 private fun VoiceBar(reco: RecoState) {
     val col = colors
     val (title, sub) = when (reco) {
-        is RecoState.Suggested -> "경유지로 추가할까요?" to "\"응\"이라고 말하면 내비에 추가돼요 · 화면은 만지지 않아도 돼요"
+        is RecoState.Suggested -> "경유지로 추가할까요?" to "“응”이라고 말하면 내비에 추가돼요 · 화면은 만지지 않아도 돼요"
         is RecoState.AwaitingTouch -> "대답을 듣지 못했어요" to "정차하면 화면에서 한 번에 추가할 수 있어요"
-        is RecoState.Switch -> "${com.chargecompass.app.voice.withSubjectParticle(reco.from.station.name)} 지금 쓸 수 없어요" to "\"응\"이라고 하면 ${reco.to.station.name}로 경유지를 바꿔요"
+        is RecoState.Switch -> "${com.chargecompass.app.voice.withSubjectParticle(reco.from.station.name)} 지금 쓸 수 없어요" to "“응”이라고 하면 ${reco.to.station.name}로 경유지를 바꿔요"
         is RecoState.Adding -> "경유지로 추가하는 중" to "내비에 반영하고 있어요"
         is RecoState.Added -> if (reco.result == StopResult.FAILED) "경유지 추가에 실패했어요" to "정차 후 다시 시도해 주세요" else "경유지로 추가했어요" to "내비 안내를 따라가세요"
         else -> return

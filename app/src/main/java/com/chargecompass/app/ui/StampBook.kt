@@ -137,7 +137,7 @@ private fun DexCard(c: AppContainer, e: DexEntry, fresh: Boolean, flat: Boolean,
                     // 다크 모드에서는 어두운 카드에 묻히지 않게 더 밝은 실루엣
                     Image(painterResource(it), "발견한 충전소", Modifier.size(120.dp), alpha = if (col.isDark) 0.95f else 0.7f, colorFilter = if (col.isDark) silhouetteDark else silhouette)
                 } ?: StationBadge(initial, badgeColor(st.operatorId), false, size = 112.dp)
-                else -> Image(painterResource(R.drawable.medal_locked), "못 본 충전소", Modifier.size(120.dp), alpha = 0.4f)
+                else -> Image(painterResource(R.drawable.medal_locked), "못 본 충전소", Modifier.size(120.dp), alpha = 0.6f)
             }
         }
         T(if (e.state == DexState.UNSEEN) "???" else st.name, ViaType.bodyM.copy(fontWeight = FontWeight.Bold), if (e.state == DexState.UNSEEN) col.text3.c() else col.text.c(), maxLines = 1)
@@ -214,6 +214,8 @@ fun PointsExchange(c: AppContainer) {
         } ?: T("모든 쿠폰을 받을 수 있어요", ViaType.bodyM, col.text2.c())
     }
     T("유효기간 12개월 · 제휴 충전 할인 쿠폰으로만 바꿀 수 있어요", ViaType.labelM, col.text3.c())
+    // 제휴 전이라 실제로 바꿔 주지는 않는다: 받기를 누르면 언제 받을 수 있는지 알려 준다
+    var asked by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(setOf<String>()) }
     partnerCoupons.forEach { coupon ->
         val ready = balance >= coupon.cost
         TicketCard(accent = if (ready) col.active.c() else col.line.c()) {
@@ -222,9 +224,19 @@ fun PointsExchange(c: AppContainer) {
                 couponTicketRes(coupon.operatorId)?.let { Image(painterResource(it), null, Modifier.width(150.dp), alpha = if (ready) 1f else 0.5f) }
                 Column(Modifier.weight(0.72f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     T(coupon.name, ViaType.titleS, maxLines = 1)
-                    T(if (ready) "받을 수 있어요 · 제휴 준비 중" else "${coupon.cost - balance}P 더 모으면 받을 수 있어요", ViaType.labelM, col.text3.c(), maxLines = 1)
+                    T(
+                        when {
+                            coupon.name in asked -> "제휴가 열리면 알림으로 알려 드릴게요"
+                            ready -> "${coupon.cost}P로 받을 수 있어요 · 제휴 준비 중"
+                            else -> "${coupon.cost - balance}P 더 모으면 받을 수 있어요"
+                        },
+                        ViaType.labelM, if (coupon.name in asked) col.pos.c() else col.text3.c(), maxLines = 1,
+                    )
                 }
-                T("${coupon.cost}P", ViaType.titleM, if (ready) col.activeText.c() else col.text3.c(), Modifier.weight(0.28f), align = TextAlign.Center)
+                ViaButton(
+                    if (coupon.name in asked) "신청됨" else "${coupon.cost}P 받기", onClick = { asked = asked + coupon.name },
+                    primary = ready && coupon.name !in asked, enabled = ready, height = 80.dp,
+                )
             }
         }
     }

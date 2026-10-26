@@ -41,11 +41,17 @@ class VisualMathTest {
     }
 
     @Test
-    fun `막대 위 금액은 만 원 이상이면 만 단위로 줄인다`() {
+    fun `막대 위 금액은 한 가지 표기로 쓴다`() {
         assertEquals("", compactWon(0))
         assertEquals("8,200", compactWon(8200))
-        assertEquals("1.1만", compactWon(11118))
-        assertEquals("3만", compactWon(30000))
+        assertEquals("11,118", compactWon(11118))
+    }
+
+    @Test
+    fun `막대 높이는 제곱근 눈금이라 작은 날도 보인다`() {
+        assertEquals(1f, barFraction(56_000, 56_000))
+        assertEquals(0.5f, barFraction(14_000, 56_000))
+        assertEquals(0f, barFraction(0, 56_000))
     }
 
     @Test

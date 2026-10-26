@@ -114,7 +114,8 @@ fun T(
     text: String, style: TextStyle, color: Color = colors.text.c(), modifier: Modifier = Modifier,
     maxLines: Int = Int.MAX_VALUE, align: androidx.compose.ui.text.style.TextAlign? = null,
 ) = Text(
-    text, modifier = modifier, style = if (align != null) style.copy(textAlign = align) else style, color = color,
+    // 여러 줄이 될 수 있는 글은 띄어쓰기에서만 줄을 바꾼다(한 글자만 다음 줄로 넘어가지 않게)
+    if (maxLines > 1) keepWords(text) else text, modifier = modifier, style = if (align != null) style.copy(textAlign = align) else style, color = color,
     maxLines = maxLines, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
 )
 

@@ -1,12 +1,12 @@
 # VIA 3D 소품: blender -b -P blender_props.py -- <font.ttf> <out.png> <종류> [옵션...] [--size N]
 #   coin                       포인트 코인(P)
-#   chest closed|open [t]      리서치 돌파 상자. t(0~1)는 열린 정도(애니메이션 장면용, 기본 1)
+#   chest closed|open [t]      미션 상자. t(0~1)는 열린 정도(애니메이션 장면용, 기본 1)
 #   emblem <글자> locked|gold   지역 엠블럼(방패)
 #   symbol                     VIA 심볼(경로 + 번개 경유지)
 #   moon                       경부하 부스트(달 + 번개)
 #   card <hex색> <글자>          충전 멤버십 카드(사업자 색)
-#   ticket <hex색> <금액 글자>    제휴 할인 쿠폰 티켓
-#   shelf                      메달 진열장 선반(가로로 긴 그림, --aspect로 세로 비율)
+#   ticket <hex색> [금액]        제휴 할인 쿠폰 티켓. 금액은 화면 글자로 따로 보여 주므로 그림에는 번개만 넣는다
+#   shelf [dark]               메달 진열장 선반(가로로 긴 그림, --aspect로 세로 비율). dark는 다크 모드용 짙은 유리
 # 재질·조명·렌더 설정은 메달과 같은 tools/blender_style.py를 쓴다.
 import bpy, bmesh, sys, os, math
 from mathutils import Vector
@@ -65,10 +65,10 @@ def prism(points, depth, z=0.0, m=None, bevel=0.0, name="prism"):
     o = bpy.data.objects.new(name, me); sc.collection.objects.link(o)
     return own(o, m, smooth=False, bevel=bevel)
 
-def text(body, size_, z, m, extrude=0.05, y=0.0):
+def text(body, size_, z, m, extrude=0.05, y=0.0, bevel=0.025):
     font = bpy.data.fonts.load(font_path)
     cu = bpy.data.curves.new("t", "FONT"); cu.body = body; cu.font = font
-    cu.size = size_; cu.extrude = extrude; cu.offset = 0.0; cu.bevel_depth = 0.025; cu.bevel_resolution = 4
+    cu.size = size_; cu.extrude = extrude; cu.offset = 0.0; cu.bevel_depth = bevel; cu.bevel_resolution = 4
     cu.align_x = "CENTER"; cu.align_y = "CENTER"
     o = bpy.data.objects.new("t", cu); sc.collection.objects.link(o)
     o.location = (0, y, z); o.data.materials.append(m); o.parent = root
@@ -100,7 +100,8 @@ elif kind == "emblem":
         left = [(-x, y) for x, y in reversed(right[:-1])]
         return [(x * sx, y * sy) for x, y in right + left]
     body = mat("body", "#FFBE0B") if done else st.metal("body", "#B9C6D8", 0.22)
-    face = mat("face", "#1E6BFF", grad=0.35) if done else st.glass("face")
+    # 잠긴 면은 유리 대신 차분한 회청색 플라스틱: 유리 반사가 글자를 가리지 않게
+    face = mat("face", "#1E6BFF", grad=0.35) if done else mat("face", "#8D9BB4", grad=0.25)
     prism(shield(1, 1), 0.22, -0.11, body, bevel=0.05, name="shield")
     prism(shield(0.8, 0.8), 0.06, 0.11, face, bevel=0.02, name="face")
     text(glyph, 0.95, 0.19, white, y=0.05)
@@ -141,7 +142,7 @@ elif kind == "moon":
     bolt(0.045, 0.0, blue, 0.18, cx=0.45, cy=-0.35)
 
 elif kind in ("card", "ticket"):
-    color, label = opts[0], opts[1]
+    color, label = opts[0], (opts[1] if len(opts) > 1 else "")
     face = mat("cardface", color, grad=0.32)
     def rounded_rect(w, h, r, notch=0.0):
         """둥근 사각형 윤곽(반시계). notch가 있으면 왼쪽·오른쪽 가운데에 반원 홈(쿠폰 모양)."""
@@ -158,18 +159,20 @@ elif kind in ("card", "ticket"):
         for y in (-0.03, 0.05, 0.13):
             box(0.34, 0.012, 0.035, loc=(-0.48, y, 0.055), m=goldDark)
         box(1.5, 0.08, 0.02, loc=(0, -0.36, 0.045), m=white)
-        text(label, 0.62, 0.05, white, extrude=0.035, y=0.12).location.x = 0.42
+        # 카드 윗변(0.54) 안에 들어오게: 글자 높이 0.56, 가운데 y=0.1. 얇은 베벨로 획을 또렷하게
+        text(label, 0.56, 0.05, white, extrude=0.03, y=0.1, bevel=0.012).location.x = 0.4
     else:
         prism(rounded_rect(1.8, 0.9, 0.1, notch=0.16), 0.08, -0.04, face, bevel=0.02, name="ticket")
         for i in range(7):   # 점선 절취선
             cyl(0.022, 0.02, loc=(0.56, -0.33 + i * 0.11, 0.045), m=white, verts=24)
-        text(label, 0.32, 0.05, white, extrude=0.035).location.x = -0.1   # 왼쪽 홈과 겹치지 않게
+        bolt(0.03, 0.04, white, 0.05, cx=-0.12)   # 금액은 화면 글자로 — 그림에는 충전 번개만
 
 elif kind == "shelf":
     flat = False
     # 진열장 선반: 반투명 유리 판 + 흰 받침(토스의 유리 패널 느낌)
-    wood = st.glass("shelf", "#E3EEFF", rough=0.18)
-    trim = mat("trim", "#C9D8F2", grad=0.2)
+    dark = bool(opts) and opts[0] == "dark"   # 다크 모드: 밝은 유리가 눈부시지 않게 짙은 유리·받침
+    wood = st.glass("shelf", "#4A5672" if dark else "#E3EEFF", rough=0.18)
+    trim = mat("trim", "#39435A" if dark else "#C9D8F2", grad=0.2)
     box(9.4, 0.9, 0.2, loc=(0, 0, -0.1), m=wood, bevel=0.04)          # 선반 판
     box(9.4, 0.06, 0.12, loc=(0, -0.47, -0.16), m=trim, bevel=0.02)    # 앞 테두리
     for x in (-4.2, 0, 4.2):                                           # 받침
@@ -205,7 +208,7 @@ elif kind == "chest":
     root.rotation_euler = (0, 0, math.radians(-24))
 
 if flat:
-    root.rotation_euler = st.FLAT_TILT
+    root.rotation_euler = st.CARD_TILT if kind in ("card", "ticket") else st.FLAT_TILT
 
 st.lights_and_world(sc)
 

@@ -73,7 +73,7 @@ fun ParkedHome(c: AppContainer) {
                 verticalArrangement = Arrangement.spacedBy(28.dp),
             ) {
                 when (t) {
-                    0 -> HomeTab(c)
+                    0 -> HomeTab(c, onCompare = { tab = 1 })
                     1 -> CompareScreen(c)
                     2 -> StampBook(c)
                     3 -> EventsScreen(c)
@@ -85,7 +85,7 @@ fun ParkedHome(c: AppContainer) {
 }
 
 @Composable
-private fun HomeTab(c: AppContainer) {
+private fun HomeTab(c: AppContainer, onCompare: () -> Unit) {
     val reco by c.reco.state.collectAsState()
     val entries by c.ledger.entries.collectAsState()
     val col = colors
@@ -93,7 +93,7 @@ private fun HomeTab(c: AppContainer) {
     val weekPoints = entries.filter { it.at.isAfter(now.minusDays(7)) }.sumOf { it.points }
     val balance = c.ledger.balance(now)
 
-    BatteryHero(c)
+    BatteryHero(c, onCompare)
 
     // 오늘이 사업자 데이면 맨 위에 알린다(포켓몬 고의 커뮤니티 데이)
     upcomingOperatorDay(c.data.operatorDays, c.demoClock.now().toLocalDate())?.takeIf { it.date == c.demoClock.now().toLocalDate() }?.let { OperatorDayCard(c, it) }
@@ -215,7 +215,7 @@ private fun HomeTab(c: AppContainer) {
     ViaCard(padding = 36.dp) {
         Row(verticalAlignment = Alignment.Bottom) {
             Column(Modifier.weight(1f)) {
-                T("최근 7일 절약", ViaType.labelM, col.text3.c())
+                T("최근 7일 절약 · 비회원가 대비", ViaType.labelM, col.text3.c())
                 T(won(week.sum()), ViaType.titleM, col.activeText.c())
             }
             T(if (week.count { it > 0 } <= 1) "충전이 끝나면 자동으로 쌓여요" else "하루 평균 ${won(week.sum() / week.count { it > 0 })}", ViaType.labelM, col.text3.c())
@@ -236,9 +236,21 @@ private fun HomeTab(c: AppContainer) {
 
 /** 넓은 창: 가로로 나란히(첫 칸이 남는 폭을 차지), 좁은 창: 세로로 쌓기. */
 @Composable
-fun Adaptive(spacing: Arrangement.HorizontalOrVertical, content: @Composable (firstWeight: Modifier) -> Unit) {
-    if (isWide) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = spacing) { content(Modifier.weight(1f)) }
+fun Adaptive(spacing: Arrangement.HorizontalOrVertical, align: Alignment.Vertical = Alignment.CenterVertically, content: @Composable (firstWeight: Modifier) -> Unit) {
+    if (isWide) Row(verticalAlignment = align, horizontalArrangement = spacing) { content(Modifier.weight(1f)) }
     else Column(verticalArrangement = spacing) { content(Modifier) }
+}
+
+/** 가로로 같은 폭·같은 높이(가장 큰 칸에 맞춤)로 놓는다. 한 번 재 보고 그 높이로 다시 잰다. */
+@Composable
+fun EqualHeightRow(spacing: androidx.compose.ui.unit.Dp, items: List<@Composable () -> Unit>) {
+    androidx.compose.ui.layout.SubcomposeLayout { cs ->
+        val gap = spacing.roundToPx()
+        val w = (cs.maxWidth - gap * (items.size - 1)) / items.size
+        val h = items.mapIndexed { i, item -> subcompose("probe$i", item).first().measure(androidx.compose.ui.unit.Constraints(minWidth = w, maxWidth = w)).height }.max()
+        val ps = items.mapIndexed { i, item -> subcompose("final$i", item).first().measure(androidx.compose.ui.unit.Constraints.fixed(w, h)) }
+        layout(cs.maxWidth, h) { ps.forEachIndexed { i, p -> p.place(i * (w + gap), 0) } }
+    }
 }
 
 /** 카드 3개: 넓은 창은 한 줄, 좁은 창은 세로로. */
@@ -247,7 +259,8 @@ private fun Grid3(content: (card: (Modifier, @Composable androidx.compose.founda
     val cards = mutableListOf<@Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit>()
     content { _, body -> cards += body }
     if (isWide) {
-        Row(horizontalArrangement = Arrangement.spacedBy(28.dp)) { cards.forEach { body -> ViaCard(Modifier.weight(1f), padding = 36.dp, content = body) } }
+        // 세 카드의 높이를 가장 큰 카드에 맞춘다(아랫선이 들쭉날쭉하지 않게)
+        EqualHeightRow(28.dp, cards.map { body -> @Composable { ViaCard(padding = 36.dp, content = body) } })
     } else {
         Column(verticalArrangement = Arrangement.spacedBy(28.dp)) { cards.forEach { body -> ViaCard(padding = 36.dp, content = body) } }
     }
@@ -255,7 +268,7 @@ private fun Grid3(content: (card: (Modifier, @Composable androidx.compose.founda
 
 /** 홈 맨 위: 배터리 링(현재 %, 목적지가 있으면 도착 예상 눈금)과 주행 가능 거리. */
 @Composable
-private fun BatteryHero(c: AppContainer) {
+private fun BatteryHero(c: AppContainer, onCompare: () -> Unit) {
     val energy by c.vehicle.energy.collectAsState()
     val route by c.navi.route.collectAsState()
     val col = colors
@@ -293,7 +306,12 @@ private fun BatteryHero(c: AppContainer) {
                     T("목적지를 정하면 도착할 때 남는 배터리를 계산해요", ViaType.bodyM, col.text2.c())
                 }
             }
-            VoiceAskButton(c)
+            // 충전이 필요하면 다음 할 일(비교 탭)로 바로 가는 버튼을 말하기 옆에 둔다
+            val needCharge = route != null && arrival != null && ArrivalCalculator.needsCharge(arrival.toDouble())
+            if (needCharge) Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                ViaButton("충전소 비교 보기", onClick = onCompare, height = 80.dp)
+                VoiceAskButton(c)
+            } else VoiceAskButton(c)
         }
     }
 }
