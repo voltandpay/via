@@ -158,7 +158,9 @@ private fun HomeTab(c: AppContainer) {
             T("이번 주 포인트", ViaType.labelM, col.text3.c())
             CoinAmount("+${weekPoints}P", ViaType.headline, col.activeText.c(), coin = 64.dp)
             Bar(balance / 200f, col.active.c(), height = 16.dp)
-            T("보유 ${balance}P · 200P면 2,000원 쿠폰", ViaType.labelM, col.text2.c(), maxLines = 1)
+            val ready = partnerCoupons.count { it.cost <= balance }
+            T("보유 ${balance}P · " + (nextCoupon(balance, partnerCoupons)?.let { n -> if (ready > 0) "쿠폰 ${ready}장 받을 수 있어요" else "다음 쿠폰까지 ${n.remaining}P" } ?: "쿠폰 ${ready}장 모두 받을 수 있어요"),
+                ViaType.labelM, col.text2.c(), maxLines = 1)
         }
         it(Modifier) {
             val event = c.data.events.firstOrNull()
@@ -193,7 +195,6 @@ private fun HomeTab(c: AppContainer) {
         }
     }
 
-    BreakthroughCard(c)
     WeeklyMissionsCard(c)
 
     // 최근 7일 절약(충전 종료 요약 기록) — Pleos Widget처럼 제목·정보 영역

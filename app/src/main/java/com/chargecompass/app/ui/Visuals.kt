@@ -261,7 +261,7 @@ fun WeekBars(values: List<Int>, labels: List<String>, modifier: Modifier = Modif
                     T(compactWon(v), ViaType.labelS.copy(fontWeight = if (today) FontWeight.Bold else FontWeight.Normal), if (today) c.activeText.c() else c.text2.c())
                     val barH = (height.value * v / max).coerceAtLeast(10f).dp
                     Box(Modifier.widthIn(max = maxBarWidth).fillMaxWidth().height(barH).clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 4.dp, bottomEnd = 4.dp))
-                        .background(if (today) c.active.c() else c.active.c().copy(alpha = 0.45f)))
+                        .background(if (today) c.active.c() else c.active.c().copy(alpha = if (c.isDark) 0.7f else 0.45f)))
                 } else {
                     Canvas(Modifier.widthIn(max = maxBarWidth).fillMaxWidth().height(6.dp)) {
                         drawLine(c.line.c(), Offset(0f, size.height / 2), Offset(size.width, size.height / 2), 3.dp.toPx(), StrokeCap.Round,

@@ -63,8 +63,16 @@ fun WeeklyMissionsCard(c: AppContainer) {
             }
         }
         DashedDivider()
-        // 리서치 돌파: 미션 스탬프 7개를 모으면 큰 보상
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        // 리서치 돌파: 미션 스탬프 7개를 모으면 큰 보상. 방금(10분 안) 돌파했으면 이 줄에서 작게 상자가 열린다
+        // (게임처럼 보이지 않도록 따로 큰 카드나 축하 효과는 쓰지 않는다)
+        val now = c.demoClock.now()
+        val recent = entries.lastOrNull { it.kind == com.chargecompass.core.rewards.RewardKind.BREAKTHROUGH }
+            ?.takeIf { java.time.Duration.between(it.at, now).abs() <= java.time.Duration.ofMinutes(10) }
+        if (recent != null) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            ChestOpening(recent.at, 96.dp)
+            T("리서치 돌파!", ViaType.titleS, col.event.c())
+            CoinAmount("+${recent.points}P", ViaType.titleS, col.activeText.c(), coin = 36.dp)
+        } else Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             Prop(com.chargecompass.app.R.drawable.prop_chest_closed, 64.dp)
             T("리서치 돌파", ViaType.labelM.copy(fontWeight = FontWeight.Bold), modifier = Modifier.width(120.dp))
             repeat(Defaults.MISSIONS_PER_BREAKTHROUGH) { i ->
@@ -124,37 +132,6 @@ fun OperatorDayCard(c: AppContainer, day: OperatorDay) {
 @Composable
 private fun CheckMark(color: Color) = LineIcon(20.dp, color) { s ->
     listOf(androidx.compose.ui.graphics.Path().apply { moveTo(5 * s, 12.5f * s); lineTo(10 * s, 17 * s); lineTo(19 * s, 7 * s) })
-}
-
-/** 리서치 돌파 직후(10분 안): 열린 상자와 +100P. 정차 중 화면이라 상자가 톡 커지고 짧은 축하 효과. */
-@Composable
-fun BreakthroughCard(c: AppContainer) {
-    val entries by c.ledger.entries.collectAsState()
-    val now = c.demoClock.now()
-    val last = entries.lastOrNull { it.kind == com.chargecompass.core.rewards.RewardKind.BREAKTHROUGH } ?: return
-    var dismissed by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
-    if (dismissed == last.at.toString() || java.time.Duration.between(last.at, now).abs() > java.time.Duration.ofMinutes(10)) return
-    val col = colors
-    val pop = androidx.compose.runtime.remember(last.at) { androidx.compose.animation.core.Animatable(0.5f) }
-    androidx.compose.runtime.LaunchedEffect(last.at) {
-        pop.animateTo(1f, androidx.compose.animation.core.spring(dampingRatio = androidx.compose.animation.core.Spring.DampingRatioMediumBouncy, stiffness = androidx.compose.animation.core.Spring.StiffnessLow))
-    }
-    Box {
-        ViaCard(padding = 36.dp, highlight = col.event.c()) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(36.dp)) {
-                ChestOpening(last.at, 200.dp, Modifier.scale(pop.value))
-                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    T("리서치 돌파!", ViaType.titleL, col.event.c())
-                    T("주간 미션 스탬프 ${Defaults.MISSIONS_PER_BREAKTHROUGH}개를 모았어요", ViaType.bodyM, col.text2.c())
-                    CoinAmount("+${last.points}P", ViaType.headline, col.activeText.c(), coin = 64.dp)
-                }
-                Box(Modifier.size(64.dp).clip(CircleShape).pressable { dismissed = last.at.toString() }, contentAlignment = Alignment.Center) {
-                    CloseIcon(color = col.text3.c())
-                }
-            }
-        }
-        ConfettiBurst(last.at, Modifier.matchParentSize())
-    }
 }
 
 /** 리서치 돌파 상자가 열리는 6장면(Blender 렌더, 같은 구도). */

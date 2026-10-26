@@ -316,4 +316,29 @@ class RecommendationCoordinatorTest {
         assertEquals(listOf("st-yangjae-chaevi", "st-banpo-kepco"), shownStationIds(RecoState.AwaitingTouch(1, top[0], top, 10.0)))
         assertEquals(null, shownStationIds(RecoState.Idle))
     }
+
+    @Test
+    fun `추천을 받은 뒤 충전해서 배터리가 넉넉해지면 추천을 내린다`() = runTest(UnconfinedTestDispatcher()) {
+        val voice = MockVoiceGateway()
+        val env = Env(voice = voice)
+        val c = start(env)
+        env.vehicle.setSoc(15)
+        env.navi.setRoute(route)
+        assertIs<RecoState.AwaitingTouch>(c.state.value)
+        env.vehicle.setSoc(80)   // 다른 곳에서 충전했거나 추천 충전소에서 충전을 마쳤다
+        val s = c.state.value
+        assertIs<RecoState.Enough>(s)
+        assertTrue(s.arrivalSoc > 15)
+        assertEquals(1, voice.asked.size)   // 다시 묻지 않는다
+    }
+
+    @Test
+    fun `주행 중 배터리가 조금씩 줄어도 추천은 그대로다`() = runTest(UnconfinedTestDispatcher()) {
+        val env = Env()
+        val c = start(env)
+        env.vehicle.setSoc(15)
+        env.navi.setRoute(route)
+        env.vehicle.setSoc(14)
+        assertIs<RecoState.AwaitingTouch>(c.state.value)
+    }
 }

@@ -98,12 +98,19 @@ fun StampBook(c: AppContainer) {
         Dex.regions.forEach { r -> ChoiceChip("${r.label} ${Dex.progress(dex, r.id).let { (g, t) -> "$g/$t" }}", region == r.id) { region = r.id } }
     }
 
-    FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(20.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        dex.filter { region == null || it.station.region == region }.forEach { e ->
-            val at = stampedAt[e.station.id]
-            // 방금(2분 안에) 등록한 곳은 톡 커지며 나타난다
-            val fresh = at != null && Duration.between(at, now).abs() < Duration.ofMinutes(2)
-            DexCard(c, e, fresh, flatBadges, Modifier.width(if (isWide) 260.dp else 230.dp), limited = e.station.id in limited)
+    // 창 폭에 맞춰 열 수를 정하고 카드가 한 줄을 꽉 채우게(넓은 창에서 오른쪽이 비지 않도록)
+    androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val gap = 20.dp
+        val cols = ((maxWidth + gap) / (230.dp + gap)).toInt().coerceAtLeast(1)
+        // 소수점 반올림으로 한 줄 폭을 넘으면 마지막 카드가 다음 줄로 밀리므로 1dp 여유
+        val cardW = (maxWidth - gap * (cols - 1)) / cols - 1.dp
+        FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(gap), verticalArrangement = Arrangement.spacedBy(gap)) {
+            dex.filter { region == null || it.station.region == region }.forEach { e ->
+                val at = stampedAt[e.station.id]
+                // 방금(2분 안에) 등록한 곳은 톡 커지며 나타난다
+                val fresh = at != null && Duration.between(at, now).abs() < Duration.ofMinutes(2)
+                DexCard(c, e, fresh, flatBadges, Modifier.width(cardW), limited = e.station.id in limited)
+            }
         }
     }
 }
@@ -127,7 +134,8 @@ private fun DexCard(c: AppContainer, e: DexEntry, fresh: Boolean, flat: Boolean,
                     medal = (if (limited) eventMedalRes(st.operatorId) else null) ?: medalRes(st.operatorId, e.tier ?: MedalTier.BRONZE))
                 // 발견: 흑백으로 어둡게 바랜 메달(포켓몬 도감의 그림자처럼 모양만 보인다)
                 e.state == DexState.SEEN -> medalRes(st.operatorId, MedalTier.BRONZE)?.let {
-                    Image(painterResource(it), "발견한 충전소", Modifier.size(120.dp), alpha = 0.7f, colorFilter = silhouette)
+                    // 다크 모드에서는 어두운 카드에 묻히지 않게 더 밝은 실루엣
+                    Image(painterResource(it), "발견한 충전소", Modifier.size(120.dp), alpha = if (col.isDark) 0.95f else 0.7f, colorFilter = if (col.isDark) silhouetteDark else silhouette)
                 } ?: StationBadge(initial, badgeColor(st.operatorId), false, size = 112.dp)
                 else -> Image(painterResource(R.drawable.medal_locked), "못 본 충전소", Modifier.size(120.dp), alpha = 0.4f)
             }
@@ -144,6 +152,9 @@ private fun DexCard(c: AppContainer, e: DexEntry, fresh: Boolean, flat: Boolean,
         T(line, ViaType.labelS, col.text2.c(), maxLines = 2)
     }
 }
+
+/** 다크 모드용: 채도만 빼고 밝기는 거의 그대로. */
+private val silhouetteDark = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f); timesAssign(ColorMatrix().apply { setToScale(0.9f, 0.9f, 0.95f, 1f) }) })
 
 /** 채도를 빼고 밝기를 낮춘 색 필터(발견만 한 충전소의 메달). */
 private val silhouette = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f); timesAssign(ColorMatrix().apply { setToScale(0.55f, 0.55f, 0.6f, 1f) }) })
@@ -207,10 +218,11 @@ fun PointsExchange(c: AppContainer) {
         val ready = balance >= coupon.cost
         TicketCard(accent = if (ready) col.active.c() else col.line.c()) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                couponTicketRes(coupon.operatorId)?.let { Prop(it, 120.dp, alpha = if (ready) 1f else 0.5f) }
+                // 티켓 이미지는 가로로 긴 비율 그대로(폭만 정한다)
+                couponTicketRes(coupon.operatorId)?.let { Image(painterResource(it), null, Modifier.width(150.dp), alpha = if (ready) 1f else 0.5f) }
                 Column(Modifier.weight(0.72f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     T(coupon.name, ViaType.titleS, maxLines = 1)
-                    T(if (ready) "포인트로 받을 수 있어요 · 제휴 준비 중" else "${coupon.cost - balance}P 더 모으면 받을 수 있어요", ViaType.labelM, col.text3.c())
+                    T(if (ready) "받을 수 있어요 · 제휴 준비 중" else "${coupon.cost - balance}P 더 모으면 받을 수 있어요", ViaType.labelM, col.text3.c(), maxLines = 1)
                 }
                 T("${coupon.cost}P", ViaType.titleM, if (ready) col.activeText.c() else col.text3.c(), Modifier.weight(0.28f), align = TextAlign.Center)
             }

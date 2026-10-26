@@ -84,7 +84,10 @@ class RecommendationCoordinator(
             _state.value = RecoState.Idle
             return
         }
-        if (route.routeId == handledRouteId) return
+        if (route.routeId == handledRouteId) {
+            dropIfCharged(route, energy)
+            return
+        }
         if (question != null) cancelQuestion()
         // 이전 경로의 추천이 화면에 남지 않게, 새 경로를 계산하기 전에 비운다
         _state.value = RecoState.Idle
@@ -110,6 +113,20 @@ class RecommendationCoordinator(
             return
         }
         askByVoice(route.routeId, arrival, ranked)
+    }
+
+    /**
+     * 같은 경로에서 배터리가 늘어(충전) 이제 충분하면, 아직 넣지 않은 추천을 내린다.
+     * 주행 중 배터리가 줄어드는 쪽으로는 다시 판단하지 않는다(지나친 충전소를 추천하지 않도록).
+     */
+    private fun dropIfCharged(route: RouteSnapshot, energy: EnergyState) {
+        val s = _state.value
+        if (s !is RecoState.AwaitingTouch && s !is RecoState.Suggested && s !is RecoState.NoneAvailable) return
+        val car = vehicleModel() ?: return
+        val arrival = ArrivalCalculator.socAfter(energy, car, route.remainingKm) ?: return
+        if (ArrivalCalculator.needsCharge(arrival)) return
+        cancelQuestion()
+        _state.value = RecoState.Enough(arrival)
     }
 
     private fun askByVoice(routeId: Long, arrival: Double, top: List<RankedStation>) {
