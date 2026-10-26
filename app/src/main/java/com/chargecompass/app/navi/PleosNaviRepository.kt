@@ -14,7 +14,6 @@ import android.content.Context
 import android.util.Log
 import com.chargecompass.core.model.Station
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withTimeoutOrNull
 
@@ -24,22 +23,30 @@ import kotlinx.coroutines.withTimeoutOrNull
  */
 class PleosNaviRepository(context: Context) : NaviRepository {
     private val navi = NaviHelper(context.applicationContext)
-    private val _route = MutableStateFlow<RouteSnapshot?>(null)
-    override val route: StateFlow<RouteSnapshot?> = _route
-
-    private var nextRouteId = 1L
+    private val tracker = RouteTracker(processCache)
+    override val route: StateFlow<RouteSnapshot?> = tracker.route
+    override val waitingForRoute: StateFlow<Boolean> = tracker.waitingForRoute
     @Volatile private var pendingWaypoint: CompletableDeferred<Boolean>? = null
 
     private val listener = object : NaviHelperEventListener {
-        override fun onRouteStarted(routeStartInfo: RouteStartInfo) = onRoute(routeStartInfo)
-
-        override fun onRouteStateInfo(routeStateInfo: RouteStateInfo) {
-            if (routeStateInfo.naviMode != NaviMode.ROUTE_GUIDING) _route.value = null
+        override fun onRouteStarted(routeStartInfo: RouteStartInfo) {
+            Log.d(TAG, "경로 시작: ${routeStartInfo.name} ${routeStartInfo.distance}m")
+            tracker.onStarted(routeStartInfo.name, routeStartInfo.distance.toInt(), routeStartInfo.duration.toInt())
         }
 
-        override fun onDestinationChanged() = navi.getRouteStateInfo()
+        // 연결 직후 getRouteStateInfo()의 응답도 여기로 온다: 이미 안내 중이면 마지막 경로를 되살린다
+        override fun onRouteStateInfo(routeStateInfo: RouteStateInfo) {
+            Log.d(TAG, "경로 상태: ${routeStateInfo.naviMode} routing=${routeStateInfo.isRouting}")
+            tracker.onState(guiding = routeStateInfo.naviMode == NaviMode.ROUTE_GUIDING)
+        }
+
+        override fun onDestinationChanged() {
+            Log.d(TAG, "목적지 바뀜")
+            navi.getRouteStateInfo()
+        }
 
         override fun onWaypointChanged(waypointChangedInfo: WaypointChangedInfo) {
+            Log.d(TAG, "경유지 바뀜")
             pendingWaypoint?.complete(true)
         }
 
@@ -64,13 +71,6 @@ class PleosNaviRepository(context: Context) : NaviRepository {
         navi.release()
     }
 
-    /** 목적지 이름이 같으면 같은 경로로 본다(재탐색·경유지 추가로 routeId가 바뀌면 추천을 다시 묻게 된다). */
-    private fun onRoute(info: RouteStartInfo) {
-        val current = _route.value
-        val id = if (current != null && current.destinationName == info.name) current.routeId else nextRouteId++
-        _route.value = RouteSnapshot(id, info.name, info.distance / 1000.0, info.duration)
-    }
-
     /** 시연용(디버그 패널): 서울역으로 경로를 요청한다. 실제 사용자는 내비에서 목적지를 정한다. */
     fun requestDemoRoute() {
         navi.requestRoute(RouteInfo(latitude = 37.5547, longitude = 126.9707, poiName = "서울역", poiId = "0", address = "서울특별시 용산구 한강대로 405", poiSubId = "0"))
@@ -78,6 +78,7 @@ class PleosNaviRepository(context: Context) : NaviRepository {
 
     override suspend fun addChargingStop(station: Station): StopResult {
         val done = CompletableDeferred<Boolean>().also { pendingWaypoint = it }
+        tracker.expectReroute()
         navi.addWaypoint(
             RequestWaypointInfo(
                 latitude = station.lat,
@@ -96,6 +97,9 @@ class PleosNaviRepository(context: Context) : NaviRepository {
 
     companion object {
         private const val TAG = "PleosNavi"
-        const val WAYPOINT_TIMEOUT_MS = 5_000L
+        /** 앱 프로세스 동안 이어지는 마지막 경로(시연 모드 전환으로 저장소를 새로 만들어도 남는다). */
+        private val processCache = RouteTracker.Cache()
+        // 에뮬레이터에서 경유지 추가 확인 콜백이 요청 뒤 약 6.4초에 왔다(재탐색 포함) → 넉넉히 12초
+        const val WAYPOINT_TIMEOUT_MS = 12_000L
     }
 }

@@ -341,4 +341,61 @@ class RecommendationCoordinatorTest {
         env.vehicle.setSoc(14)
         assertIs<RecoState.AwaitingTouch>(c.state.value)
     }
+
+    /** 질문하면 [answer]가 올 때까지 기다리는 음성. */
+    private class HeldVoice(val answer: CompletableDeferred<Answer>) : VoiceGateway {
+        override val sttAvailable = true
+        val asked = mutableListOf<String>()
+        override suspend fun speak(text: String) = Unit
+        override suspend fun ask(question: String, timeoutMs: Long): Answer { asked += question; return answer.await() }
+        override fun start() = Unit
+        override fun stop() = Unit
+    }
+
+    @Test
+    fun `음성 질문 중에 화면에서 추가하면 질문을 거두어 '응'이 와도 두 번 넣지 않는다`() = runTest(UnconfinedTestDispatcher()) {
+        val answer = CompletableDeferred<Answer>()
+        val env = Env(voice = HeldVoice(answer))
+        val c = start(env)
+        env.vehicle.setSoc(15)
+        env.navi.setRoute(route)
+        val s = c.state.value
+        assertIs<RecoState.Suggested>(s)
+        c.confirmByTouch(s.top.first().station.id)
+        answer.complete(Answer.YES)
+        assertEquals(1, env.navi.addedStops.size)
+        assertIs<RecoState.Added>(c.state.value)
+    }
+
+    @Test
+    fun `음성 질문 중에 화면에서 추가했으면 질문 시간이 끝나도 Added가 유지된다`() = runTest(UnconfinedTestDispatcher()) {
+        val answer = CompletableDeferred<Answer>()
+        val env = Env(voice = HeldVoice(answer))
+        val c = start(env)
+        env.vehicle.setSoc(15)
+        env.navi.setRoute(route)
+        c.confirmByTouch((c.state.value as RecoState.Suggested).top.first().station.id)
+        answer.complete(Answer.TIMEOUT)
+        assertIs<RecoState.Added>(c.state.value)
+    }
+
+    @Test
+    fun `터치로 넣는 중에 목적지가 바뀌면 끝난 결과로 새 경로 상태를 덮지 않는다`() = runTest(UnconfinedTestDispatcher()) {
+        val gate = CompletableDeferred<Unit>()
+        val navi = object : com.chargecompass.app.navi.NaviRepository {
+            override val route = kotlinx.coroutines.flow.MutableStateFlow<RouteSnapshot?>(null)
+            override suspend fun addChargingStop(station: com.chargecompass.core.model.Station): StopResult { gate.await(); return StopResult.WAYPOINT_ADDED }
+            override fun start() = Unit
+            override fun stop() = Unit
+        }
+        val vehicle = MockVehicleRepository()
+        val c = RecommendationCoordinator(vehicle, navi, MockVoiceGateway(sttAvailable = false), data, { car }, { setOf("m-chaevi") }, backgroundScope)
+        vehicle.setSoc(15)
+        navi.route.value = route
+        c.confirmByTouch((c.state.value as RecoState.AwaitingTouch).choice.station.id)
+        vehicle.setSoc(80)
+        navi.route.value = RouteSnapshot(2, "강남역", 10.0, 900)
+        gate.complete(Unit)
+        assertIs<RecoState.Enough>(c.state.value)
+    }
 }

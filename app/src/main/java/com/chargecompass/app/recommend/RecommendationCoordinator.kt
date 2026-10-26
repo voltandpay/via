@@ -73,8 +73,11 @@ class RecommendationCoordinator(
             is RecoState.Added -> s.station.takeIf { s.result == StopResult.FAILED && currentRoute != null && it.station.id == stationId }
             else -> null
         } ?: return
+        // 음성 질문이 진행 중이면 거둔다(화면에서 넣었는데 "응"이 와서 한 번 더 넣거나, 시간 초과로 상태가 되돌아가지 않게)
+        cancelQuestion()
         _state.value = RecoState.Adding(choice)
-        scope.launch { add(choice) }
+        // 터치로 시작한 추가도 question으로 추적해, 목적지가 바뀌면 함께 취소된다
+        question = scope.launch { add(choice, currentRoute!!) }
     }
 
     private fun onUpdate(route: RouteSnapshot?, energy: EnergyState) {
@@ -151,15 +154,17 @@ class RecommendationCoordinator(
             return
         }
         when (voice.ask("$info 경유지로 추가할까요?")) {
-            Answer.YES -> add(best)
+            Answer.YES -> add(best, routeId)
             Answer.NO -> Unit
             Answer.UNKNOWN, Answer.TIMEOUT -> _state.value = RecoState.AwaitingTouch(routeId, best, top, arrival)
         }
     }
 
-    private suspend fun add(choice: RankedStation) {
+    private suspend fun add(choice: RankedStation, routeId: Long) {
         _state.value = RecoState.Adding(choice)
         val result = navi.addChargingStop(choice.station)
+        // 넣는 사이 경로가 바뀌었으면 새 경로의 상태를 이전 경로 결과로 덮지 않는다
+        if (navi.route.value?.routeId != routeId) return
         _state.value = RecoState.Added(choice, result)
         // 추가되면 내비 앱이 앞으로 나와 우리 화면이 가려지므로, 결과는 음성으로 알린다
         voice.speak(

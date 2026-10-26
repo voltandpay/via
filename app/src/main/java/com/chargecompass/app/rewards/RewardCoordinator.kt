@@ -80,12 +80,17 @@ class RewardCoordinator(
     }
 
     private suspend fun onStarted(session: ChargeSession) {
+        // 같은 세션에서 충전소를 늦게 찾아 Started가 다시 오면, 처음 Started에서 받은 것(미션·시즌)에 더한다
+        val sameSession = _active.value?.startedAt == session.startedAt
+        val earlier = if (sameSession) _sessionEarned.value else emptyList()
         _active.value = session
+        val lastCharge = session.stationId?.let { ledger.lastChargeAt(it, session.startedAt) }
         val charged = RewardEngine.onChargeStarted(session, data.events, ledger, data.stations, data.operatorDays)
         ledger.append(charged)
         val earned = charged + checkMissions(session.startedAt, speak = false)
-        // 충전소를 늦게 찾아 Started가 다시 오면, 처음 Started(충전소 없음)의 빈 적립분을 이것으로 바꾼다
-        _sessionEarned.value = earned
+        // 쿨다운에 걸려 새로 받은 충전 보상이 없으면(앱 재시작·플러그 다시 꽂기) 그 방문에서 이미 받은 적립분을 다시 보여 준다
+        val resumed = if (charged.isEmpty() && lastCharge != null) visitEntries(session.stationId!!, lastCharge) else emptyList()
+        _sessionEarned.value = (earlier + resumed + earned).distinct()
         val region = earned.firstOrNull { it.kind == RewardKind.REGION_COMPLETE }
         when {
             region != null -> voice.speak("${Dex.regions.firstOrNull { it.id == region.regionId }?.label ?: "지역"} 도감 완성! 보너스 ${region.points}포인트")
@@ -93,6 +98,10 @@ class RewardCoordinator(
         }
         speakMissions(earned)
     }
+
+    /** [stationId] 방문(마지막 충전 보상 시각부터)에 쌓인 적립분: 그 충전소 항목과 같은 시각의 미션·시즌 항목. */
+    private fun visitEntries(stationId: String, since: java.time.LocalDateTime): List<RewardEntry> =
+        ledger.entries.value.filter { e -> !e.at.isBefore(since) && (e.stationId == stationId || e.stationId == null && e.at == since) }
 
     /** 이번 주 새로 달성한 미션·리서치 돌파와 시즌 단계 보상을 적립하고 돌려준다. */
     private suspend fun checkMissions(at: java.time.LocalDateTime, speak: Boolean = true): List<RewardEntry> {

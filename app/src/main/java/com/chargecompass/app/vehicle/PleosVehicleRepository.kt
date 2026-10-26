@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeoutOrNull
 import java.time.LocalDateTime
 import kotlin.coroutines.resume
 
@@ -90,8 +91,12 @@ class PleosVehicleRepository(
         vehicle.getGear().registerGearSelection(gearListener)
         startLocation()
         pollJob = scope.launch {
+            var failures = 0
             while (isActive) {
-                val on = chargeSwitch()
+                val read = chargeSwitch()
+                failures = if (read == null) failures + 1 else 0
+                // 충전 상태를 1분 넘게 못 읽으면 충전이 끝난 것으로 본다(충전 화면에 갇히지 않게)
+                val on = read ?: if (failures * CHARGE_POLL_MS > 60_000L) false else null
                 if (on != null) {
                     val loc = lastLocation
                     _charging.emit(ChargingSample(clock(), on, _energy.value.socPct, loc?.first, loc?.second))
@@ -113,18 +118,27 @@ class PleosVehicleRepository(
         vehicle.release()
     }
 
-    override suspend fun vin(): String? = suspendCancellableCoroutine { cont ->
-        vehicle.getCarInfo().getVINInfo(
-            onComplete = { cont.resume(it?.trim('"')?.takeIf { v -> v.isNotBlank() && v != "invalid" }) },
-            onFailed = { cont.resume(null) },
-        )
+    override suspend fun vin(): String? = withTimeoutOrNull(SDK_CALL_TIMEOUT_MS) {
+        suspendCancellableCoroutine { cont ->
+            vehicle.getCarInfo().getVINInfo(
+                onComplete = { cont.resumeOnce(it?.trim('"')?.takeIf { v -> v.isNotBlank() && v != "invalid" }) },
+                onFailed = { cont.resumeOnce(null) },
+            )
+        }
     }
 
-    private suspend fun chargeSwitch(): Boolean? = suspendCancellableCoroutine { cont ->
-        vehicle.getEvBattery().getEvChargeSwitchState(
-            onComplete = { cont.resume(it) },
-            onFailed = { cont.resume(null) },
-        )
+    /** SDK가 콜백을 안 부르면 폴링이 멈추지 않게 시간 제한을 두고, 두 번 부르면 무시한다. */
+    private suspend fun chargeSwitch(): Boolean? = withTimeoutOrNull(SDK_CALL_TIMEOUT_MS) {
+        suspendCancellableCoroutine { cont ->
+            vehicle.getEvBattery().getEvChargeSwitchState(
+                onComplete = { cont.resumeOnce(it) },
+                onFailed = { cont.resumeOnce(null) },
+            )
+        }
+    }
+
+    private fun <T> kotlinx.coroutines.CancellableContinuation<T>.resumeOnce(value: T) {
+        if (isActive) resume(value)
     }
 
     private fun onGear(gear: VehicleGear?) {
@@ -142,7 +156,8 @@ class PleosVehicleRepository(
         tripStart = null
         val km = (odometerKm ?: return) - startKm
         if (km <= 0f) return
-        val usedKwh = if (startWh != null && energyWh != null) (startWh - energyWh!!) / 1000f else null
+        val endWh = energyWh   // 리스너가 다른 스레드에서 바꿀 수 있어 한 번만 읽는다
+        val usedKwh = if (startWh != null && endWh != null) (startWh - endWh) / 1000f else null
         val efficiency = _energy.value.efficiencyKmPerKwh
             ?: usedKwh?.takeIf { it > 0f }?.let { (km / it).toDouble() }
         _trips.tryEmit(TripSummary(km.toDouble(), efficiency, clock()))
@@ -185,5 +200,6 @@ class PleosVehicleRepository(
     companion object {
         private const val TAG = "PleosVehicle"
         const val CHARGE_POLL_MS = 5_000L
+        private const val SDK_CALL_TIMEOUT_MS = 3_000L
     }
 }

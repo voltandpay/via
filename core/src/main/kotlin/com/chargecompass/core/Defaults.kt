@@ -14,6 +14,8 @@ object Defaults {
     const val POINTS_NEW_STAMP = 20
     const val POINTS_CHARGE = 10
     const val POINTS_REGION_COMPLETE = 50
+    /** 같은 충전소에서 이 시간 안에 다시 시작한 충전은 같은 방문(보상 한 번). */
+    const val CHARGE_REWARD_COOLDOWN_MIN = 120L
     const val POINTS_MISSION = 15
     const val POINTS_BREAKTHROUGH = 100
     const val MISSIONS_PER_BREAKTHROUGH = 7

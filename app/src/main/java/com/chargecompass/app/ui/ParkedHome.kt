@@ -216,7 +216,7 @@ private fun HomeTab(c: AppContainer) {
         is RecoState.Added -> if (s.result != StopResult.FAILED) ViaCard { T("경유지로 추가한 충전소", ViaType.labelM, col.text3.c()); T(s.station.station.name, ViaType.titleM, col.activeText.c()) }
         is RecoState.Enough -> ViaCard { T("지금 경로는 충전 없이 도착할 수 있어요", ViaType.bodyL) }
         RecoState.NoneAvailable -> ViaCard { T("경로 위에 쓸 수 있는 충전소가 없어요", ViaType.bodyL, col.neg.c()) }
-        RecoState.Idle -> IdleGuide()
+        RecoState.Idle -> IdleGuide(c.navi.waitingForRoute.collectAsState().value)
         else -> Unit
     }
 }
@@ -302,12 +302,14 @@ fun RouteBandFor(c: AppContainer, top: List<RankedStation>) {
 /** 경로가 없을 때: 그림과 세 단계 안내. */
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-private fun IdleGuide() {
+private fun IdleGuide(waitingForRoute: Boolean = false) {
     val col = colors
     ViaCard(padding = 36.dp) {
         Adaptive(Arrangement.spacedBy(40.dp)) { first ->
             Prop(com.chargecompass.app.R.drawable.prop_symbol, 150.dp)
             Column(first, verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                // 내비는 안내 중인데 앱이 경로 정보를 못 받았다(앱보다 내비 안내를 먼저 시작한 경우)
+                if (waitingForRoute) T("내비가 안내 중이에요. 내비에서 경로를 한 번 다시 시작하면 바로 추천해요", ViaType.bodyM.copy(fontWeight = FontWeight.Bold), col.pos.c())
                 T("목적지를 정하면 경로 위 가장 싼 충전소를 찾아드려요", ViaType.bodyL.copy(fontWeight = FontWeight.Bold))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     listOf("내비에서 목적지 설정", "내 멤버십 기준 최저가 추천", "경유지로 한 번에 추가").forEachIndexed { i, step ->

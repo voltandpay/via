@@ -31,6 +31,9 @@ class MainActivity : ComponentActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         (app.container.vehicle as? PleosVehicleRepository)?.retryLocation()
+        // 마이크를 지금 허용했으면 음성 인식도 다시 붙인다(앱을 다시 켜지 않아도 음성으로 대답할 수 있게)
+        val mic = permissions.indexOf(Manifest.permission.RECORD_AUDIO)
+        if (mic >= 0 && grantResults.getOrNull(mic) == PackageManager.PERMISSION_GRANTED) app.container.voice.retrySpeechToText()
     }
 
     private companion object {
