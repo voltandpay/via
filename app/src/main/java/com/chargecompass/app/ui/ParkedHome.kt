@@ -1,5 +1,11 @@
 package com.chargecompass.app.ui
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -47,17 +53,29 @@ fun ParkedHome(c: AppContainer) {
         return
     }
     Column(Modifier.fillMaxSize()) {
-        PageNavigation("정차 중", tabs, tab, onSelect = { tab = it }, onSettings = { settings = true })
-        Column(
-            Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 48.dp, vertical = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(28.dp),
-        ) {
-            when (tab) {
-                0 -> HomeTab(c)
-                1 -> CompareScreen(c)
-                2 -> StampBook(c)
-                3 -> EventsScreen(c)
-                else -> PointsExchange(c)
+        PageNavigation(
+            "정차 중", tabs, tab, onSelect = { tab = it }, onSettings = { settings = true },
+            icons = listOf({ t -> HomeIcon(color = t) }, { t -> ListIcon(color = t) }, { t -> StampIcon(32.dp, t) }, { t -> CalendarIcon(color = t) }, { t -> TicketIcon(32.dp, t) }),
+        )
+        // 정차 중 화면이라 탭 전환에 짧은 페이드·이동(주행 중 화면에는 애니메이션 없음)
+        AnimatedContent(
+            targetState = tab, modifier = Modifier.weight(1f).fillMaxWidth(), label = "tab",
+            transitionSpec = {
+                val dir = if (targetState > initialState) 1 else -1
+                (fadeIn(tween(220)) + slideInHorizontally(tween(220)) { it / 12 * dir }) togetherWith fadeOut(tween(120))
+            },
+        ) { t ->
+            Column(
+                Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 48.dp, vertical = 32.dp),
+                verticalArrangement = Arrangement.spacedBy(28.dp),
+            ) {
+                when (t) {
+                    0 -> HomeTab(c)
+                    1 -> CompareScreen(c)
+                    2 -> StampBook(c)
+                    3 -> EventsScreen(c)
+                    else -> PointsExchange(c)
+                }
             }
         }
     }
@@ -130,24 +148,39 @@ private fun HomeTab(c: AppContainer) {
             if (event == null) T("진행 중인 이벤트가 없어요", ViaType.bodyM, col.text2.c()) else {
                 T(c.data.stations.firstOrNull { it.id == event.stationId }?.name.orEmpty(), ViaType.titleS)
                 T("${event.startHour}시 ~ ${event.endHour}시 충전 시작 시 포인트 ${event.multiplier}배", ViaType.bodyM, col.text2.c())
-                T("한산한 시간에 충전하면 더 드려요", ViaType.labelM, col.text3.c())
+                val now = c.demoClock.now()
+                DayTimeline(event.startHour, event.endHour, (now.hour * 60 + now.minute) / 1440f, col.event.c())
             }
         }
         it(Modifier) {
             val stamped = entries.filter { e -> e.kind == RewardKind.NEW_STAMP }.mapNotNull { e -> e.stationId }.toSet()
             T("충전소 도감", ViaType.labelM, col.text3.c())
             T("${stamped.size} / ${c.data.stations.size}곳", ViaType.headline)
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 c.data.stations.forEach { st ->
-                    val got = st.id in stamped
-                    Box(
-                        Modifier.weight(1f).aspectRatio(1f).clip(CircleShape)
-                            .then(if (got) Modifier.background(col.active.c()) else Modifier.border(3.dp, col.line.c(), CircleShape)),
-                    )
+                    Box(Modifier.weight(1f).aspectRatio(1f), contentAlignment = Alignment.Center) {
+                        val op = c.data.memberships.firstOrNull { it.operatorId == st.operatorId }
+                        StationBadge(op?.name?.take(1) ?: "?", badgeColor(st.operatorId), st.id in stamped, size = 40.dp)
+                    }
                 }
             }
             T("처음 충전한 곳마다 스탬프 +20P", ViaType.labelM, col.text2.c())
         }
+    }
+
+    // 최근 7일 절약(충전 종료 요약 기록) — Pleos Widget처럼 제목·정보 영역
+    val summaries by c.summaries.summaries.collectAsState()
+    val today = c.demoClock.now().toLocalDate()
+    val week = dailySavings(summaries, today)
+    ViaCard(padding = 36.dp) {
+        Row(verticalAlignment = Alignment.Bottom) {
+            Column(Modifier.weight(1f)) {
+                T("최근 7일 절약", ViaType.labelM, col.text3.c())
+                T(won(week.sum()), ViaType.titleM, col.activeText.c())
+            }
+            T("충전이 끝나면 자동으로 쌓여요", ViaType.labelM, col.text3.c())
+        }
+        WeekBars(week, (6 downTo 0).map { back -> if (back == 0) "오늘" else today.minusDays(back.toLong()).dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.KOREAN) }, height = if (isWide) 140.dp else 110.dp)
     }
 
     when (val s = reco) {

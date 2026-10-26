@@ -93,8 +93,13 @@ val colors: ViaColors @Composable get() = LocalViaColors.current
 val isWide: Boolean @Composable get() = LocalWindowLayout.current == WindowLayout.WIDE
 
 @Composable
-fun T(text: String, style: TextStyle, color: Color = colors.text.c(), modifier: Modifier = Modifier) =
-    Text(text, modifier = modifier, style = style, color = color)
+fun T(
+    text: String, style: TextStyle, color: Color = colors.text.c(), modifier: Modifier = Modifier,
+    maxLines: Int = Int.MAX_VALUE, align: androidx.compose.ui.text.style.TextAlign? = null,
+) = Text(
+    text, modifier = modifier, style = if (align != null) style.copy(textAlign = align) else style, color = color,
+    maxLines = maxLines, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+)
 
 /** 카드: 라이트에서는 그림자 Level 1, 다크에서는 면 색으로만 구분. */
 @Composable
@@ -110,6 +115,7 @@ fun ViaCard(
     if (!c.isDark) m = m.shadow(8.dp, shape, ambientColor = Color(0x14000000), spotColor = Color(0x14000000))
     m = m.clip(shape).background(c.card.c())
     if (highlight != null) m = m.border(3.dp, highlight, shape)
+    else if (c.isDark) m = m.border(1.dp, Color.White.copy(alpha = 0.08f), shape)
     Column(m.padding(padding), verticalArrangement = Arrangement.spacedBy(16.dp), content = content)
 }
 
@@ -191,24 +197,22 @@ fun Bar(fraction: Float, color: Color, modifier: Modifier = Modifier, height: Dp
     )
 }
 
-/** 앱 표식(임시): 파란 바탕에 VIA. 런처 아이콘과 같은 색. */
+/** 앱 표식: VIA 로고 아이콘. */
 @Composable
-fun ViaMark(size: Dp = 56.dp) {
-    Box(Modifier.size(size).clip(RoundedCornerShape(16.dp)).background(Color(0xFF0064FF)), contentAlignment = Alignment.Center) {
-        T("VIA", ViaType.labelS.copy(fontWeight = FontWeight.ExtraBold), Color.White)
-    }
-}
+fun ViaMark(size: Dp = 56.dp) = ViaLogo(size)
 
 /**
  * Pleos Page Navigation + Line 탭. 화면 위쪽에 둔다(아래쪽은 시스템 GNB 자리).
  */
 @Composable
-fun PageNavigation(subtitle: String, tabs: List<String>, selected: Int, onSelect: (Int) -> Unit, onSettings: (() -> Unit)? = null) {
+fun PageNavigation(
+    subtitle: String, tabs: List<String>, selected: Int, onSelect: (Int) -> Unit, onSettings: (() -> Unit)? = null,
+    icons: List<@Composable (Color) -> Unit> = emptyList(),
+) {
     val c = colors
     Column(Modifier.fillMaxWidth().padding(start = 48.dp, end = 48.dp, top = 32.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            ViaMark()
-            T("VIA", ViaType.titleM)
+            ViaWordmark(56.dp)
             T(subtitle, ViaType.labelM, c.text3.c(), Modifier.weight(1f))
             // Page Navigation의 Suffix 자리: 설정
             if (onSettings != null) {
@@ -224,13 +228,17 @@ fun PageNavigation(subtitle: String, tabs: List<String>, selected: Int, onSelect
         ) {
             tabs.forEachIndexed { i, label ->
                 val sel = i == selected
-                T(
-                    label, ViaType.bodyM.copy(fontWeight = if (sel) FontWeight.Bold else FontWeight.Normal),
-                    if (sel) c.text.c() else c.text3.c(),
+                val tint = if (sel) c.text.c() else c.text3.c()
+                // Pleos: 아이콘은 텍스트 라벨과 함께
+                Row(
                     Modifier.pressable(role = Role.Tab) { onSelect(i) }
                         .drawBehind { if (sel) drawLine(c.text.c(), Offset(0f, size.height - 2.dp.toPx()), Offset(size.width, size.height - 2.dp.toPx()), 4.dp.toPx()) }
                         .padding(horizontal = 4.dp, vertical = 20.dp),
-                )
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    icons.getOrNull(i)?.invoke(tint)
+                    T(label, ViaType.bodyM.copy(fontWeight = if (sel) FontWeight.Bold else FontWeight.Normal), tint)
+                }
             }
         }
     }

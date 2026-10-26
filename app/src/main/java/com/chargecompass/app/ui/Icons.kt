@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 
 /** 24 격자 기준 선 아이콘(Pleos: 단순한 Outlined 아이콘). 장식용이라 접근성 이름은 붙이지 않는다. */
 @Composable
-private fun LineIcon(size: Dp, color: Color, draw: (s: Float) -> List<Path>) {
+internal fun LineIcon(size: Dp, color: Color, draw: (s: Float) -> List<Path>) {
     Canvas(Modifier.size(size)) {
         val s = this.size.width / 24f
         val stroke = Stroke(width = 2.2f * s, cap = StrokeCap.Round, join = StrokeJoin.Round)
@@ -115,4 +115,23 @@ fun PinIcon(size: Dp = 48.dp, color: Color) = LineIcon(size, color) { s ->
         },
         Path().apply { addOval(androidx.compose.ui.geometry.Rect(9.5f * s, 7 * s, 14.5f * s, 12 * s)) },
     )
+}
+
+@Composable
+fun HomeIcon(size: Dp = 32.dp, color: Color) = LineIcon(size, color) { s ->
+    listOf(Path().apply { moveTo(4 * s, 11 * s); lineTo(12 * s, 4 * s); lineTo(20 * s, 11 * s); lineTo(20 * s, 20 * s); lineTo(4 * s, 20 * s); close() },
+        Path().apply { moveTo(10 * s, 20 * s); lineTo(10 * s, 14 * s); lineTo(14 * s, 14 * s); lineTo(14 * s, 20 * s) })
+}
+
+@Composable
+fun ListIcon(size: Dp = 32.dp, color: Color) = LineIcon(size, color) { s ->
+    listOf(6f, 12f, 18f).map { y -> Path().apply { moveTo(9 * s, y * s); lineTo(20 * s, y * s) } } +
+        listOf(6f, 12f, 18f).map { y -> Path().apply { moveTo(4 * s, y * s); lineTo(5 * s, y * s) } }
+}
+
+@Composable
+fun CalendarIcon(size: Dp = 32.dp, color: Color) = LineIcon(size, color) { s ->
+    listOf(Path().apply { moveTo(4 * s, 6 * s); lineTo(20 * s, 6 * s); lineTo(20 * s, 20 * s); lineTo(4 * s, 20 * s); close() },
+        Path().apply { moveTo(4 * s, 10 * s); lineTo(20 * s, 10 * s) },
+        Path().apply { moveTo(8 * s, 3 * s); lineTo(8 * s, 7 * s) }, Path().apply { moveTo(16 * s, 3 * s); lineTo(16 * s, 7 * s) })
 }
