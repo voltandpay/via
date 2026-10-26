@@ -95,6 +95,10 @@ fun ChargingScreen(c: AppContainer) {
                                 RewardKind.NEW_STAMP -> Chip("새 스탬프 +${e.points}P", bg = col.activeSoft.c(), fg = col.activeText.c(), bold = true)
                                 RewardKind.EVENT_BONUS -> Chip("이벤트 보너스 +${e.points}P", bg = col.activeSoft.c(), fg = col.activeText.c(), bold = true)
                                 RewardKind.REGION_COMPLETE -> Chip("지역 도감 완성 +${e.points}P", bg = col.activeSoft.c(), fg = col.activeText.c(), bold = true)
+                                RewardKind.OFF_PEAK_BOOST -> Chip("경부하 부스트 +${e.points}P", bg = col.posSoft.c(), fg = col.pos.c(), bold = true)
+                                RewardKind.OPERATOR_DAY -> Chip("사업자 데이 +${e.points}P", bg = col.event.c(), fg = androidx.compose.ui.graphics.Color.White, bold = true)
+                                RewardKind.MISSION -> Chip("주간 미션 +${e.points}P", bg = col.activeSoft.c(), fg = col.activeText.c(), bold = true)
+                                RewardKind.BREAKTHROUGH -> Chip("리서치 돌파 +${e.points}P", bg = col.activeSoft.c(), fg = col.activeText.c(), bold = true)
                                 RewardKind.EFFICIENT_TRIP -> Unit
                             }
                         }

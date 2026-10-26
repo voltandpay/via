@@ -25,13 +25,15 @@ class RewardCoordinatorTest {
     private fun env() = Triple(MockVehicleRepository { now }, InMemoryRewardLedger(), MockVoiceGateway())
 
     @Test
-    fun `새 충전소에서 충전하면 30점과 스탬프 음성`() = runTest(UnconfinedTestDispatcher()) {
+    fun `새 충전소에서 충전하면 30점과 스탬프 음성, 이번 주 첫 등록이면 미션 15점`() = runTest(UnconfinedTestDispatcher()) {
         val (vehicle, ledger, voice) = env()
         val c = RewardCoordinator(vehicle, ledger, data, { car }, voice, backgroundScope)
         vehicle.setLocation(yangjae.lat, yangjae.lng)
         vehicle.setCharging(true)
-        assertEquals(30, ledger.balance(now))
-        assertEquals(listOf("새 스탬프 획득!"), voice.spoken)
+        assertEquals(45, ledger.balance(now))
+        assertEquals(listOf("새 스탬프 획득!", "주간 미션 달성! 새 충전소 1곳 등록"), voice.spoken)
+        // 충전 화면의 "이번 충전으로 받은 포인트"에도 미션이 들어간다
+        assertTrue(c.sessionEarned.value.any { it.kind == RewardKind.MISSION })
         assertNotNull(c.activeSession.value)
     }
 
@@ -44,8 +46,8 @@ class RewardCoordinatorTest {
         now = now.plusMinutes(30); vehicle.setCharging(false)
         now = now.plusMinutes(2); vehicle.setCharging(false)
         now = now.plusHours(3); vehicle.setCharging(true)
-        assertEquals(40, ledger.balance(now))
-        assertEquals(1, voice.spoken.size)
+        assertEquals(55, ledger.balance(now))
+        assertEquals(2, voice.spoken.size)
     }
 
     @Test
@@ -56,7 +58,8 @@ class RewardCoordinatorTest {
         vehicle.setCharging(true)
         now = now.plusSeconds(5); vehicle.setCharging(false)
         now = now.plusSeconds(30); vehicle.setCharging(true)
-        assertEquals(30, ledger.balance(now))
+        assertEquals(45, // 충전 10 + 스탬프 20 + 이번 주 새 충전소 미션 15
+            ledger.balance(now))
         assertNotNull(c.activeSession.value)
     }
 
@@ -106,7 +109,8 @@ class RewardCoordinatorTest {
         vehicle.setLocation(yangjae.lat, yangjae.lng)
         now = now.plusSeconds(5); vehicle.setCharging(true)
         now = now.plusSeconds(5); vehicle.setCharging(true)
-        assertEquals(30, ledger.balance(now))
+        assertEquals(45, // 충전 10 + 스탬프 20 + 이번 주 새 충전소 미션 15
+            ledger.balance(now))
     }
 
     @Test
@@ -133,7 +137,8 @@ class RewardCoordinatorTest {
         assertTrue(c.sessionEarned.value.isEmpty())
         vehicle.setLocation(yangjae.lat, yangjae.lng)
         now = now.plusSeconds(5); vehicle.setCharging(true)
-        assertEquals(30, c.sessionEarned.value.sumOf { it.points })
+        assertEquals(45, // 충전 10 + 스탬프 20 + 이번 주 새 충전소 미션 15
+            c.sessionEarned.value.sumOf { it.points })
         now = now.plusMinutes(10); vehicle.endCharging()
         assertTrue(c.sessionEarned.value.isEmpty())
     }
@@ -156,7 +161,8 @@ class RewardCoordinatorTest {
         assertEquals(19.35, sum.chargedKwh, 0.001)
         assertEquals(5786, sum.costWon)
         assertEquals(4276, sum.savingWon)
-        assertEquals(30, sum.points)
+        assertEquals(45, // 충전 10 + 스탬프 20 + 이번 주 새 충전소 미션 15
+            sum.points)
         c.dismissSummary()
         assertNull(c.lastSummary.value)
     }
@@ -194,6 +200,26 @@ class RewardCoordinatorTest {
         vehicle.setLocation(yangjae.lat, yangjae.lng)
         vehicle.setCharging(true)
         assertTrue(ledger.entries.value.any { it.kind == RewardKind.REGION_COMPLETE && it.regionId == "gangnam" })
-        assertEquals(listOf("강남·서초 도감 완성! 보너스 50포인트"), voice.spoken)
+        assertEquals("강남·서초 도감 완성! 보너스 50포인트", voice.spoken.first())
+    }
+
+    @Test
+    fun `효율 운전 두 번째 트립에서 주간 미션 달성`() = runTest(UnconfinedTestDispatcher()) {
+        val (vehicle, ledger, voice) = env()
+        RewardCoordinator(vehicle, ledger, data, { car }, voice, backgroundScope)
+        vehicle.endTrip(TripSummary(12.0, 5.6, now))
+        assertTrue(ledger.entries.value.none { it.kind == RewardKind.MISSION })
+        vehicle.endTrip(TripSummary(12.0, 5.6, now.plusHours(1)))
+        assertEquals(listOf("EFFICIENT_TRIP"), ledger.entries.value.filter { it.kind == RewardKind.MISSION }.map { it.eventId })
+        assertEquals(listOf("주간 미션 달성! 효율 운전 2번"), voice.spoken)
+    }
+
+    @Test
+    fun `이번 주 비회원가보다 싸게 두 번 충전했으면 할인 충전 미션`() = runTest(UnconfinedTestDispatcher()) {
+        val (vehicle, ledger, voice) = env()
+        val log = com.chargecompass.app.store.InMemorySummaryLog(List(2) { ChargeSummary("양재 채비 충전소", 30.0, 9000, 6000, 10, now.minusHours(2)) })
+        RewardCoordinator(vehicle, ledger, data, { car }, voice, backgroundScope, summaryLog = log)
+        vehicle.endTrip(TripSummary(3.0, 4.0, now)) // 보상 없는 트립도 미션 확인의 계기
+        assertEquals(listOf("DISCOUNT_CHARGE"), ledger.entries.value.filter { it.kind == RewardKind.MISSION }.map { it.eventId })
     }
 }

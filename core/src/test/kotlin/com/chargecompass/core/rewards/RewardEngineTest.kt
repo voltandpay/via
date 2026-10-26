@@ -40,16 +40,17 @@ class RewardEngineTest {
 
     @Test
     fun `처음 충전한 충전소면 충전 10점과 스탬프 20점`() {
-        val r = RewardEngine.onChargeStarted(session("st-1", now), emptyList(), History())
+        val day = now.withHour(14) // 경부하 시간대 밖
+        val r = RewardEngine.onChargeStarted(session("st-1", day), emptyList(), History())
         assertEquals(
-            listOf(RewardEntry(RewardKind.CHARGE, 10, now, "st-1"), RewardEntry(RewardKind.NEW_STAMP, 20, now, "st-1")),
+            listOf(RewardEntry(RewardKind.CHARGE, 10, day, "st-1"), RewardEntry(RewardKind.NEW_STAMP, 20, day, "st-1")),
             r,
         )
     }
 
     @Test
     fun `이미 스탬프가 있으면 충전 점수만`() {
-        val r = RewardEngine.onChargeStarted(session("st-1", now), emptyList(), History(stamps = setOf("st-1")))
+        val r = RewardEngine.onChargeStarted(session("st-1", now.withHour(14)), emptyList(), History(stamps = setOf("st-1")))
         assertEquals(listOf(RewardKind.CHARGE), r.map { it.kind })
     }
 
@@ -122,5 +123,29 @@ class RewardEngineTest {
         // 다 모은 지역에서 다시 충전해도 또 주지 않는다
         val again = RewardEngine.onChargeStarted(session("b", now.withHour(12)), emptyList(), History(stamps = setOf("a", "b", "c")), stations)
         assertTrue(again.none { it.kind == RewardKind.REGION_COMPLETE })
+    }
+
+    @Test
+    fun `경부하 시간대(23~9시)에 충전을 시작하면 부스트 보너스`() {
+        val stations = listOf(station("a", "downtown"))
+        val night = RewardEngine.onChargeStarted(session("a", now.withHour(23).withMinute(10)), emptyList(), History(stamps = setOf("a")), stations)
+        assertEquals(10, night.single { it.kind == RewardKind.OFF_PEAK_BOOST }.points)
+        val morning = RewardEngine.onChargeStarted(session("a", now.withHour(8).withMinute(59)), emptyList(), History(stamps = setOf("a")), stations)
+        assertTrue(morning.any { it.kind == RewardKind.OFF_PEAK_BOOST })
+        val noon = RewardEngine.onChargeStarted(session("a", now.withHour(9)), emptyList(), History(stamps = setOf("a")), stations)
+        assertTrue(noon.none { it.kind == RewardKind.OFF_PEAK_BOOST })
+    }
+
+    @Test
+    fun `사업자 데이에 그 사업자에서 충전하면 포인트 3배(보너스 20)와 한정 메달 기록`() {
+        val st = station("a", "downtown").copy(operatorId = "chaevi")
+        val day = com.chargecompass.core.model.OperatorDay("chaevi-day-1114", "chaevi", LocalDate.of(2026, 11, 14), 3, "채비 데이")
+        val r = RewardEngine.onChargeStarted(session("a", LocalDateTime.of(2026, 11, 14, 12, 0)), emptyList(), History(stamps = setOf("a")), listOf(st), listOf(day))
+        val bonus = r.single { it.kind == RewardKind.OPERATOR_DAY }
+        assertEquals(20, bonus.points)
+        assertEquals("chaevi-day-1114", bonus.eventId)
+        // 다른 날이나 다른 사업자는 없음
+        val other = RewardEngine.onChargeStarted(session("a", LocalDateTime.of(2026, 11, 15, 12, 0)), emptyList(), History(stamps = setOf("a")), listOf(st), listOf(day))
+        assertTrue(other.none { it.kind == RewardKind.OPERATOR_DAY })
     }
 }

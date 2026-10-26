@@ -56,6 +56,7 @@ fun StampBook(c: AppContainer) {
     val col = colors
     val now = c.demoClock.now()
     val visits = entries.filter { it.kind == RewardKind.CHARGE }.mapNotNull { it.stationId }.groupingBy { it }.eachCount()
+    val limited = entries.filter { it.kind == RewardKind.OPERATOR_DAY }.mapNotNull { it.stationId }.toSet()
     val stampedAt = entries.filter { it.kind == RewardKind.NEW_STAMP }.associate { it.stationId to it.at }
     val dex = Dex.build(c.data.stations, seen, visits)
     val registered = dex.count { it.state == DexState.REGISTERED }
@@ -102,13 +103,13 @@ fun StampBook(c: AppContainer) {
             val at = stampedAt[e.station.id]
             // 방금(2분 안에) 등록한 곳은 톡 커지며 나타난다
             val fresh = at != null && Duration.between(at, now).abs() < Duration.ofMinutes(2)
-            DexCard(c, e, fresh, flatBadges, Modifier.width(if (isWide) 260.dp else 230.dp))
+            DexCard(c, e, fresh, flatBadges, Modifier.width(if (isWide) 260.dp else 230.dp), limited = e.station.id in limited)
         }
     }
 }
 
 @Composable
-private fun DexCard(c: AppContainer, e: DexEntry, fresh: Boolean, flat: Boolean, modifier: Modifier) {
+private fun DexCard(c: AppContainer, e: DexEntry, fresh: Boolean, flat: Boolean, modifier: Modifier, limited: Boolean = false) {
     val col = colors
     val st = e.station
     val op = c.data.memberships.firstOrNull { it.operatorId == st.operatorId }
@@ -121,7 +122,9 @@ private fun DexCard(c: AppContainer, e: DexEntry, fresh: Boolean, flat: Boolean,
         Box(Modifier.fillMaxWidth().height(132.dp), contentAlignment = Alignment.Center) {
             when {
                 flat -> StationBadge(initial, badgeColor(st.operatorId), e.state == DexState.REGISTERED, fresh, size = 112.dp)
-                e.state == DexState.REGISTERED -> StationBadge(initial, badgeColor(st.operatorId), true, fresh, size = 120.dp, medal = medalRes(st.operatorId, e.tier ?: MedalTier.BRONZE))
+                // 사업자 데이에 충전했으면 한정 메달(보라 테두리)을 보여 준다
+                e.state == DexState.REGISTERED -> StationBadge(initial, badgeColor(st.operatorId), true, fresh, size = 120.dp,
+                    medal = (if (limited) eventMedalRes(st.operatorId) else null) ?: medalRes(st.operatorId, e.tier ?: MedalTier.BRONZE))
                 // 발견: 흑백으로 어둡게 바랜 메달(포켓몬 도감의 그림자처럼 모양만 보인다)
                 e.state == DexState.SEEN -> medalRes(st.operatorId, MedalTier.BRONZE)?.let {
                     Image(painterResource(it), "발견한 충전소", Modifier.size(120.dp), alpha = 0.7f, colorFilter = silhouette)
@@ -135,7 +138,7 @@ private fun DexCard(c: AppContainer, e: DexEntry, fresh: Boolean, flat: Boolean,
             DexState.SEEN -> "발견 · 충전하면 등록돼요"
             DexState.REGISTERED -> {
                 val next = MedalTier.visitsToNext(e.visits)
-                "${e.tier?.label ?: ""} 메달 · ${e.visits}회 충전" + (next?.let { " · 다음까지 ${it}번" } ?: "")
+                (if (limited) "한정 메달 · " else "") + "${e.tier?.label ?: ""} 메달 · ${e.visits}회 충전" + (next?.let { " · 다음까지 ${it}번" } ?: "")
             }
         }
         T(line, ViaType.labelS, col.text2.c(), maxLines = 2)
@@ -164,9 +167,13 @@ private fun TypeChip(type: PowerType) {
 @Composable
 fun EventsScreen(c: AppContainer) {
     val col = colors
-    T("이벤트 충전소", ViaType.titleM)
+    T("이벤트", ViaType.titleM)
     T("한산한 시간·장소에서 충전하면 포인트를 더 드려요", ViaType.bodyM, col.text2.c())
     val now = c.demoClock.now()
+    OffPeakCard(c)
+    T("사업자 데이", ViaType.titleS)
+    c.data.operatorDays.filter { !it.date.isBefore(now.toLocalDate()) }.sortedBy { it.date }.forEach { OperatorDayCard(c, it) }
+    T("이벤트 충전소", ViaType.titleS)
     c.data.events.forEach { e ->
         val live = com.chargecompass.core.rewards.RewardEngine.eventOccurrenceDate(e, now) != null
         ViaCard(padding = 36.dp, highlight = if (live) col.event.c() else null) {

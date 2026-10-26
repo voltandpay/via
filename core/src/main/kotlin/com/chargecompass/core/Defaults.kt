@@ -14,6 +14,13 @@ object Defaults {
     const val POINTS_NEW_STAMP = 20
     const val POINTS_CHARGE = 10
     const val POINTS_REGION_COMPLETE = 50
+    const val POINTS_MISSION = 15
+    const val POINTS_BREAKTHROUGH = 100
+    const val MISSIONS_PER_BREAKTHROUGH = 7
+
+    /** 경부하 시간대(시연용 예시: 23~9시). 이때 충전을 시작하면 충전 포인트 2배. 실제 시간대별 요금 확인 필요. */
+    const val OFF_PEAK_START_HOUR = 23
+    const val OFF_PEAK_END_HOUR = 9
 
     const val STATION_MATCH_RADIUS_M = 100.0
     const val CHARGE_GAP_TOLERANCE_SEC = 60L

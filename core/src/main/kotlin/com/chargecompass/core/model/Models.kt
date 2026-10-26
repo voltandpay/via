@@ -58,3 +58,12 @@ data class RewardEvent(
     val endHour: Int,
     val multiplier: Int,
 )
+
+/** 사업자 데이(포켓몬 고의 커뮤니티 데이): 그날 그 사업자 충전소에서 충전하면 포인트 [multiplier]배와 한정 메달. 사업자가 비용을 내는 제휴 프로모션. */
+data class OperatorDay(
+    val id: String,
+    val operatorId: String,
+    val date: java.time.LocalDate,
+    val multiplier: Int,
+    val title: String,
+)

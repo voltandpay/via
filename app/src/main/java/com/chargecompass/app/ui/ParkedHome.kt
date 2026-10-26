@@ -95,6 +95,9 @@ private fun HomeTab(c: AppContainer) {
 
     BatteryHero(c)
 
+    // 오늘이 사업자 데이면 맨 위에 알린다(포켓몬 고의 커뮤니티 데이)
+    upcomingOperatorDay(c.data.operatorDays, c.demoClock.now().toLocalDate())?.takeIf { it.date == c.demoClock.now().toLocalDate() }?.let { OperatorDayCard(c, it) }
+
     // 방금 끝난 충전: 영수증 카드(보상 고리의 마무리). 정차 중 화면이라 처음 나타날 때 한 번 축하 효과
     val summary by c.rewards.lastSummary.collectAsState()
     summary?.let { sum ->
@@ -187,6 +190,8 @@ private fun HomeTab(c: AppContainer) {
         }
     }
 
+    WeeklyMissionsCard(c)
+
     // 최근 7일 절약(충전 종료 요약 기록) — Pleos Widget처럼 제목·정보 영역
     val summaries by c.summaries.summaries.collectAsState()
     val today = c.demoClock.now().toLocalDate()
@@ -252,7 +257,12 @@ private fun BatteryHero(c: AppContainer) {
                 }
             }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                T(car?.name ?: "차종을 골라 주세요", ViaType.labelM, col.text3.c())
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    T(car?.name ?: "차종을 골라 주세요", ViaType.labelM, col.text3.c())
+                    val now = c.demoClock.now()
+                    if (com.chargecompass.core.rewards.RewardEngine.isOffPeak(now.hour)) T("경부하 부스트 중 · 충전 포인트 2배", ViaType.labelS.copy(fontWeight = FontWeight.Bold), Color.White,
+                        Modifier.clip(RoundedCornerShape(999.dp)).background(col.pos.c()).padding(horizontal = 14.dp, vertical = 4.dp))
+                }
                 T(range?.let { "약 ${it}km 갈 수 있어요" } ?: "배터리 정보를 기다리는 중", ViaType.titleM)
                 val r = route
                 if (r != null && arrival != null) {
