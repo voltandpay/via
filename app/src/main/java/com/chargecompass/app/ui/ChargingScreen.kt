@@ -20,6 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.chargecompass.app.AppContainer
 import com.chargecompass.core.Defaults
+import com.chargecompass.core.charge.ChargeCurve
+import com.chargecompass.core.charge.ChargeStopAdvice
 import com.chargecompass.core.model.ChargerStatus
 import com.chargecompass.core.pricing.StationRanker
 import com.chargecompass.core.rewards.RewardKind
@@ -62,7 +64,7 @@ fun ChargingScreen(c: AppContainer) {
             return@Column
         }
         val nonMemberTotal = ranked.nonMemberCostWon
-        val eta = car?.let { chargeEtaMinutes(energy.socPct, Defaults.TARGET_SOC.toInt(), it.batteryKwh, station.maxKw) }
+        val eta = car?.let { m -> energy.socPct?.let { ChargeCurve.minutes(it, Defaults.TARGET_SOC.toInt(), m.batteryKwh, station.maxKw, c.demoClock.now().month) } }
         Adaptive(Arrangement.spacedBy(28.dp)) { first ->
             ViaCard(first, padding = 48.dp) {
                 Adaptive(Arrangement.spacedBy(48.dp)) { textSide ->
@@ -114,10 +116,28 @@ fun ChargingScreen(c: AppContainer) {
                 StationDexCard(c, station.id, station.operatorId)
             }
         }
+        c.chargeStopAdvice(s, energy)?.let { (destination, advice) -> ChargeStopCard(destination, advice, energy.socPct) }
         // 충전 중(차를 세워 둔 20~40분)에만 보여 주는 수집·시즌 화면. 홈·주행 화면에는 넣지 않는다
         MedalShelfCard(c, station.id)
         SeasonTrackCard(c)
         WeeklyMissionsCard(c)
+    }
+}
+
+/** 언제 끝낼까: 목적지까지 충분한 지점과, 목표까지 더 채울 때 드는 시간·돈. 다 차기를 기다리지 않아도 되게. */
+@Composable
+private fun ChargeStopCard(destination: String, a: ChargeStopAdvice, socPct: Int?) {
+    val col = colors
+    val reached = socPct != null && a.reached(socPct)
+    val target = Defaults.TARGET_SOC.toInt()
+    ViaCard(padding = 36.dp, highlight = if (reached) col.pos.c() else null) {
+        T("언제 끝낼까요", ViaType.labelM, col.text3.c())
+        T(
+            if (reached) "지금 끝내도 ${destination}에 ${a.arrivalSoc}%로 도착해요"
+            else "${a.enoughSoc}%면 ${destination}에 ${a.arrivalSoc}%로 도착 · 약 ${a.minutesToEnough}분 뒤",
+            ViaType.titleM,
+        )
+        T("${target}%까지 채우면 ${a.extraMinutes}분 · ${won(a.extraWon)} 더" + if (a.winter) " · 겨울이라 충전이 느려요" else "", ViaType.bodyM, col.text2.c())
     }
 }
 

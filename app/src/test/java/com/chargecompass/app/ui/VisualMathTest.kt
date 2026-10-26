@@ -9,14 +9,6 @@ import kotlin.test.assertNull
 
 class VisualMathTest {
     @Test
-    fun `목표까지 남은 충전 시간(분)은 필요한 kWh를 출력으로 나눈 값`() {
-        // 15→80%, 77.4kWh → 50.31kWh, 200kW → 15.1분 → 16분(올림)
-        assertEquals(16, chargeEtaMinutes(socPct = 15, targetPct = 80, batteryKwh = 77.4, powerKw = 200))
-        assertEquals(0, chargeEtaMinutes(socPct = 85, targetPct = 80, batteryKwh = 77.4, powerKw = 200))
-        assertNull(chargeEtaMinutes(socPct = null, targetPct = 80, batteryKwh = 77.4, powerKw = 200))
-    }
-
-    @Test
     fun `최근 7일 날짜별 절약액(오늘이 마지막)`() {
         val today = LocalDate.of(2026, 11, 7)
         fun s(day: Int, won: Int, month: Int = 11) = ChargeSummary("st", 10.0, 1000, won, 10, LocalDateTime.of(2026, month, day, 12, 0))

@@ -86,6 +86,7 @@ fun DebugPanel(c: AppContainer, onSwitchMode: (DataMode) -> Unit) {
                     OutlinedButton(onClick = { c.toggleDrive.set(DriveState.DRIVING) }) { Text("주행") }
                     OutlinedButton(onClick = { c.toggleDrive.set(DriveState.PARKED) }) { Text("정차") }
                     OutlinedButton(onClick = { v.setSoc(15) }) { Text("SoC 15") }
+                    OutlinedButton(onClick = { v.setSoc(25) }) { Text("SoC 25") }
                     OutlinedButton(onClick = { v.setSoc(80) }) { Text("SoC 80") }
                     OutlinedButton(onClick = { c.mockNavi.setRoute(RouteSnapshot(1, "서울역", 23.0, 2040)) }) { Text("서울역 안내") }
                     // 장거리 다중 충전 시연: 410km, 충전 2~3번

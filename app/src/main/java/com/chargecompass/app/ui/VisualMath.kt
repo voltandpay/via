@@ -2,18 +2,9 @@ package com.chargecompass.app.ui
 
 import com.chargecompass.app.rewards.ChargeSummary
 import java.time.LocalDate
-import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.round
 import kotlin.math.roundToInt
-
-/** 목표까지 남은 충전 시간(분, 올림). 최대 출력으로 계속 충전한다고 본 근사값. SoC를 모르면 null. */
-fun chargeEtaMinutes(socPct: Int?, targetPct: Int, batteryKwh: Double, powerKw: Int): Int? {
-    val soc = socPct ?: return null
-    if (soc >= targetPct || powerKw <= 0) return 0
-    val kwh = (targetPct - soc) / 100.0 * batteryKwh
-    return ceil(kwh / powerKw * 60).toInt()
-}
 
 /** 오늘을 마지막으로 하는 최근 7일의 날짜별 절약액. */
 fun dailySavings(summaries: List<ChargeSummary>, today: LocalDate): List<Int> =

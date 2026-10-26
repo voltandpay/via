@@ -92,6 +92,24 @@ class AppContainer(context: Context, val mode: DataMode, scope: CoroutineScope) 
     val statusBoard = com.chargecompass.app.navi.StationStatusBoard()
     val reco = RecommendationCoordinator(vehicle, navi, voice, data, ::vehicleModel, { membership.owned.value }, scope, driving, statusBoard)
     private val announcer = EventAnnouncer(data.events, data.stations)
+    private val chargeStopAnnouncer = com.chargecompass.app.rewards.ChargeStopAnnouncer()
+
+    /**
+     * 지금 충전을 언제 끝내도 되는지(목적지 이름과 함께). 충전소가 지금 경로 위에 있어야 남은 거리를 안다.
+     * 경로 거리는 출발 때 값이라, 남은 거리 = 경로 거리 - 이 충전소까지의 거리.
+     */
+    fun chargeStopAdvice(session: com.chargecompass.core.session.ChargeSession?, energy: com.chargecompass.core.energy.EnergyState):
+        Pair<String, com.chargecompass.core.charge.ChargeStopAdvice>? {
+        val route = navi.route.value ?: return null
+        val car = vehicleModel() ?: return null
+        val station = data.stationsFor(route.destinationName).firstOrNull { it.id == session?.stationId } ?: return null
+        val tariff = data.tariffs[station.operatorId] ?: return null
+        val price = com.chargecompass.core.pricing.StationRanker.effectivePrice(tariff, membership.owned.value).wonPerKwh
+        val advice = com.chargecompass.core.charge.ChargeStopAdvisor.advise(
+            energy, car, route.remainingKm - station.alongRouteKm, station.maxKw, price, demoClock.now().month,
+        ) ?: return null
+        return route.destinationName to advice
+    }
 
     init {
         // 추천에 나온 충전소는 도감에 "발견"으로 남긴다
@@ -103,6 +121,14 @@ class AppContainer(context: Context, val mode: DataMode, scope: CoroutineScope) 
         // 달이 바뀐 뒤 처음 정차했을 때 지난달 절약 리포트를 한 번 말한다(주행 중에는 말하지 않는다)
         scope.launch {
             driving.collect { now -> if (!now) announceMonthlyReport() }
+        }
+        // 충전 중 목적지까지 충분히 찼으면 "지금 끝내도 돼요"를 충전 1회에 한 번 말한다
+        scope.launch {
+            kotlinx.coroutines.flow.combine(rewards.activeSession, vehicle.energy) { s, e -> s to e }.collect { (s, e) ->
+                val session = s ?: return@collect
+                val (destination, advice) = chargeStopAdvice(session, e) ?: return@collect
+                chargeStopAnnouncer.onUpdate(session, e.socPct, destination, advice)?.let { voice.speak(it) }
+            }
         }
         scope.launch {
             var wasDriving = driving.value
