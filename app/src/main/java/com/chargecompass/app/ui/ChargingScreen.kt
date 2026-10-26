@@ -110,6 +110,34 @@ fun ChargingScreen(c: AppContainer) {
                     }
                     T("차가 충전 위치와 상태를 확인해 자동으로 쌓였어요", ViaType.labelM, col.text3.c())
                 }
+                StationDexCard(c, station.id, station.operatorId)
+            }
+        }
+        // 충전 중에는 화면을 볼 수 있으니 이번 주 미션 진행도 함께
+        WeeklyMissionsCard(c)
+    }
+}
+
+/** 이 충전소의 도감 메달: 지금 단계와 다음 단계까지 남은 충전 횟수. */
+@Composable
+private fun StationDexCard(c: AppContainer, stationId: String, operatorId: String) {
+    val entries by c.ledger.entries.collectAsState()
+    val col = colors
+    val visits = entries.count { it.kind == RewardKind.CHARGE && it.stationId == stationId }
+    val tier = com.chargecompass.core.dex.MedalTier.of(visits) ?: return
+    val next = com.chargecompass.core.dex.MedalTier.visitsToNext(visits)
+    val no = com.chargecompass.core.dex.Dex.build(c.data.stations, emptySet(), emptyMap()).firstOrNull { it.station.id == stationId }?.no
+    ViaCard(padding = 32.dp) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+            medalRes(operatorId, tier)?.let { Prop(it, 104.dp) }
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                T("도감" + (no?.let { " · ${com.chargecompass.core.dex.Dex.label(it)}" } ?: ""), ViaType.labelM, col.text3.c())
+                T("${tier.label} 메달 · ${visits}회 충전", ViaType.titleS)
+                if (next != null) {
+                    val nextTier = com.chargecompass.core.dex.MedalTier.entries[tier.ordinal + 1]
+                    Bar((visits - tier.minVisits).toFloat() / (nextTier.minVisits - tier.minVisits), col.active.c(), height = 12.dp)
+                    T("${nextTier.label} 메달까지 ${next}번", ViaType.labelM, col.text2.c())
+                } else T("가장 높은 단계예요", ViaType.labelM, col.text2.c())
             }
         }
     }

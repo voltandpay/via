@@ -78,7 +78,7 @@ fun MembershipCard(name: String, operatorId: String, selected: Boolean, onClick:
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(contentAlignment = Alignment.TopEnd) {
-            membershipCardRes(operatorId)?.let { Prop(it, 150.dp, alpha = if (selected) 1f else 0.45f) }
+            membershipCardRes(operatorId)?.let { Prop(it, 150.dp, alpha = if (selected) 1f else if (col.isDark) 0.7f else 0.45f) }
                 ?: StationBadge(name.take(1), badgeColor(operatorId), selected, size = 96.dp)
             if (selected) Box(Modifier.size(36.dp).clip(CircleShape).background(col.pos.c()), contentAlignment = Alignment.Center) {
                 T("✓", ViaType.labelM.copy(fontWeight = FontWeight.Bold), androidx.compose.ui.graphics.Color.White)

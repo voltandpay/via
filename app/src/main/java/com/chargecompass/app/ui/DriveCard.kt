@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -88,17 +89,17 @@ private fun ColumnScope.BatteryPanel(arrival: Double?, socNow: Int?, route: Rout
     }
     val low = arrival < 15
     val tint = if (low) col.neg.c() else col.activeText.c()
-    Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-        T("${arrival.roundToInt().coerceAtLeast(0)}%", ViaType.display, tint)
-        T(if (low) "충전이 필요해요" else "충전 없이 도착해요", ViaType.bodyL.copy(fontWeight = FontWeight.Bold), tint, Modifier.padding(bottom = 16.dp))
-    }
-    Bar((arrival / 100).toFloat(), if (low) col.neg.c() else col.active.c(), height = 28.dp, marker = 0.15f)
+    // 한눈에: 넓은 창에서는 숫자를 더 크게, 막대·설명은 패널 아래로
+    T("${arrival.roundToInt().coerceAtLeast(0)}%", if (isWide) ViaType.display.copy(fontSize = ViaType.display.fontSize * 1.5f, lineHeight = ViaType.display.lineHeight * 1.5f) else ViaType.display, tint)
+    T(if (low) "충전이 필요해요" else "충전 없이 도착해요", ViaType.titleM, tint)
+    if (isWide) Spacer(Modifier.weight(1f))
+    Bar((arrival / 100).toFloat(), if (low) col.neg.c() else col.active.c(), height = 36.dp, marker = 0.15f)
     Row(Modifier.fillMaxWidth()) {
         T("0%", ViaType.labelM, col.text3.c(), Modifier.weight(0.15f))
         T("충전 권장 15%", ViaType.labelM, col.text3.c(), Modifier.weight(0.7f))
         T("100%", ViaType.labelM, col.text3.c())
     }
-    T("지금 ${socNow ?: "-"}% · 남은 거리 ${route?.remainingKm?.roundToInt() ?: "-"}km", ViaType.bodyM, col.text2.c())
+    T("지금 ${socNow ?: "-"}% · 남은 거리 ${route?.remainingKm?.roundToInt() ?: "-"}km", ViaType.bodyL, col.text2.c())
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -118,12 +119,13 @@ private fun ColumnScope.RecommendPanel(reco: RecoState, best: RankedStation?, ro
     }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         T(if (reco is RecoState.Added) "경유지로 추가한 충전소" else "추천 충전소 · 내 멤버십 기준 최저가", ViaType.bodyM, col.text2.c())
-        T(best.station.name, ViaType.titleL)
+        T(best.station.name, ViaType.headline, maxLines = 1)
     }
+    if (best.savingWon > 0) T("${won(best.savingWon)} 절약", ViaType.titleL, col.activeText.c())
+    if (isWide) Spacer(Modifier.weight(1f))
     RouteStrip(best.station.alongRouteKm, route?.remainingKm, route?.destinationName ?: "목적지")
     FlowRow(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Chip("${best.price.wonPerKwh}원/kWh · ${best.price.basis.label()}", bold = true)
-        if (best.savingWon > 0) Chip("${won(best.savingWon)} 절약", bg = col.activeSoft.c(), fg = col.activeText.c(), bold = true)
         Chip("${best.station.maxKw}kW · 사용 가능")
     }
 }
