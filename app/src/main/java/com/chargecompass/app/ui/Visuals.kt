@@ -73,7 +73,7 @@ fun ViaLogo(size: Dp = 56.dp) {
 fun ViaWordmark(size: Dp = 56.dp, showText: Boolean = true) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(size * 0.28f)) {
         ViaLogo(size)
-        if (showText) T("VIA", TextStyle(fontSize = (size.value * 0.68f).sp, fontWeight = FontWeight.Black, letterSpacing = 2.sp))
+        if (showText) T("VIA", TextStyle(fontFamily = AstaSans, fontSize = (size.value * 0.68f).sp, fontWeight = FontWeight.Black, letterSpacing = 2.sp))
     }
 }
 

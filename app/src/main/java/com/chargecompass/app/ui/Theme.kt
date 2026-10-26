@@ -41,7 +41,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
+import com.chargecompass.app.R
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,9 +59,21 @@ fun Long.c() = Color(this)
 val LocalViaColors = staticCompositionLocalOf { ViaPalette.light }
 val LocalWindowLayout = staticCompositionLocalOf { WindowLayout.WIDE }
 
+/**
+ * Pleos System UI 서체 Asta Sans(42dot, SIL OFL 1.1 — 라이선스: assets/licenses/AstaSans-OFL.txt).
+ * 가변 폰트 하나에서 굵기(wght 축)만 바꿔 쓴다.
+ */
+@OptIn(ExperimentalTextApi::class)
+val AstaSans = FontFamily(
+    listOf(FontWeight.Normal, FontWeight.Medium, FontWeight.SemiBold, FontWeight.Bold, FontWeight.ExtraBold, FontWeight.Black).map { w ->
+        Font(R.font.asta_sans, weight = w, variationSettings = FontVariation.Settings(FontVariation.weight(w.weight)))
+    },
+)
+
 /** Pleos 타이포 스케일(size / line height). doc/UI-디자인-가이드-정리.md 3절. */
 object ViaType {
-    private fun s(size: Int, line: Int, w: FontWeight = FontWeight.Normal) = TextStyle(fontSize = size.sp, lineHeight = line.sp, fontWeight = w)
+    private fun s(size: Int, line: Int, w: FontWeight = FontWeight.Normal) =
+        TextStyle(fontFamily = AstaSans, fontSize = size.sp, lineHeight = line.sp, fontWeight = w)
     /** 화면당 하나뿐인 핵심 숫자(도착 배터리, 절약액). 가이드 Headline보다 크게 둔 예외. */
     val display = s(120, 128, FontWeight.ExtraBold)
     val headline = s(60, 72, FontWeight.ExtraBold)
