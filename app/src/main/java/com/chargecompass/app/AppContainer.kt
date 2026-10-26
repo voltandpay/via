@@ -52,8 +52,8 @@ class AppContainer(context: Context, val mode: DataMode, scope: CoroutineScope) 
     val demoClock = DemoClock()
     /** 디버그: 분할 화면 세로 창(840dp) 배치를 미리 보기. */
     val narrowPreview = kotlinx.coroutines.flow.MutableStateFlow(false)
-    /** 디버그: 도감 배지를 Blender 3D 메달 시안으로 바꿔 보기. */
-    val medalPreview = kotlinx.coroutines.flow.MutableStateFlow(false)
+    /** 디버그: 도감 배지를 3D 메달 대신 평면 배지로 보기(비교용). */
+    val flatBadges = kotlinx.coroutines.flow.MutableStateFlow(false)
     val mockVehicle = MockVehicleRepository(demoClock::now)
     val mockNavi = MockNaviRepository()
     val vehicle: VehicleRepository = if (mode == DataMode.MOCK) mockVehicle else PleosVehicleRepository(context, scope, demoClock::now)

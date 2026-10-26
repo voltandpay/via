@@ -29,6 +29,10 @@
 ## 서체
 Pleos Connect System UI 서체 **Asta Sans**(42dot)를 앱에 포함한다. [SIL Open Font License 1.1](app/src/main/assets/licenses/AstaSans-OFL.txt) · 출처 https://github.com/42dot/Asta-Sans
 
+## 도감 3D 메달
+도감 배지는 Blender(Cycles)로 렌더링한 메달 이미지다(`app/src/main/res/drawable-nodpi/medal_*.webp`). 사업자 색과 글자를 바꿔 다시 만들 수 있다.
+`Blender -b -P tools/blender_medal.py -- <asta_sans.ttf> <out.png> "#00A06A" "채" [locked]`
+
 ## 구조
 - `core/` — 순수 Kotlin. 도착 잔량(`ArrivalCalculator`), 멤버십 기준 실효 단가·순위(`StationRanker`), 리워드 규칙(`RewardEngine`), 충전 세션 감지(`ChargeSessionDetector`), 목업 데이터. JVM 단위 테스트.
 - `app/` — Android(Compose). SDK는 Repository 뒤에 숨기고(`Pleos*`/`Mock*`), 추천 흐름(`RecommendationCoordinator`)과 리워드 적립(`RewardCoordinator`)이 이를 조합한다.

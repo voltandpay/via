@@ -6,6 +6,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import com.chargecompass.app.R
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.foundation.border
@@ -153,7 +154,7 @@ fun StationBadge(initial: String, color: Color, collected: Boolean, fresh: Boole
     val pop = remember { Animatable(if (fresh) 0.4f else 1f) }
     LaunchedEffect(fresh) { if (fresh) pop.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow)) }
     if (medal != null) {
-        // 3D 메달 시안: 메달 테두리까지 꽉 찬 이미지라 평면 배지와 거의 같은 크기
+        // 3D 메달: 메달 테두리까지 꽉 찬 이미지라 평면 배지와 거의 같은 크기
         // 못 모은 메달은 반투명으로 물러나 보이게(모은 메달이 돋보이도록)
         androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(medal), initial, Modifier.size(size * 1.05f).scale(pop.value),
             alpha = if (collected) 1f else 0.45f)
@@ -173,12 +174,14 @@ fun StationBadge(initial: String, color: Color, collected: Boolean, fresh: Boole
     }
 }
 
-/** 3D 메달 시안 이미지(Blender 렌더). 모은 메달은 채비만 시안이 있어 나머지는 평면 배지로 둔다. */
-fun medalRes(operatorId: String, collected: Boolean): Int? = when {
-    !collected -> com.chargecompass.app.R.drawable.medal_locked
-    operatorId == "chaevi" -> com.chargecompass.app.R.drawable.medal_chaevi
-    else -> null
-}
+/** 도감 3D 메달(Blender 렌더, tools/blender_medal.py). 못 모은 곳은 공통 잠긴 메달, 메달이 없는 사업자는 null(평면 배지). */
+private val operatorMedals = mapOf(
+    "me" to R.drawable.medal_me, "kepco" to R.drawable.medal_kepco, "skel" to R.drawable.medal_skel,
+    "chaevi" to R.drawable.medal_chaevi, "evsis" to R.drawable.medal_evsis, "gscv" to R.drawable.medal_gscv,
+    "everon" to R.drawable.medal_everon, "water" to R.drawable.medal_water, "pluglink" to R.drawable.medal_pluglink,
+)
+fun medalRes(operatorId: String, collected: Boolean): Int? =
+    if (!collected) R.drawable.medal_locked else operatorMedals[operatorId]
 
 @Composable
 fun LockIcon(size: Dp = 36.dp, color: Color) {
