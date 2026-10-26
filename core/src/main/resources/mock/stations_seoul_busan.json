@@ -1,0 +1,15 @@
+[
+  {"id": "lt-anseong", "name": "안성휴게소(부산방향) 충전소", "operatorId": "me", "lat": 37.0137, "lng": 127.2009, "maxKw": 200, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 72.0, "detourKm": 0.0},
+  {"id": "lt-manghyang", "name": "망향휴게소 충전소", "operatorId": "kepco", "lat": 36.8722, "lng": 127.1983, "maxKw": 100, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 95.0, "detourKm": 0.0},
+  {"id": "lt-oksan", "name": "옥산휴게소 충전소", "operatorId": "chaevi", "lat": 36.6826, "lng": 127.3644, "maxKw": 200, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 124.0, "detourKm": 0.0},
+  {"id": "lt-jugam", "name": "죽암휴게소 충전소", "operatorId": "skel", "lat": 36.544, "lng": 127.457, "maxKw": 200, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 141.0, "detourKm": 0.0},
+  {"id": "lt-sintanjin", "name": "신탄진휴게소 충전소", "operatorId": "water", "lat": 36.4513, "lng": 127.4311, "maxKw": 350, "connectors": ["DC_COMBO"], "status": "BROKEN", "alongRouteKm": 152.0, "detourKm": 0.0},
+  {"id": "lt-geumgang", "name": "금강휴게소 충전소", "operatorId": "evsis", "lat": 36.2805, "lng": 127.6524, "maxKw": 100, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 183.0, "detourKm": 0.0},
+  {"id": "lt-hwanggan", "name": "황간휴게소 충전소", "operatorId": "gscv", "lat": 36.2208, "lng": 127.9154, "maxKw": 100, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 214.0, "detourKm": 0.0},
+  {"id": "lt-chupungnyeong", "name": "추풍령휴게소 충전소", "operatorId": "me", "lat": 36.2192, "lng": 128.0042, "maxKw": 200, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 228.0, "detourKm": 0.0},
+  {"id": "lt-gimcheon", "name": "김천휴게소 충전소", "operatorId": "kepco", "lat": 36.1386, "lng": 128.1475, "maxKw": 100, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 247.0, "detourKm": 0.0},
+  {"id": "lt-chilgok", "name": "칠곡휴게소 충전소", "operatorId": "chaevi", "lat": 35.9919, "lng": 128.4183, "maxKw": 200, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 292.0, "detourKm": 0.0},
+  {"id": "lt-geonchun", "name": "건천휴게소 충전소", "operatorId": "everon", "lat": 35.8519, "lng": 129.0705, "maxKw": 100, "connectors": ["CHADEMO"], "status": "AVAILABLE", "alongRouteKm": 343.0, "detourKm": 0.0},
+  {"id": "lt-gyeongju", "name": "경주휴게소 충전소", "operatorId": "skel", "lat": 35.8211, "lng": 129.1919, "maxKw": 200, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 352.0, "detourKm": 0.0},
+  {"id": "lt-tongdosa", "name": "통도사휴게소 충전소", "operatorId": "pluglink", "lat": 35.4917, "lng": 129.0681, "maxKw": 100, "connectors": ["DC_COMBO"], "status": "AVAILABLE", "alongRouteKm": 386.0, "detourKm": 0.0}
+]

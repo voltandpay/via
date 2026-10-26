@@ -14,6 +14,8 @@ interface NaviRepository {
     /** 내비는 안내 중인데 경로 정보(목적지·거리)를 아직 모른다 → 내비에서 경로를 다시 시작해야 추천할 수 있다. */
     val waitingForRoute: StateFlow<Boolean> get() = NOT_WAITING
     suspend fun addChargingStop(station: Station): StopResult
+    /** 이미 넣은 충전소 경유지를 [station]으로 바꾼다(가는 도중 그 충전소가 사용 중·고장이 된 경우). */
+    suspend fun replaceChargingStop(station: Station): StopResult = addChargingStop(station)
     fun start()
     fun stop()
 }

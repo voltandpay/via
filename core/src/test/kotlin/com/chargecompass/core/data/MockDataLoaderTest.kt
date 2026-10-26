@@ -64,4 +64,13 @@ class MockDataLoaderTest {
         val ops = data.stations.map { it.operatorId }.toSet()
         data.operatorDays.forEach { assertTrue(it.operatorId in ops, it.id) }
     }
+
+    @Test
+    fun `장거리 경로 충전소는 따로 읽고 목적지가 부산이면 그 목록을 쓴다`() {
+        assertEquals(13, data.longTripStations.size)
+        assertTrue(data.longTripStations.zipWithNext().all { (a, b) -> a.alongRouteKm < b.alongRouteKm })
+        assertEquals(data.longTripStations, data.stationsFor("부산역"))
+        assertEquals(data.stations, data.stationsFor("서울역"))
+        assertEquals(22, data.allStations.size)
+    }
 }

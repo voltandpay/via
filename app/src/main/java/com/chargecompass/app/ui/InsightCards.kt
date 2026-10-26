@@ -29,7 +29,7 @@ fun MembershipCoachCard(c: AppContainer) {
     val owned by c.membership.owned.collectAsState()
     val scope = rememberCoroutineScope()
     val col = colors
-    val charges = coachCharges(summaries, c.data.stations, c.demoClock.now())
+    val charges = coachCharges(summaries, c.data.allStations, c.demoClock.now())
     if (charges.isEmpty()) return
     val advice = MembershipCoach.advise(charges, c.data.tariffs, c.data.memberships, owned)
     val saved = MembershipCoach.savedWithOwned(charges, c.data.tariffs, owned)

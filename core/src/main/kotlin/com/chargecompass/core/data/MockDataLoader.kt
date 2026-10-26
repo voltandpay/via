@@ -22,7 +22,15 @@ data class MockData(
     val events: List<RewardEvent>,
     val memberships: List<Membership>,
     val operatorDays: List<OperatorDay> = emptyList(),
-)
+    /** 장거리 시연 경로(서울역 → 부산역) 휴게소 충전소. 도감에는 넣지 않는다. */
+    val longTripStations: List<Station> = emptyList(),
+) {
+    /** 충전소 위치 매칭·기록 조회용 전체 목록. */
+    val allStations: List<Station> get() = stations + longTripStations
+
+    /** 경로에 맞는 충전소 목록(시연 데이터: 목적지가 부산이면 장거리 경로, 아니면 판교 → 서울역). */
+    fun stationsFor(destination: String?): List<Station> = if (destination?.contains("부산") == true) longTripStations else stations
+}
 
 @Serializable
 private data class OperatorDayJson(val id: String, val operatorId: String, val date: String, val multiplier: Int, val title: String)
@@ -39,6 +47,7 @@ object MockDataLoader {
         memberships = json.decodeFromString(read("mock/memberships.json")),
         operatorDays = json.decodeFromString<List<OperatorDayJson>>(read("mock/operator_days.json"))
             .map { OperatorDay(it.id, it.operatorId, LocalDate.parse(it.date), it.multiplier, it.title) },
+        longTripStations = json.decodeFromString(read("mock/stations_seoul_busan.json")),
     )
 }
 

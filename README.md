@@ -61,10 +61,10 @@ Pleos Connect System UI 서체 **Asta Sans**(42dot)를 앱에 포함한다. [SIL
 새 스탬프 획득 연출은 메달을 `--spin 0~315`(45° 간격)로 8장면 렌더링한다. PT 표지·영상 썸네일용 히어로 컷 `doc/assets/via_hero_1920x1080.png`은 `python3 tools/compose_hero.py <렌더 폴더> <symbol.png> <asta_sans.ttf> <out.png>`로 만든다.
 
 ## 구조
-- `core/` — 순수 Kotlin. 도착 잔량(`ArrivalCalculator`), 멤버십 기준 실효 단가·순위(`StationRanker`), 리워드 규칙(`RewardEngine`), 충전 세션 감지(`ChargeSessionDetector`), 도감(`dex/Dex`), 주간 미션(`missions/Missions`), 충전 혜택 시즌(`season/Seasons`), 멤버십 코치(`coach/MembershipCoach`), 목업 데이터. JVM 단위 테스트.
+- `core/` — 순수 Kotlin. 도착 잔량(`ArrivalCalculator`), 멤버십 기준 실효 단가·순위(`StationRanker`), 리워드 규칙(`RewardEngine`), 충전 세션 감지(`ChargeSessionDetector`), 도감(`dex/Dex`), 주간 미션(`missions/Missions`), 충전 혜택 시즌(`season/Seasons`), 멤버십 코치(`coach/MembershipCoach`), 장거리 다중 충전 계획(`trip/TripPlanner`), 목업 데이터. JVM 단위 테스트.
 - `app/` — Android(Compose). SDK는 Repository 뒤에 숨기고(`Pleos*`/`Mock*`), 추천 흐름(`RecommendationCoordinator`)과 리워드 적립(`RewardCoordinator`)이 이를 조합한다. 기록은 앱 내부 파일(포인트 원장·발견한 충전소·충전 요약)에 남는다(서버 없음).
 - `tools/` — Blender 3D 렌더 스크립트(`blender_style.py`·`blender_medal.py`·`blender_props.py`, 전체는 `render_all.sh`), Virtual Console 조작(`vc.sh`).
-- 단위 테스트 172개(core 69 · app 103).
+- 단위 테스트 184개(core 74 · app 110).
 
 ## 제출 APK
 `apk/VoltAndPay_VIA_release.apk` (공모전 규칙: `팀명_앱이름_release.apk`)

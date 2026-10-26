@@ -88,7 +88,9 @@ class AppContainer(context: Context, val mode: DataMode, scope: CoroutineScope) 
     private val driving: StateFlow<Boolean> =
         drive.state.map { it == DriveState.DRIVING }.stateIn(scope, SharingStarted.Eagerly, drive.state.value == DriveState.DRIVING)
 
-    val reco = RecommendationCoordinator(vehicle, navi, voice, data, ::vehicleModel, { membership.owned.value }, scope, driving)
+    /** 충전기 실시간 상태(본선: 공공 API, 1차: 시연 패널). */
+    val statusBoard = com.chargecompass.app.navi.StationStatusBoard()
+    val reco = RecommendationCoordinator(vehicle, navi, voice, data, ::vehicleModel, { membership.owned.value }, scope, driving, statusBoard)
     private val announcer = EventAnnouncer(data.events, data.stations)
 
     init {

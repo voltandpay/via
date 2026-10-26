@@ -51,7 +51,7 @@ class RewardCoordinator(
     fun dismissSummary() { _lastSummary.value = null }
 
     private val detector = ChargeSessionDetector({ lat, lng ->
-        nearestStation(data.stations, lat, lng, Defaults.STATION_MATCH_RADIUS_M)
+        nearestStation(data.allStations, lat, lng, Defaults.STATION_MATCH_RADIUS_M)
     })
 
     init {
@@ -85,7 +85,7 @@ class RewardCoordinator(
         val earlier = if (sameSession) _sessionEarned.value else emptyList()
         _active.value = session
         val lastCharge = session.stationId?.let { ledger.lastChargeAt(it, session.startedAt) }
-        val charged = RewardEngine.onChargeStarted(session, data.events, ledger, data.stations, data.operatorDays)
+        val charged = RewardEngine.onChargeStarted(session, data.events, ledger, data.allStations, data.operatorDays)
         ledger.append(charged)
         val earned = charged + checkMissions(session.startedAt, speak = false)
         // 쿨다운에 걸려 새로 받은 충전 보상이 없으면(앱 재시작·플러그 다시 꽂기) 그 방문에서 이미 받은 적립분을 다시 보여 준다
@@ -125,7 +125,7 @@ class RewardCoordinator(
 
     /** 실제 충전량(시작·종료 SoC × 배터리 용량)으로 낸 돈과 비회원가 대비 절약액을 계산한다. */
     private fun summarize(session: ChargeSession, earned: List<RewardEntry>): ChargeSummary? {
-        val station = data.stations.firstOrNull { it.id == session.stationId } ?: return null
+        val station = data.allStations.firstOrNull { it.id == session.stationId } ?: return null
         val car = vehicleModel() ?: return null
         val start = session.startSoc ?: return null
         val end = session.endSoc ?: return null

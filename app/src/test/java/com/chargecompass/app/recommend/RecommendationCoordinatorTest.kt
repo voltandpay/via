@@ -10,6 +10,7 @@ import com.chargecompass.app.voice.VoiceGateway
 import com.chargecompass.core.data.MockData
 import com.chargecompass.core.data.MockDataLoader
 import com.chargecompass.core.model.ChargerStatus
+import com.chargecompass.app.navi.StationStatusBoard
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.TestScope
@@ -29,10 +30,11 @@ class RecommendationCoordinatorTest {
         val vehicle: MockVehicleRepository = MockVehicleRepository(),
         val navi: MockNaviRepository = MockNaviRepository(),
         val voice: VoiceGateway = MockVoiceGateway(),
+        val board: StationStatusBoard = StationStatusBoard(),
     )
 
     private fun TestScope.start(env: Env, data: MockData = this@RecommendationCoordinatorTest.data, scope: CoroutineScope = backgroundScope) =
-        RecommendationCoordinator(env.vehicle, env.navi, env.voice, data, { car }, { setOf("m-chaevi") }, scope)
+        RecommendationCoordinator(env.vehicle, env.navi, env.voice, data, { car }, { setOf("m-chaevi") }, scope, statusBoard = env.board)
 
     @Test
     fun `배터리가 넉넉하면 Enough이고 말하지 않는다`() = runTest(UnconfinedTestDispatcher()) {
@@ -397,5 +399,107 @@ class RecommendationCoordinatorTest {
         navi.route.value = RouteSnapshot(2, "강남역", 10.0, 900)
         gate.complete(Unit)
         assertIs<RecoState.Enough>(c.state.value)
+    }
+
+    @Test
+    fun `경유지로 넣은 충전소가 도착 전에 사용 중이 되면 다음 곳으로 바꿀지 묻고, 응이면 경유지를 바꾼다`() = runTest(UnconfinedTestDispatcher()) {
+        val voice = MockVoiceGateway(answers = listOf(Answer.YES, Answer.YES))
+        val env = Env(voice = voice)
+        val c = start(env)
+        env.vehicle.setSoc(15)
+        env.navi.setRoute(route)
+        assertIs<RecoState.Added>(c.state.value)
+        env.board.set("st-yangjae-chaevi", ChargerStatus.IN_USE)
+        assertTrue(voice.asked.last().startsWith("양재 채비 충전소가 지금 사용 중이에요."), voice.asked.last())
+        val s = c.state.value
+        assertIs<RecoState.Added>(s)
+        assertTrue(s.station.station.id != "st-yangjae-chaevi")
+        assertEquals(listOf(s.station.station.id), env.navi.replacedStops)
+    }
+
+    @Test
+    fun `정차 중이면 묻지 않고 바꾸기 카드를 띄우고, 누르면 바꾼다`() = runTest(UnconfinedTestDispatcher()) {
+        val voice = MockVoiceGateway(answers = listOf(Answer.YES))
+        val drivingFlow = kotlinx.coroutines.flow.MutableStateFlow(true)
+        val env = Env(voice = voice)
+        val c = RecommendationCoordinator(env.vehicle, env.navi, env.voice, data, { car }, { setOf("m-chaevi") }, backgroundScope, drivingFlow, env.board)
+        env.vehicle.setSoc(15)
+        env.navi.setRoute(route)
+        drivingFlow.value = false
+        env.board.set("st-yangjae-chaevi", ChargerStatus.BROKEN)
+        val s = c.state.value
+        assertIs<RecoState.Switch>(s)
+        assertEquals("st-yangjae-chaevi", s.from.station.id)
+        assertEquals(1, voice.asked.size)   // 처음 추천 질문만
+        c.confirmByTouch(s.to.station.id)
+        assertEquals(listOf(s.to.station.id), env.navi.replacedStops)
+        assertIs<RecoState.Added>(c.state.value)
+    }
+
+    @Test
+    fun `아직 넣지 않은 추천이 사용 중이 되면 다음 곳으로 추천을 바꾼다`() = runTest(UnconfinedTestDispatcher()) {
+        val env = Env(voice = MockVoiceGateway(sttAvailable = false))
+        val c = start(env)
+        env.vehicle.setSoc(15)
+        env.navi.setRoute(route)
+        assertIs<RecoState.AwaitingTouch>(c.state.value)
+        env.board.set("st-yangjae-chaevi", ChargerStatus.IN_USE)
+        val s = c.state.value
+        assertIs<RecoState.AwaitingTouch>(s)
+        assertTrue(s.top.none { it.station.id == "st-yangjae-chaevi" })
+    }
+
+    @Test
+    fun `다른 충전소 상태가 바뀌는 건 상관없다`() = runTest(UnconfinedTestDispatcher()) {
+        val env = Env(voice = MockVoiceGateway(answers = listOf(Answer.YES)))
+        val c = start(env)
+        env.vehicle.setSoc(15)
+        env.navi.setRoute(route)
+        env.board.set("st-hannam-everon", ChargerStatus.BROKEN)
+        assertIs<RecoState.Added>(c.state.value)
+        assertTrue(env.navi.replacedStops.isEmpty())
+    }
+
+    private val busan = RouteSnapshot(9, "부산역", 410.0, 16_200)
+
+    @Test
+    fun `한 번 충전으로 안 되는 장거리면 충전 계획을 세우고 첫 번째 정류지를 묻는다`() = runTest(UnconfinedTestDispatcher()) {
+        val voice = MockVoiceGateway()   // 대답 없음
+        val env = Env(voice = voice)
+        val c = start(env)
+        env.vehicle.setSoc(40)
+        env.navi.setRoute(busan)
+        val plan = c.tripPlan.value!!
+        assertTrue(plan.stops.size >= 2, plan.toString())
+        assertTrue(voice.asked.single().startsWith("부산역까지 충전이 ${plan.stops.size}번 필요해요."), voice.asked.single())
+        val s = c.state.value
+        assertIs<RecoState.AwaitingTouch>(s)
+        assertEquals(plan.stops.first().station.id, s.choice.station.id)
+    }
+
+    @Test
+    fun `첫 번째 정류지에서 충전을 마치면 다음 정류지를 추천한다`() = runTest(UnconfinedTestDispatcher()) {
+        val voice = MockVoiceGateway(answers = listOf(Answer.YES))
+        val env = Env(voice = voice)
+        val c = start(env)
+        env.vehicle.setSoc(40)
+        env.navi.setRoute(busan)
+        assertIs<RecoState.Added>(c.state.value)
+        val plan = c.tripPlan.value!!
+        env.vehicle.setSoc(plan.stops.first().chargeToSoc)   // 첫 정류지에서 충전 완료
+        val s = c.state.value
+        assertTrue(s is RecoState.AwaitingTouch || s is RecoState.Suggested, s.toString())
+        val next = if (s is RecoState.AwaitingTouch) s.choice else (s as RecoState.Suggested).top.first()
+        assertEquals(plan.stops[1].station.id, next.station.id)
+        assertTrue(voice.asked.last().startsWith("다음 충전은"), voice.asked.last())
+    }
+
+    @Test
+    fun `가까운 경로에서는 장거리 계획을 세우지 않는다`() = runTest(UnconfinedTestDispatcher()) {
+        val env = Env()
+        val c = start(env)
+        env.vehicle.setSoc(15)
+        env.navi.setRoute(route)
+        assertEquals(null, c.tripPlan.value)
     }
 }

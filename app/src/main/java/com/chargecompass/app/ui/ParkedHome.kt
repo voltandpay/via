@@ -137,23 +137,32 @@ private fun HomeTab(c: AppContainer) {
         is RecoState.AwaitingTouch -> Triple(s.choice, false, false)
         is RecoState.Adding -> Triple(s.station, true, false)
         is RecoState.Added -> if (s.result == StopResult.FAILED) Triple(s.station, false, true) else null
+        is RecoState.Switch -> Triple(s.to, false, false)
         else -> null
     }
+    val switch = reco as? RecoState.Switch
     pending?.let { (station, loading, failed) ->
-        val top = (reco as? RecoState.AwaitingTouch)?.top ?: listOf(station)
-        ViaCard(padding = 44.dp, highlight = if (failed) col.neg.c() else null) {
+        val top = (reco as? RecoState.AwaitingTouch)?.top ?: switch?.top ?: listOf(station)
+        ViaCard(padding = 44.dp, highlight = if (failed || switch != null) col.neg.c() else null) {
             RouteBandFor(c, top)
             Adaptive(Arrangement.spacedBy(32.dp)) { firstWeight ->
                 Column(firstWeight, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    if (failed) T("경유지를 넣지 못했어요 · 내비가 준비되면 다시 시도해 주세요", ViaType.labelM.copy(fontWeight = FontWeight.Bold), col.neg.c())
-                    else T("경로 위 추천 충전소 · 아직 경로에 없어요", ViaType.labelM, col.text3.c())
+                    when {
+                        failed -> T("경유지를 넣지 못했어요 · 내비가 준비되면 다시 시도해 주세요", ViaType.labelM.copy(fontWeight = FontWeight.Bold), col.neg.c())
+                        // 가는 도중 경유지 충전소가 쓸 수 없게 됐다
+                        switch != null -> T("${com.chargecompass.app.voice.withSubjectParticle(switch.from.station.name)} 지금 쓸 수 없어요 · 다음 충전소로 바꿀까요?", ViaType.labelM.copy(fontWeight = FontWeight.Bold), col.neg.c())
+                        else -> T("경로 위 추천 충전소 · 아직 경로에 없어요", ViaType.labelM, col.text3.c())
+                    }
                     T(station.station.name, ViaType.titleL)
                     T("${station.station.alongRouteKm.toInt()}km 앞 · ${station.price.wonPerKwh}원/kWh ${station.price.basis.label()} · ${won(station.savingWon)} 절약", ViaType.bodyM, col.text2.c())
                 }
-                ViaButton(if (failed) "다시 시도" else "경유지로 추가", onClick = { c.reco.confirmByTouch(station.station.id) }, loading = loading, modifier = if (isWide) Modifier else Modifier.fillMaxWidth())
+                ViaButton(if (failed) "다시 시도" else if (switch != null) "경유지 바꾸기" else "경유지로 추가", onClick = { c.reco.confirmByTouch(station.station.id) }, loading = loading, modifier = if (isWide) Modifier else Modifier.fillMaxWidth())
             }
         }
     }
+
+    // 장거리 경로면 정류지 순서와 요금
+    TripPlanCard(c)
 
     Grid3 {
         it(Modifier) {

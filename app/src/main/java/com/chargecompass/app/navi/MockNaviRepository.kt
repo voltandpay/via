@@ -18,6 +18,14 @@ class MockNaviRepository : NaviRepository {
         return nextResult
     }
 
+    val replacedStops = mutableListOf<String>()
+
+    override suspend fun replaceChargingStop(station: Station): StopResult {
+        replacedStops += station.id
+        if (addedStops.isNotEmpty()) addedStops[0] = station else addedStops += station
+        return nextResult
+    }
+
     override fun start() = Unit
     override fun stop() = Unit
 }
