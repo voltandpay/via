@@ -203,6 +203,27 @@ fun regionEmblemRes(regionId: String, done: Boolean): Int? = when (regionId) {
     else -> null
 }
 
+/** 충전 멤버십 카드(사업자 색 3D 카드). */
+fun membershipCardRes(operatorId: String): Int? = when (operatorId) {
+    "me" -> R.drawable.card_me; "kepco" -> R.drawable.card_kepco; "skel" -> R.drawable.card_skel
+    "chaevi" -> R.drawable.card_chaevi; "evsis" -> R.drawable.card_evsis; "gscv" -> R.drawable.card_gscv
+    "everon" -> R.drawable.card_everon; "water" -> R.drawable.card_water; "pluglink" -> R.drawable.card_pluglink
+    "epit" -> R.drawable.card_epit
+    else -> null
+}
+
+/** 제휴 쿠폰 티켓(3D). */
+fun couponTicketRes(operatorId: String): Int? = when (operatorId) {
+    "kepco" -> R.drawable.ticket_kepco; "chaevi" -> R.drawable.ticket_chaevi; "water" -> R.drawable.ticket_water
+    else -> null
+}
+
+/** 새 스탬프 획득 연출: 메달이 세로축으로 도는 8장면(0 = 정면). 시연 충전소(채비)만 있다. */
+fun stampSpinFrames(operatorId: String): List<Int>? = if (operatorId == "chaevi") listOf(
+    R.drawable.stamp_spin_chaevi_0, R.drawable.stamp_spin_chaevi_1, R.drawable.stamp_spin_chaevi_2, R.drawable.stamp_spin_chaevi_3,
+    R.drawable.stamp_spin_chaevi_4, R.drawable.stamp_spin_chaevi_5, R.drawable.stamp_spin_chaevi_6, R.drawable.stamp_spin_chaevi_7,
+) else null
+
 /** Blender로 렌더링한 소품 이미지(tools/blender_props.py). */
 @Composable
 fun Prop(res: Int, size: Dp, modifier: Modifier = Modifier, alpha: Float = 1f) =

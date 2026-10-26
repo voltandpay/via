@@ -1,6 +1,13 @@
-# 도감 메달: blender -b -P blender_medal.py -- <font.ttf> <out.png> <hex색> <글자> [locked|bronze|silver|gold|event]
+# 도감 메달: blender -b -P blender_medal.py -- <font.ttf> <out.png> <hex색> <글자> [locked|bronze|silver|gold|event] [--spin 도] [--size N]
+#   --spin: 세로축으로 돌린 각도(새 스탬프 획득 연출 장면용), --size: 출력 크기(기본 512)
 import bpy, sys, math
 argv = sys.argv[sys.argv.index("--") + 1:]
+def flag(name, default):
+    global argv
+    if name not in argv: return default
+    i = argv.index(name); v = argv[i + 1]; argv = argv[:i] + argv[i + 2:]; return float(v)
+spin = flag("--spin", 0.0)
+size = int(flag("--size", 512))
 font_path, out, hexcol, glyph = argv[:4]
 variant = argv[4] if len(argv) > 4 else ""
 locked = variant == "locked"
@@ -57,7 +64,7 @@ txt = parent(bpy.data.objects.new("glyph", cu)); sc.collection.objects.link(txt)
 txt.location = (0, 0.02, 0.2); txt.data.materials.append(ink)
 
 # 보는 각도: 살짝 위에서 내려다보고 오른쪽으로 돌림
-root.rotation_euler = (math.radians(68), 0, math.radians(-14))
+root.rotation_euler = (math.radians(68), 0, math.radians(-14 + spin))
 
 # 카메라
 cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); sc.collection.objects.link(cam)
@@ -92,7 +99,7 @@ try:
 except Exception as e:
     print("GPU 설정 실패, CPU로:", e)
 r.film_transparent = True
-r.resolution_x = r.resolution_y = 512
+r.resolution_x = r.resolution_y = size
 r.image_settings.file_format = "PNG"; r.image_settings.color_mode = "RGBA"
 sc.view_settings.view_transform = "Standard"  # 브랜드 색이 바래지 않게
 r.filepath = out

@@ -4,6 +4,8 @@
 #   emblem <글자> locked|gold   지역 엠블럼(방패)
 #   symbol                     VIA 심볼(경로 + 번개 경유지)
 #   moon                       경부하 부스트(달 + 번개)
+#   card <hex색> <글자>          충전 멤버십 카드(사업자 색)
+#   ticket <hex색> <금액 글자>    제휴 할인 쿠폰 티켓
 # 메달(tools/blender_medal.py)과 같은 조명·색 처리(Standard)로 맞춘다.
 import bpy, bmesh, sys, math
 from mathutils import Vector
@@ -58,7 +60,9 @@ def prism(points, depth, z=0.0, m=None, bevel=0.0, name="prism"):
     me = bpy.data.meshes.new(name); bm = bmesh.new()
     vs = [bm.verts.new((x, y, z)) for x, y in points]
     f = bm.faces.new(vs)
-    ext = bmesh.ops.extrude_face_region(bm, geom=[f])
+    # 오목한 윤곽(쿠폰 홈·초승달)도 바르게 나뉘도록 귀 자르기로 삼각형 분할
+    tri = bmesh.ops.triangulate(bm, faces=[f], quad_method="BEAUTY", ngon_method="EAR_CLIP")
+    ext = bmesh.ops.extrude_face_region(bm, geom=tri["faces"])
     for v in [g for g in ext["geom"] if isinstance(g, bmesh.types.BMVert)]: v.co.z += depth
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     bm.to_mesh(me); bm.free()
@@ -141,6 +145,31 @@ elif kind == "moon":
     pts = outer + inner
     prism(pts[::4], 0.26, -0.13, mat("moon", "#FFD45A", 0.3, 0.35), bevel=0.05, name="moon")
     bolt(0.045, 0.0, blue, 0.18, cx=0.45, cy=-0.35)
+
+elif kind in ("card", "ticket"):
+    color, label = opts[0], opts[1]
+    face = mat("cardface", color, 0.1, 0.32, coat=0.6)
+    def rounded_rect(w, h, r, notch=0.0):
+        """둥근 사각형 윤곽(반시계). notch가 있으면 왼쪽·오른쪽 가운데에 반원 홈(쿠폰 모양)."""
+        def arc(cx, cy, a0): return [(cx + r * math.cos(math.radians(a0 + k)), cy + r * math.sin(math.radians(a0 + k))) for k in range(0, 91, 10)]
+        def dent(side, sign): return [(side + sign * notch * math.cos(math.radians(t)), notch * math.sin(math.radians(t * -sign))) for t in range(-90, 91, 10)]
+        pts = arc(w / 2 - r, h / 2 - r, 0) + arc(-w / 2 + r, h / 2 - r, 90)
+        if notch: pts += dent(-w / 2, 1)
+        pts += arc(-w / 2 + r, -h / 2 + r, 180) + arc(w / 2 - r, -h / 2 + r, 270)
+        if notch: pts += dent(w / 2, -1)
+        return pts
+    if kind == "card":
+        prism(rounded_rect(1.7, 1.08, 0.12), 0.08, -0.04, face, bevel=0.02, name="card")
+        box(0.34, 0.26, 0.03, loc=(-0.48, 0.05, 0.05), m=gold, bevel=0.01)   # IC 칩
+        for y in (-0.03, 0.05, 0.13):
+            box(0.34, 0.012, 0.035, loc=(-0.48, y, 0.055), m=goldDark)
+        box(1.5, 0.08, 0.02, loc=(0, -0.36, 0.045), m=mat("stripe", "#FFFFFF", 0, 0.4))
+        text(label, 0.62, 0.05, white, extrude=0.035, y=0.12).location.x = 0.42
+    else:
+        prism(rounded_rect(1.8, 0.9, 0.1, notch=0.16), 0.08, -0.04, face, bevel=0.02, name="ticket")
+        for i in range(7):   # 점선 절취선
+            cyl(0.022, 0.02, loc=(0.42, -0.33 + i * 0.11, 0.045), m=white, verts=24)
+        text(label, 0.36, 0.05, white, extrude=0.035).location.x = -0.18
 
 elif kind == "chest":
     flat = False

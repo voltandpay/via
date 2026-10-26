@@ -22,7 +22,7 @@ fun dailySavings(summaries: List<ChargeSummary>, today: LocalDate): List<Int> =
         summaries.filter { it.endedAt.toLocalDate() == day }.sumOf { it.savingWon }
     }
 
-data class Coupon(val name: String, val cost: Int)
+data class Coupon(val name: String, val cost: Int, val operatorId: String = "")
 data class NextCoupon(val coupon: Coupon, val remaining: Int)
 
 /** 지금 포인트로 아직 못 받는 쿠폰 중 가장 싼 것과 남은 포인트. 다 받을 수 있으면 null. */
@@ -30,7 +30,9 @@ fun nextCoupon(balance: Int, coupons: List<Coupon>): NextCoupon? =
     coupons.filter { it.cost > balance }.minByOrNull { it.cost }?.let { NextCoupon(it, it.cost - balance) }
 
 /** 제휴 쿠폰(1차 MVP는 화면만). */
-val partnerCoupons = listOf(Coupon("한전 EV 충전 1,000원 할인", 100), Coupon("채비 충전 2,000원 할인", 200), Coupon("워터 초급속 3,000원 할인", 300))
+val partnerCoupons = listOf(
+    Coupon("한전 EV 충전 1,000원 할인", 100, "kepco"), Coupon("채비 충전 2,000원 할인", 200, "chaevi"), Coupon("워터 초급속 3,000원 할인", 300, "water"),
+)
 
 /** 지금 배터리로 갈 수 있는 거리(km, 내림). SoC를 모르면 null. */
 fun rangeKm(socPct: Int?, batteryKwh: Double, efficiencyKmPerKwh: Double): Int? =
