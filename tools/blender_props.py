@@ -7,9 +7,11 @@
 #   card <hex색> <글자>          충전 멤버십 카드(사업자 색)
 #   ticket <hex색> <금액 글자>    제휴 할인 쿠폰 티켓
 #   shelf                      메달 진열장 선반(가로로 긴 그림, --aspect로 세로 비율)
-# 메달(tools/blender_medal.py)과 같은 조명·색 처리(Standard)로 맞춘다.
-import bpy, bmesh, sys, math
+# 재질·조명·렌더 설정은 메달과 같은 tools/blender_style.py를 쓴다.
+import bpy, bmesh, sys, os, math
 from mathutils import Vector
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import blender_style as st
 
 argv = sys.argv[sys.argv.index("--") + 1:]
 size = 512
@@ -20,24 +22,12 @@ if "--aspect" in argv:
     i = argv.index("--aspect"); aspect = float(argv[i + 1]); argv = argv[:i] + argv[i + 2:]
 font_path, out, kind, *opts = argv
 
-def srgb(h):
-    h = h.lstrip("#"); c = [int(h[i:i+2], 16) / 255 for i in (0, 2, 4)]
-    return tuple(((x + 0.055) / 1.055) ** 2.4 if x > 0.04045 else x / 12.92 for x in c) + (1,)
+srgb = st.srgb
 
-PASTEL = 0.08   # 토스풍: 색을 흰색 쪽으로 살짝(8%) 밝힌다 — 더 밝히면 바래 보인다
-def mat(name, color, metal=0.0, rough=0.4, coat=0.0, emit=0.0, pastel=True):
-    m = bpy.data.materials.new(name); m.use_nodes = True
-    p = m.node_tree.nodes["Principled BSDF"]
-    c = srgb(color)
-    if pastel: c = tuple(x + (1 - x) * PASTEL for x in c[:3]) + (1,)
-    p.inputs["Base Color"].default_value = c
-    p.inputs["Metallic"].default_value = metal
-    p.inputs["Roughness"].default_value = rough
-    if "Coat Weight" in p.inputs: p.inputs["Coat Weight"].default_value = coat
-    if emit:
-        p.inputs["Emission Color"].default_value = srgb(color)
-        p.inputs["Emission Strength"].default_value = emit
-    return m
+def mat(name, color, metal=0.0, rough=0.3, coat=0.5, emit=0.0, grad=0.28):
+    """기본은 반광 플라스틱(그라데이션). metal>0.5면 금속."""
+    if metal > 0.5: return st.metal(name, color, rough)
+    return st.plastic(name, color, grad=grad, rough=rough, coat=coat, emit=emit)
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 sc = bpy.context.scene
@@ -88,11 +78,10 @@ BOLT = [(2, -10), (-7, 2), (-1, 2), (-2, 10), (7, -2), (1, -2)]  # 위가 +y가 
 def bolt(scale, z, m, depth, cx=0.0, cy=0.0):
     return prism([(cx + x * scale, cy - y * scale) for x, y in BOLT], depth, z, m, bevel=depth * 0.25, name="bolt")
 
-# 토스풍 3D: 금속 광택 대신 무광 점토 질감
-gold = mat("gold", "#FFC21A", 0.15, 0.35)
-goldDark = mat("goldDark", "#F59E0B", 0.1, 0.42)
-white = mat("white", "#FFFFFF", 0.0, 0.5, pastel=False)
-blue = mat("blue", "#2F7BFF", 0.0, 0.45)
+gold = mat("gold", "#FFBE0B")
+goldDark = mat("goldDark", "#F59E0B", grad=0.15)
+white = mat("white", st.WHITE, grad=0, rough=0.35)
+blue = mat("blue", "#1E6BFF", grad=0.35)
 
 flat = True   # 원판·방패처럼 XY 평면에 만들어 앞(+Z)을 카메라 쪽으로 세우는 것
 if kind == "coin":
@@ -110,11 +99,11 @@ elif kind == "emblem":
             right.append(((1 - t) ** 2 * 0.85 + 2 * (1 - t) * t * 0.85, (1 - t) ** 2 * -0.2 + 2 * (1 - t) * t * -0.85 + t * t * -1.15))
         left = [(-x, y) for x, y in reversed(right[:-1])]
         return [(x * sx, y * sy) for x, y in right + left]
-    body = mat("body", "#FFCF3F" if done else "#C9CFD7", 0.15, 0.38)
-    face = mat("face", "#2F7BFF" if done else "#A9B0BA", 0.0, 0.5)
+    body = mat("body", "#FFBE0B") if done else st.metal("body", "#B9C6D8", 0.22)
+    face = mat("face", "#1E6BFF", grad=0.35) if done else st.glass("face")
     prism(shield(1, 1), 0.22, -0.11, body, bevel=0.05, name="shield")
     prism(shield(0.8, 0.8), 0.06, 0.11, face, bevel=0.02, name="face")
-    text(glyph, 0.95, 0.19, white if done else mat("ink", "#F1F3F5", pastel=False), y=0.05)
+    text(glyph, 0.95, 0.19, white, y=0.05)
 
 elif kind == "symbol":
     tile = box(2.0, 2.0, 0.34, m=blue, bevel=0.32)
@@ -148,12 +137,12 @@ elif kind == "moon":
     inner = inner[j:] + inner[:j]
     if math.dist(inner[1], outer[0]) < math.dist(inner[-1], outer[0]): inner.reverse(); inner = inner[-1:] + inner[:-1]
     pts = outer + inner
-    prism(pts[::4], 0.3, -0.15, mat("moon", "#FFD45A", 0.05, 0.45), bevel=0.05, name="moon")
+    prism(pts[::4], 0.3, -0.15, mat("moon", "#FFC83D"), bevel=0.05, name="moon")
     bolt(0.045, 0.0, blue, 0.18, cx=0.45, cy=-0.35)
 
 elif kind in ("card", "ticket"):
     color, label = opts[0], opts[1]
-    face = mat("cardface", color, 0.0, 0.45)
+    face = mat("cardface", color, grad=0.32)
     def rounded_rect(w, h, r, notch=0.0):
         """둥근 사각형 윤곽(반시계). notch가 있으면 왼쪽·오른쪽 가운데에 반원 홈(쿠폰 모양)."""
         def arc(cx, cy, a0): return [(cx + r * math.cos(math.radians(a0 + k)), cy + r * math.sin(math.radians(a0 + k))) for k in range(0, 91, 10)]
@@ -168,7 +157,7 @@ elif kind in ("card", "ticket"):
         box(0.34, 0.26, 0.03, loc=(-0.48, 0.05, 0.05), m=gold, bevel=0.01)   # IC 칩
         for y in (-0.03, 0.05, 0.13):
             box(0.34, 0.012, 0.035, loc=(-0.48, y, 0.055), m=goldDark)
-        box(1.5, 0.08, 0.02, loc=(0, -0.36, 0.045), m=mat("stripe", "#FFFFFF", 0, 0.4))
+        box(1.5, 0.08, 0.02, loc=(0, -0.36, 0.045), m=white)
         text(label, 0.62, 0.05, white, extrude=0.035, y=0.12).location.x = 0.42
     else:
         prism(rounded_rect(1.8, 0.9, 0.1, notch=0.16), 0.08, -0.04, face, bevel=0.02, name="ticket")
@@ -178,8 +167,9 @@ elif kind in ("card", "ticket"):
 
 elif kind == "shelf":
     flat = False
-    wood = mat("wood", "#EBD3B0", 0.0, 0.55)
-    trim = mat("trim", "#DDBE94", 0.0, 0.55)
+    # 진열장 선반: 반투명 유리 판 + 흰 받침(토스의 유리 패널 느낌)
+    wood = st.glass("shelf", "#E3EEFF", rough=0.18)
+    trim = mat("trim", "#C9D8F2", grad=0.2)
     box(9.4, 0.9, 0.2, loc=(0, 0, -0.1), m=wood, bevel=0.04)          # 선반 판
     box(9.4, 0.06, 0.12, loc=(0, -0.47, -0.16), m=trim, bevel=0.02)    # 앞 테두리
     for x in (-4.2, 0, 4.2):                                           # 받침
@@ -189,7 +179,7 @@ elif kind == "chest":
     flat = False
     opened = bool(opts) and opts[0] == "open"
     chest_t = (float(opts[1]) if len(opts) > 1 else 1.0) if opened else 0.0
-    wood = mat("wood", "#7B68FF", 0.0, 0.45)   # VIA 이벤트 보라(파스텔)
+    wood = mat("wood", "#6E55FF", grad=0.32)   # VIA 이벤트 보라
     box(1.6, 1.0, 0.8, m=wood, bevel=0.06)
     for x in (-0.55, 0.55):
         box(0.16, 1.04, 0.84, loc=(x, 0, 0), m=gold, bevel=0.02)
@@ -200,10 +190,10 @@ elif kind == "chest":
     for x in (-0.55, 0.55):
         lidpart(cyl(0.52, 0.16, loc=(x, 0, 0.4), rot=(0, math.pi / 2, 0), m=gold, bevel=0.01))
     box(0.3, 0.08, 0.34, loc=(0, -0.53, 0.32), m=gold, bevel=0.03)   # 자물쇠판
-    box(0.06, 0.02, 0.12, loc=(0, -0.575, 0.3), m=mat("hole", "#2A2340", 0, 0.6))
+    box(0.06, 0.02, 0.12, loc=(0, -0.575, 0.3), m=mat("hole", "#2A2340", grad=0, rough=0.6, coat=0))
     if chest_t > 0:
         # 열리는 정도에 따라 빛이 세지고, 반쯤 열리면 동전이 보인다
-        glow = mat("glow", "#FFE08A", 0, 0.5, emit=1.3 * chest_t)
+        glow = mat("glow", "#FFE08A", grad=0, rough=0.5, coat=0, emit=1.3 * chest_t)
         box(1.44, 0.86, 0.02, loc=(0, 0, 0.405), m=glow)
         if chest_t >= 0.45:
             for i, (x, y, z, rx) in enumerate([(-0.3, -0.1, 0.48, 20), (0.15, 0.12, 0.5, -15), (0.4, -0.15, 0.47, 35), (-0.05, -0.2, 0.55, -30)]):
@@ -215,20 +205,9 @@ elif kind == "chest":
     root.rotation_euler = (0, 0, math.radians(-24))
 
 if flat:
-    root.rotation_euler = (math.radians(78), 0, math.radians(-10))
+    root.rotation_euler = st.FLAT_TILT
 
-# 조명: 메달과 같은 배치
-def area(name, loc, rot, energy, size_, color=(1, 1, 1)):
-    l = bpy.data.lights.new(name, "AREA"); l.energy = energy; l.size = size_; l.color = color
-    o = bpy.data.objects.new(name, l); o.location = loc; o.rotation_euler = [math.radians(a) for a in rot]
-    sc.collection.objects.link(o)
-# 토스풍: 크고 부드러운 빛, 그림자를 밝게(점토 느낌)
-area("key", (-4, -5, 5), (50, 0, -38), 550, 12)
-area("rim", (3, 3, 3), (-50, 0, 140), 300, 6, (0.95, 0.97, 1))
-area("fill", (5, -5, 0.5), (85, 0, 45), 280, 10)
-sc.world = bpy.data.worlds.new("w"); sc.world.use_nodes = True
-sc.world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.95, 0.96, 1.0, 1)
-sc.world.node_tree.nodes["Background"].inputs["Strength"].default_value = 0.5
+st.lights_and_world(sc)
 
 # 카메라: 보이는 물체의 경계 상자에 맞춘 정사영(살짝 위에서)
 bpy.context.view_layer.update()
@@ -250,19 +229,7 @@ if kind == "chest":
     lid.rotation_euler = (math.radians(-108 * chest_t), 0, 0)
 sc.camera = cam
 
-r = sc.render
-r.engine = "CYCLES"; sc.cycles.samples = 64; sc.cycles.use_denoising = True
-try:
-    prefs = bpy.context.preferences.addons["cycles"].preferences
-    prefs.compute_device_type = "METAL"; prefs.get_devices()
-    for d in prefs.devices: d.use = True
-    sc.cycles.device = "GPU"
-except Exception as e:
-    print("GPU 설정 실패, CPU로:", e)
-r.film_transparent = True
-r.resolution_x = size; r.resolution_y = int(size * aspect)
-r.image_settings.file_format = "PNG"; r.image_settings.color_mode = "RGBA"
-sc.view_settings.view_transform = "Standard"
-r.filepath = out
+st.render_setup(sc, out, size, int(size * aspect))
+
 bpy.ops.render.render(write_still=True)
 print("RENDERED", out)

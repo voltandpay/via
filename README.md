@@ -46,7 +46,7 @@ Pleos Connect System UI 서체 **Asta Sans**(42dot)를 앱에 포함한다. [SIL
 - **경부하 부스트**(날씨 부스트): 23~9시 충전 시작 시 충전 포인트 2배 (시연용 예시 시간대)
 - **사업자 데이**(커뮤니티 데이): 정해진 날 그 사업자 충전소에서 충전하면 포인트 3배 + 한정 메달 (`mock/operator_days.json`)
 
-3D 이미지는 모두 같은 스타일(무광 점토 질감, 밝은 색, 두툼하고 둥근 형태, 정면에 가까운 시점)이다. 전체를 다시 만들 때는
+3D 이미지는 모두 같은 스타일(채도 높은 반광 플라스틱과 위가 밝은 그라데이션, 포인트로 반투명 유리·푸른빛 은색, 솟은 테두리의 두툼한 동전, 흰 글자, 살짝 비튼 3/4 시점)이다. 재질·조명은 `tools/blender_style.py` 한 곳에서 정한다. 전체를 다시 만들 때는
 `BLENDER=/path/to/Blender bash tools/render_all.sh` (렌더 76장, 앱 리소스·PT 표지 그림까지 갱신).
 
 메달은 Blender(Cycles)로 렌더링한 이미지다(`app/src/main/res/drawable-nodpi/medal_*.webp`, 사업자 9곳 × 동·은·금 + 잠긴 메달).
