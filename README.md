@@ -6,6 +6,8 @@
 
 현대자동차그룹 차량용 앱 개발 공모전(2026) 출품작 · 팀 **볼트앤페이(Volt&Pay)** · 1차 MVP.
 
+**먼저 볼 것:** [시연 영상(2분 59초)](doc/video/via_demo.mp4) · [접수양식(기획서)](doc/contest-application-consent.docx) · 제출 APK `apk/VoltAndPay_VIA_release.apk`
+
 이름의 뜻: *via*는 "~을 경유하여"라는 뜻이다. 충전소를 경로의 경유지로 넣는 이 앱의 핵심 동작과 같다.
 
 ## 핵심 장면
@@ -28,6 +30,8 @@
 | SpeechToText | 3.3.1 (ON_DEVICE) | "응/아니" 음성 응답 | `STT_SERVICE`, `RECORD_AUDIO` |
 
 차량 제어 권한(`CONTROL_*`)은 쓰지 않는다.
+
+에뮬레이터에서 동작을 확인한 것은 SoC·배터리 에너지·충전 스위치, 기어, 주행거리, 내비 경로·경유지 추가, 위치, On-device TTS·STT다. **전비·VIN·운전석 착석은 에뮬레이터가 값을 주지 않아 대체 동작으로 확인했다**(전비 → 차종 기본 전비, VIN → 온보딩에서 차종 선택, 착석 → 차 안에 있다고 보고 바로 안내). 실차 신호가 오면 그대로 쓴다.
 
 ## 서체
 Pleos Connect System UI 서체 **Asta Sans**(42dot)를 앱에 포함한다. [SIL Open Font License 1.1](app/src/main/assets/licenses/AstaSans-OFL.txt) · 출처 https://github.com/42dot/Asta-Sans
@@ -87,7 +91,7 @@ Pleos Connect System UI 서체 **Asta Sans**(42dot)를 앱에 포함한다. [SIL
 5. 디버그 빌드(`./gradlew :app:installDebug`)에는 오른쪽 위 **DEV** 시연 패널이 있어 Virtual Console 없이(MOCK 모드) 같은 장면을 재생할 수 있다. 릴리스 APK에는 없다.
 
 ## 시연
-[doc/시연-시나리오.md](doc/시연-시나리오.md) — Pleos 모드(Virtual Console) / Mock 모드(디버그 패널), 장면 A~E.
+[doc/시연-시나리오.md](doc/시연-시나리오.md) — Pleos 모드(Virtual Console) / Mock 모드(디버그 패널), 장면 A~F·A'(평소 경로)·경유지 교체. 시연 영상은 차량 신호를 Mock 모드로 재현해 녹화했다.
 
 ## 문서
 - [설계 문서](doc/설계문서-초안.md) · [구현 계획](doc/구현계획-1차MVP.md) · [스파이크 결과](doc/스파이크-결과-SoC-NaviHelper.md)
