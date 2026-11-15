@@ -84,6 +84,7 @@ Pleos Connect System UI 서체 **Asta Sans**(42dot)를 앱에 포함한다. [SIL
 - 릴리스 서명 키는 저장소 밖에 두고 `local.properties`에 `release.storeFile`, `release.storePassword`, `release.keyAlias`, `release.keyPassword`를 적는다(없으면 디버그 키로 서명).
 
 ## 테스트 환경 및 필요 설정
+0. **개발·검증 환경:** Pleos Connect Emulator v2.1(AVD `Pleos_Connect_v2.1`, Android 14 Automotive, API 34). 화면 규격은 Connect-S-17 기본 디스플레이 **2560×1440px · 160dpi**, 앱 창은 가로 모드 1700×1164dp(분할 화면 세로 모드 840×1164dp도 지원).
 1. Pleos Connect Emulator(`Pleos_Connect_v2.1`, Android 14 Automotive)를 켜고 APK를 설치한다: `adb install -r --user 10 apk/VoltAndPay_VIA_release.apk`
 2. 처음 실행하면 **위치·마이크 권한을 허용**하고, 온보딩에서 **차종**(시연: 아이오닉 5 롱레인지)과 **가진 충전 멤버십**(시연: 채비)을 고른다. 에뮬레이터 VIN은 `"invalid"`라 차종을 자동으로 알 수 없다.
 3. 차량 상태(배터리·기어·충전)는 Virtual Console로 바꾼다: `adb forward tcp:8088 tcp:8088` 후 `tools/vc.sh soc 15`, `tools/vc.sh gear Drive`, `tools/vc.sh charge on`. **Virtual Console은 웹 페이지(http://127.0.0.1:8088)가 브라우저 앞에 열려 있을 때만 동작한다.**
